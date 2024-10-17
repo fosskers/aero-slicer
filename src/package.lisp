@@ -6,6 +6,16 @@
 (defparameter +screen-width+ (* 256 3))
 (defparameter +screen-height+ (* 240 3))
 
+(defmacro with-drawing (&body body)
+  `(progn (raylib:begin-drawing)
+          ,@body
+          (raylib:end-drawing)))
+
+(defmacro with-2d-camera (camera &body body)
+  `(progn (raylib:begin-mode-2d ,camera)
+          ,@body
+          (raylib:end-mode-2d)))
+
 (defstruct (sprite (:copier nil) (:predicate nil))
   (texture nil :read-only t)
   (pos (raylib:make-vector2 :x 0.0 :y 0.0))
@@ -16,16 +26,14 @@
 
 (defun event-loop-inner (camera sprite fc)
   (unless (raylib:window-should-close)
-    (raylib:begin-drawing)
-    (raylib:begin-mode-2d camera)
-    (raylib:clear-background raylib:+raywhite+)
-    (raylib:draw-rectangle 0 0 10 10 raylib:+red+)
-    (raylib:draw-pixel 0 0 raylib:+blue+)
-    (draw-sprite sprite)
-    (raylib:end-mode-2d)
-    (raylib:draw-fps 10 10)
-    (raylib:draw-text (format nil "FC: ~a" fc) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)
-    (raylib:end-drawing)
+    (with-drawing
+      (with-2d-camera camera
+        (raylib:clear-background raylib:+raywhite+)
+        ;; (raylib:draw-rectangle 0 0 10 10 raylib:+red+)
+        (raylib:draw-pixel 0 0 raylib:+red+)
+        (draw-sprite sprite))
+      (raylib:draw-fps 10 10)
+      (raylib:draw-text (format nil "FC: ~a" fc) 10 (- +screen-height+ 25) 20 raylib:+lightgray+))
     (incf fc)
     (event-loop-inner camera sprite fc)))
 
