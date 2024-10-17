@@ -3,18 +3,19 @@
 #+nil
 (launch)
 
-(defun event-loop-inner (camera sprite fc)
+(defun event-loop-inner (camera fighter fc)
   (unless (raylib:window-should-close)
     (with-drawing
       (with-2d-camera camera
         (raylib:clear-background raylib:+raywhite+)
         ;; (raylib:draw-rectangle 0 0 10 10 raylib:+red+)
         (raylib:draw-pixel 0 0 raylib:+red+)
-        (draw-sprite sprite))
+        (move-fighter fighter)
+        (draw-sprite fighter))
       (raylib:draw-fps 10 10)
       (raylib:draw-text (format nil "FC: ~a" fc) 10 (- +screen-height+ 25) 20 raylib:+lightgray+))
     (incf fc)
-    (event-loop-inner camera sprite fc)))
+    (event-loop-inner camera fighter fc)))
 
 (defun event-loop (camera)
   (let ((sprite (make-fighter)))
