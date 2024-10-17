@@ -4,7 +4,9 @@
   :license "MPL-2.0"
   :depends-on (:claw-raylib)
   :components ((:module "src"
-                :components ((:file "package"))))
+                :components ((:file "package")
+                             (:file "fighter")
+                             (:file "main"))))
   :description "JP's shooter from the past.")
 
 (defsystem "aero-fighter/gen"
