@@ -29,3 +29,14 @@
   `(progn (raylib:begin-mode-2d ,camera)
           ,@body
           (raylib:end-mode-2d)))
+
+;; --- Generics --- ;;
+
+(defgeneric min-x (sprite)
+  (:documentation "The lowest (closest to 0) X value occupied by this sprite."))
+(defgeneric max-x (sprite)
+  (:documentation "The highest (furthest to 0) X value occupied by this sprite."))
+(defgeneric min-y (sprite)
+  (:documentation "The lowest (closest to 0) Y value occupied by this sprite."))
+(defgeneric max-y (sprite)
+  (:documentation "The highest (furthest to 0) Y value occupied by this sprite."))

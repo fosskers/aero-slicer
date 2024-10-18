@@ -3,13 +3,20 @@
 #+nil
 (launch)
 
+(defun debugging-dots ()
+  (raylib:draw-pixel 0 0 raylib:+red+)
+  (raylib:draw-pixel -128 -120 raylib:+red+)
+  (raylib:draw-pixel -128 119 raylib:+red+)
+  (raylib:draw-pixel 127 119 raylib:+red+)
+  (raylib:draw-pixel 127 -120 raylib:+red+))
+
 (defun event-loop-inner (camera fighter fc)
   (unless (raylib:window-should-close)
     (with-drawing
       (with-2d-camera camera
         (raylib:clear-background raylib:+raywhite+)
         ;; (raylib:draw-rectangle 0 0 10 10 raylib:+red+)
-        (raylib:draw-pixel 0 0 raylib:+red+)
+        (debugging-dots)
         (move-fighter fighter)
         (draw-sprite fighter))
       (raylib:draw-fps 10 10)
