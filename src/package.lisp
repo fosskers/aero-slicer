@@ -8,9 +8,15 @@
 
 ;; --- Globals --- ;;
 
-(defparameter +screen-width+ (* 256 3))
-(defparameter +screen-height+ (* 240 3))
+(defparameter +world-pixels-x+ 256)
+(defparameter +world-pixels-y+ 240)
+(defparameter +screen-width+ (* +world-pixels-x+ 3))
+(defparameter +screen-height+ (* +world-pixels-y+ 3))
 (defparameter +frame-rate+ 60)
+(defparameter +world-min-x+ -128)
+(defparameter +world-max-x+ +127)
+(defparameter +world-min-y+ -120)
+(defparameter +world-max-y+ +119)
 
 ;; --- Keys --- ;;
 
@@ -38,6 +44,9 @@
 
 (defgeneric draw (sprite)
   (:documentation "Render the `sprite' on the screen."))
+
+(defgeneric pos (sprite)
+  (:documentation "The location of a sprite as a `Vector2'."))
 
 (defgeneric min-x (sprite)
   (:documentation "The lowest (closest to 0) X value occupied by this sprite."))

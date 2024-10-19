@@ -31,7 +31,8 @@
          (center-y (/ +screen-height+ 2.0))
          (offset   (raylib:make-vector2 :x center-x :y center-y))
          (target   (raylib:make-vector2 :x 0.0 :y 0.0)))
-    (raylib:make-camera-2d :offset offset :target target :rotation 0.0 :zoom 3.0)))
+    ;; TODO: Restore to Zoom 3 once testing is done.
+    (raylib:make-camera-2d :offset offset :target target :rotation 0.0 :zoom 2.0)))
 
 (defun ungame (game)
   "Release various resources."
@@ -62,10 +63,10 @@
 (defun debugging-dots ()
   "For confirmation of certain coordinates in the game world."
   (raylib:draw-pixel 0 0 raylib:+red+)
-  (raylib:draw-pixel -128 -120 raylib:+red+)
-  (raylib:draw-pixel -128 119 raylib:+red+)
-  (raylib:draw-pixel 127 119 raylib:+red+)
-  (raylib:draw-pixel 127 -120 raylib:+red+))
+  (raylib:draw-pixel +world-min-x+ +world-min-y+ raylib:+red+)
+  (raylib:draw-pixel +world-min-x+ +world-max-y+ raylib:+red+)
+  (raylib:draw-pixel +world-max-x+ +world-max-y+ raylib:+red+)
+  (raylib:draw-pixel +world-max-x+ +world-min-y+ raylib:+red+))
 
 (defun event-loop (game)
   "Loop until a signal to quit has been received."
