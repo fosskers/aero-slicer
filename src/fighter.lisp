@@ -38,10 +38,10 @@
   "Move the fighter depending on the current button presses."
   (let* ((pos (fighter-pos fighter)))
     (when (raylib:is-key-down +key-right+)
-      (setf (raylib:vector2-x pos) (min 112.0 (+ 2.0 (raylib:vector2-x pos)))))
+      (setf (raylib:vector2-x pos) (min +112.0 (+ +2.0 (raylib:vector2-x pos)))))
     (when (raylib:is-key-down +key-left+)
       (setf (raylib:vector2-x pos) (max -128.0 (+ -2.0 (raylib:vector2-x pos)))))
     (when (raylib:is-key-down +key-down+)
-      (setf (raylib:vector2-y pos) (min 104.0 (+ 2.0 (raylib:vector2-y pos)))))
+      (setf (raylib:vector2-y pos) (min +104.0 (+ +2.0 (raylib:vector2-y pos)))))
     (when (raylib:is-key-down +key-up+)
       (setf (raylib:vector2-y pos) (max -120.0 (+ -2.0 (raylib:vector2-y pos)))))))

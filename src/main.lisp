@@ -8,7 +8,8 @@
 ;; NOTE: When you add a texture here, make sure to unload it in `ungame' below.
 (defstruct (textures (:constructor textures))
   "A bank of the various loaded textures."
-  (fighter (raylib:load-texture "assets/fighter.png")))
+  (fighter (raylib:load-texture "assets/fighter.png"))
+  (blob    (raylib:load-texture "assets/blob.png")))
 
 (defstruct game
   "The state of the running game."
@@ -35,14 +36,17 @@
 (defun ungame (game)
   "Release various resources."
   (let ((textures (game-textures game)))
-    (raylib:unload-texture (textures-fighter textures))))
+    (raylib:unload-texture (textures-fighter textures))
+    (raylib:unload-texture (textures-blob textures))))
 
 ;; --- Event Handling --- ;;
 
 (defun update (game)
   "Following TEA, update the game state."
-  (move (game-fighter game))
-  (incf (game-frame game)))
+  (incf (game-frame game))
+  (maybe-spawn-blob game)
+  (move-all-blobs game)
+  (move (game-fighter game)))
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
@@ -50,6 +54,7 @@
     (raylib:clear-background raylib:+raywhite+)
     (with-2d-camera (game-camera game)
       (debugging-dots)
+      (draw-all-blobs game)
       (draw (game-fighter game)))
     (raylib:draw-fps 10 10)
     (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)))
