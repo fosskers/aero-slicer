@@ -10,6 +10,7 @@
 
 (defparameter +screen-width+ (* 256 3))
 (defparameter +screen-height+ (* 240 3))
+(defparameter +frame-rate+ 60)
 
 ;; --- Keys --- ;;
 
@@ -31,6 +32,12 @@
           (raylib:end-mode-2d)))
 
 ;; --- Generics --- ;;
+
+(defgeneric move (sprite)
+  (:documentation "Attempt to move the `sprite' on the screen."))
+
+(defgeneric draw (sprite)
+  (:documentation "Render the `sprite' on the screen."))
 
 (defgeneric min-x (sprite)
   (:documentation "The lowest (closest to 0) X value occupied by this sprite."))

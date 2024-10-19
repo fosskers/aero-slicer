@@ -5,37 +5,37 @@
 
 ;; --- Types --- ;;
 
-(defstruct sprite
+(defstruct fighter
+  "The player's fighter ship."
   (texture nil :read-only t)
   (pos (raylib:make-vector2 :x 0.0 :y 0.0))
   (bbox nil :read-only t))
 
-(defun make-fighter ()
-  "Read in the fighter texture."
+(defun fighter ()
+  "Read in the fighter texture and construct a `fighter'."
   (let* ((sprite (raylib:load-texture "assets/fighter.png"))
          (bbox   (raylib:make-rectangle :x 0.0 :y 0.0
                                         :width  (float (raylib:texture-width sprite))
                                         :height (float (raylib:texture-height sprite)))))
-    (make-sprite :texture sprite :bbox bbox)))
+    (make-fighter :texture sprite :bbox bbox)))
 
-(defmethod min-x ((sprite sprite))
-  (raylib:vector2-x (sprite-pos sprite)))
-(defmethod max-x ((sprite sprite))
-  (+ 15 (raylib:vector2-x (sprite-pos sprite))))
-(defmethod min-y ((sprite sprite))
-  (raylib:vector2-y (sprite-pos sprite)))
-(defmethod max-y ((sprite sprite))
-  (+ 15 (raylib:vector2-y (sprite-pos sprite))))
+;; --- Generics --- ;;
 
-(defun draw-sprite (sprite)
-  (raylib:draw-texture-rec (sprite-texture sprite) (sprite-bbox sprite) (sprite-pos sprite) raylib:+white+))
+(defmethod min-x ((fighter fighter))
+  (raylib:vector2-x (fighter-pos fighter)))
+(defmethod max-x ((fighter fighter))
+  (+ 15 (raylib:vector2-x (fighter-pos fighter))))
+(defmethod min-y ((fighter fighter))
+  (raylib:vector2-y (fighter-pos fighter)))
+(defmethod max-y ((fighter fighter))
+  (+ 15 (raylib:vector2-y (fighter-pos fighter))))
 
-;; --- Movement --- ;;
+(defmethod draw ((fighter fighter))
+  (raylib:draw-texture-rec (fighter-texture fighter) (fighter-bbox fighter) (fighter-pos fighter) raylib:+white+))
 
-;; TODO: 2024-10-19 Use ints?
-(defun move-fighter (fighter)
+(defmethod move ((fighter fighter))
   "Move the fighter depending on the current button presses."
-  (let* ((pos (sprite-pos fighter)))
+  (let* ((pos (fighter-pos fighter)))
     (when (raylib:is-key-down +key-right+)
       (setf (raylib:vector2-x pos) (min 112.0 (+ 2.0 (raylib:vector2-x pos)))))
     (when (raylib:is-key-down +key-left+)
@@ -44,4 +44,3 @@
       (setf (raylib:vector2-y pos) (min 104.0 (+ 2.0 (raylib:vector2-y pos)))))
     (when (raylib:is-key-down +key-up+)
       (setf (raylib:vector2-y pos) (max -120.0 (+ -2.0 (raylib:vector2-y pos)))))))
-
