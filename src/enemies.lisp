@@ -15,8 +15,8 @@
 (defstruct blob
   "An amorphous blob enemy that moves in a sin-wave."
   (texture nil :read-only t)
-  (pos nil))
-;; (pos (raylib:make-vector2 :x 0.0 :y 0.0)))
+  (pos     nil)
+  (health  1))
 
 (defun blob (texture)
   "Spawn a `blob' somewhere off the top of the screen."

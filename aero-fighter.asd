@@ -2,9 +2,13 @@
   :version "0.0.1"
   :author "Colin Woodbury <colin@fosskers.ca>"
   :license "MPL-2.0"
-  :depends-on (:claw-raylib)
+  :depends-on (:claw-raylib
+               :com.inuoe.jzon
+               :transducers)
   :components ((:module "src"
                 :components ((:file "package")
+                             (:file "state")
+                             (:file "aseprite")
                              (:file "fighter")
                              (:file "enemies")
                              (:file "main"))))

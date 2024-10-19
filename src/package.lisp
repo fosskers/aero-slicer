@@ -1,5 +1,7 @@
 (defpackage aero-fighter
-  (:use :cl))
+  (:use :cl)
+  (:local-nicknames (#:jzon #:com.inuoe.jzon)
+                    (#:t #:transducers)))
 
 (in-package :aero-fighter)
 
@@ -21,9 +23,9 @@
 ;; --- Keys --- ;;
 
 (defparameter +key-right+ 262)
-(defparameter +key-left+ 263)
-(defparameter +key-down+ 264)
-(defparameter +key-up+ 265)
+(defparameter +key-left+  263)
+(defparameter +key-down+  264)
+(defparameter +key-up+    265)
 
 ;; --- Macros --- ;;
 
