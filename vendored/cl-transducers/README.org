@@ -1,0 +1,979 @@
+#+title: Transducers: Ergonomic, efficient data processing
+
+#+begin_quote
+I think Transducers are a fundamental primitive that decouples critical logic
+from list/sequence processing, and if I had to do Clojure all over I would put
+them at the bottom.
+
+-- Rich Hickey
+#+end_quote
+
+Transducers are an ergonomic and extremely memory-efficient way to process a
+data source. Here "data source" means simple collections like Lists or Vectors,
+but also potentially large files or generators of infinite data.
+
+Transducers...
+
+- allow the chaining of operations like ~map~ and ~filter~ without allocating memory between each step.
+- aren't tied to any specific data type; they need only be implemented once.
+- vastly simplify "data transformation code".
+- have nothing to do with "lazy evaluation".
+- are a joy to use!
+
+Example: /While skipping every second line of a file, sum the lengths of only
+evenly-lengthed lines./
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+
+(transduce
+  ;; How do we want to process each element?
+  (comp (step 2) (map #'length) (filter #'evenp))
+  ;; How do we want to combine all the elements together?
+  #'+
+  ;; What's our original data source?
+  #p"README.org")
+#+end_src
+
+#+RESULTS:
+: 7026
+
+_This library has been confirmed to work with SBCL, CCL, ECL, Clasp and LispWorks 8._
+
+#+begin_quote
+⚠ ABCL cannot be used due to lack of support for tail-call elimination within ~labels~.
+
+⚠ Allegro support is partial for the same reason; large sources blow the stack.
+#+end_quote
+
+Looking for Transducers in other Lisps? Check out the [[https://codeberg.org/fosskers/transducers.el][Emacs Lisp]] and [[https://git.sr.ht/~fosskers/transducers.fnl][Fennel]] implementations!
+
+* History and Motivation
+
+Originally invented in Clojure and adapted to Scheme as SRFI-171, Transducers
+are an excellent way to think about - and efficiently operate on - collections
+or streams of data. Transduction operations are strict and don't involve
+"laziness" or "thunking" in any way, yet only process the exact amount of data
+you ask them to.
+
+This library draws inspiration from both the original Clojure and SRFI-171,
+while adding many other convenient operations commonly found in other languages.
+
+* Installation
+
+This library is available on [[https://quickdocs.org/cl-transducers][Quicklisp]] and [[https://ultralisp.org/projects/fosskers/cl-transducers][Ultralisp]]. To download the main
+system:
+
+#+begin_src lisp
+(ql:quickload :transducers)
+#+end_src
+
+For the JSON extensions:
+
+#+begin_src lisp
+(ql:quickload :transducers/jzon)
+#+end_src
+
+* Usage and Theory
+
+** Importing
+
+Since this library reuses some symbol names also found in =:cl=, it is expected
+that you import =transducers= as follows in your =defpackage=:
+
+#+begin_src lisp
+(defpackage foo
+  (:use :cl)
+  (:local-nicknames (:t :transducers)))
+#+end_src
+
+You can then make relatively clean calls like:
+
+#+begin_src lisp
+(t:transduce (t:map #'1+) #'t:vector '(1 2 3))
+;; => #(2 3 4)
+#+end_src
+
+However, many of the examples below use ~(in-package :transducers)~ for brevity in
+the actual function calls. You should still use a nickname in your own code.
+
+** Transducers, Reducers, and Sources
+
+#+begin_src lisp
+;; The fundamental pattern.
+(transduce <transducer-chain> <reducer> <source>)
+#+end_src
+
+Data processing largely has three concerns:
+
+1. Where is my data coming from? (sources)
+2. What do I want to do to each element? (transducers)
+3. How do I want to collect the results? (reducers)
+
+Each full "transduction" requires all three. We pass one of each to the
+=transduce= function, which drives the process. It knows how to pull values from
+the source, feed them through the transducer chain, and wrap everything together
+via the reducer.
+
+- Typical transducers are =map=, =filter=, and =take=.
+- Typical reducers are =+=, =count=, =t:cons=, and =fold=.
+- Typical sources are lists, vectors, strings, hash tables, and files.
+
+/Generators/ are a special kind of source that yield infinite data. Typical
+generators are =repeat=, =cycle=, and =ints=.
+
+Let's sum the squares of the first 1000 odd integers:
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+
+(transduce
+ (comp (filter #'oddp)             ;; (2) Keep only odd numbers.
+       (take 1000)                 ;; (3) Keep the first 1000 filtered odds.
+       (map (lambda (n) (* n n)))) ;; (4) Square those 1000.
+ #'+       ;; (5) Reducer: Add up all the squares.
+ (ints 1)) ;; (1) Source: Generate all positive integers.
+#+end_src
+
+#+RESULTS:
+: 1333333000
+
+Two things of note here:
+
+1. =comp= is used here to chain together different transducer steps. Notice that
+   the order appears "backwards" from usual function composition. It may help to
+   imagine that =comp= is acting like the =->>= macro here. =comp= is supplied here as
+   a convenience; you're free to use =alexandria:compose= if you wish.
+2. The reduction via =+= is listed as Step 5, but really it's occuring throughout
+   the transduction process. Each value that makes it through the composed
+   transducer chain is immediately added to an internal accumulator.
+
+Explore the other transducers and reducers to see what's possible! You'll never
+write a =loop= again.
+
+** Processing JSON Data
+
+The system =transducers/jzon= provides automatic JSON streaming support via the
+[[https://github.com/Zulu-Inuoe/jzon][jzon]] library. Like =transducers= itself, it is expected that you import this
+system with a nickname:
+
+#+begin_src lisp
+(:local-nicknames (#:j #:transducers/jzon))
+#+end_src
+
+Only two functions are exposed: =read= and =write=.
+
+- =read= is a /source/ that accepts a pathname, open stream, or a string. It
+  produces parsed JSON values as Lisp types. JSON Objects become Hash Tables.
+- =write= is a /reducer/ that expects an open stream. It writes the stream of Lisp
+  types into their logical JSON equivalents.
+
+Here is a simple example of reading some JSON data from a string, doing nothing
+to it, and outputting it again to a new string:
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+
+(with-output-to-string (stream)
+  (transduce #'pass
+             (transducers/jzon:write stream)
+             (transducers/jzon:read "[{\"name\": \"A\"}, {\"name\": \"B\"}]")))
+#+end_src
+
+#+RESULTS:
+: [{"name":"A"},{"name":"B"}]
+
+Note that the JSON data _must_ be a JSON array. There is otherwise no size limit;
+the library can handle any amount of JSON input.
+
+For more examples, see the Gallery below.
+
+** Fset: Immutable Collections
+
+The system =transducers/fset= provides support for the [[https://gitlab.common-lisp.net/fset/fset][Fset library]] of immutable
+collections. It's expected that you import this system with a nickname:
+
+#+begin_src lisp
+(:local-nicknames (#:s #:transducers/fset))
+#+end_src
+
+Reducers are provided for each of its main types: ~set~, ~map~, ~seq~, and ~bag~.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+
+(transduce (map #'1+) #'transducers/fset:set (fset:set 1 2 3 1))
+#+end_src
+
+#+RESULTS:
+: #{ 2 3 4 }
+
+* API
+
+The examples here use ~(in-package :transducers)~ for brevity in the actual
+function calls and to allow them to be runnable directly in this README, but as
+mentioned above it's recommended to nickname the library to ~:t~ due to some
+overlap with ~:cl~.
+
+** Transducers
+
+Transducers describe how to alter the items of some stream of values. Some
+transducers, like ~take~, can short-circuit.
+
+Multiple transducer functions can be chained together with ~comp~.
+
+*** pass, map
+
+Just pass along each value of the transduction.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'pass #'cons '(1 2 3))
+#+end_src
+
+#+RESULTS:
+: (1 2 3)
+
+Apply a function F to all elements of the transduction.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (map #'1+) #'cons '(1 2 3))
+#+end_src
+
+#+RESULTS:
+: (2 3 4)
+
+*** filter, filter-map, unique, dedup
+
+Only keep elements from the transduction that satisfy PRED.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (filter #'evenp) #'cons '(1 2 3 4 5))
+#+end_src
+
+#+RESULTS:
+: (2 4)
+
+Apply a function F to the elements of the transduction, but only keep results
+that are non-nil.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (filter-map #'cl:first) #'cons '(() (2 3) () (5 6) () (8 9)))
+#+end_src
+
+#+RESULTS:
+: (2 5 8)
+
+Only allow values to pass through the transduction once each. Stateful; this
+uses a set internally so could get quite heavy if you're not careful.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'unique #'cons '(1 2 1 3 2 1 2 "abc"))
+#+end_src
+
+#+RESULTS:
+: (1 2 3 "abc")
+
+Remove adjacent duplicates from the transduction.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'dedup #'cons '(1 1 1 2 2 2 3 3 3 4 3 3))
+#+end_src
+
+#+RESULTS:
+: (1 2 3 4 3)
+
+*** drop, drop-while, take, take-while
+
+Drop the first N elements of the transduction.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (drop 3) #'cons '(1 2 3 4 5))
+#+end_src
+
+#+RESULTS:
+: (4 5)
+
+Drop elements from the front of the transduction that satisfy PRED.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (drop-while #'evenp) #'cons '(2 4 6 7 8 9))
+#+end_src
+
+#+RESULTS:
+: (7 8 9)
+
+Keep only the first N elements of the transduction.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (take 3) #'cons '(1 2 3 4 5))
+#+end_src
+
+#+RESULTS:
+: (1 2 3)
+
+Keep only elements which satisfy a given PRED, and stop the transduction as soon
+as any element fails the test.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (take-while #'evenp) #'cons '(2 4 6 8 9 2))
+#+end_src
+
+#+RESULTS:
+: (2 4 6 8)
+*** uncons, concatenate, flatten
+
+Split up a transduction of cons cells.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'uncons #'cons '((:a . 1) (:b . 2) (:c . 3)))
+#+end_src
+
+#+RESULTS:
+: (:A 1 :B 2 :C 3)
+
+Concatenate all the sublists in the transduction.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'concatenate #'cons '((1 2 3) (4 5 6) (7 8 9)))
+#+end_src
+
+#+RESULTS:
+: (1 2 3 4 5 6 7 8 9)
+
+Entirely flatten all lists in the transduction, regardless of nesting.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'flatten #'cons '((1 2 3) 0 (4 (5) 6) 0 (7 8 9) 0))
+#+end_src
+
+#+RESULTS:
+: (1 2 3 0 4 5 6 0 7 8 9 0)
+
+*** segment, window, group-by
+
+Partition the input into lists of N items. If the input stops, flush any
+accumulated state, which may be shorter than N.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (segment 3) #'cons '(1 2 3 4 5))
+#+end_src
+
+#+RESULTS:
+: ((1 2 3) (4 5))
+
+Yield N-length windows of overlapping values. This is different from ~segment~
+which yields non-overlapping windows. If there were fewer items in the input
+than N, then this yields nothing.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (window 3) #'cons '(1 2 3 4 5))
+#+end_src
+
+#+RESULTS:
+: ((1 2 3) (2 3 4) (3 4 5))
+
+Group the input stream into sublists via some function F. The cutoff criterion
+is whether the return value of F changes between two consecutive elements of the
+transduction.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (group-by #'evenp) #'cons '(2 4 6 7 9 1 2 4 6 3))
+#+end_src
+
+#+RESULTS:
+: ((2 4 6) (7 9 1) (2 4 6) (3))
+
+*** intersperse, enumerate, step, scan
+
+Insert an ELEM between each value of the transduction.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (intersperse 0) #'cons '(1 2 3))
+#+end_src
+
+#+RESULTS:
+: (1 0 2 0 3)
+
+Index every value passed through the transduction into a cons pair. Starts at 0.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'enumerate #'cons '("a" "b" "c"))
+#+end_src
+
+#+RESULTS:
+: ((0 . "a") (1 . "b") (2 . "c"))
+
+Only yield every Nth element of the transduction. The first element of the
+transduction is always included.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (step 2) #'cons '(1 2 3 4 5 6 7 8 9))
+#+end_src
+
+#+RESULTS:
+: (1 3 5 7 9)
+
+Build up successsive values from the results of previous applications of a given
+function F.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (scan #'+ 0) #'cons '(1 2 3 4))
+#+end_src
+
+#+RESULTS:
+: (0 1 3 6 10)
+
+*** once
+
+Inject some ITEM onto the front of the transduction.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (comp (filter (lambda (n) (> n 10)))
+                 (once 'hello)
+                 (take 3))
+           #'cons (ints 1))
+#+end_src
+
+#+RESULTS:
+: (HELLO 11 12)
+
+*** log
+
+Call some LOGGER function for each step of the transduction. The LOGGER must
+accept the running results and the current element as input. The original items
+of the transduction are passed through as-is.
+
+#+begin_src lisp :results output :exports both
+(in-package :transducers)
+(transduce (log (lambda (_ n) (format t "Got: ~a~%" n))) #'cons '(1 2 3 4 5))
+#+end_src
+
+#+RESULTS:
+: Got: 1
+: Got: 2
+: Got: 3
+: Got: 4
+: Got: 5
+
+These are STDOUT results. The actual return value is the result of the reducer,
+in this case ~cons~, thus a list.
+
+*** from-csv, into-csv
+
+Interpret the data stream as CSV data.
+
+The first item found is assumed to be the header list, and it will be used to
+construct useable hashtables for all subsequent items.
+
+Note: This function makes no attempt to convert types from the original parsed
+strings. If you want numbers, you will need to further parse them yourself.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (comp #'from-csv
+                 (map (lambda (hm) (gethash "Name" hm))))
+           #'cons '("Name,Age" "Alice,35" "Bob,26"))
+#+end_src
+
+#+RESULTS:
+: ("Alice" "Bob")
+
+Given a sequence of HEADERS, rerender each item in the data stream into a CSV
+string. It's assumed that each item in the transduction is a hash table whose
+keys are strings that match the values found in HEADERS.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (comp #'from-csv
+                 (into-csv '("Name" "Age")))
+           #'cons '("Name,Age,Hair" "Alice,35,Blond" "Bob,26,Black"))
+#+end_src
+
+#+RESULTS:
+: ("Name,Age" "Alice,35" "Bob,26")
+
+** Reducers
+
+Reducers describe how to fold the stream of items down into a single result, be
+it either a new collection or a scalar.
+
+Some reducers, like ~first~, can also force the entire transduction to
+short-circuit.
+
+*** cons, snoc, vector, string, hash-table
+
+Collect all results as a list.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'pass #'cons '(1 2 3))
+#+end_src
+
+#+RESULTS:
+: (1 2 3)
+
+Collect all results as a list, but results are reversed. In theory, slightly
+more performant than ~cons~ since it performs no final reversal.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'pass #'snoc '(1 2 3))
+#+end_src
+
+#+RESULTS:
+: (3 2 1)
+
+Collect a stream of values into a vector.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'pass #'vector '(1 2 3))
+#+end_src
+
+#+RESULTS:
+: #(1 2 3)
+
+Collect a stream of characters into to a single string.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (map #'char-upcase) #'string "hello")
+#+end_src
+
+#+RESULTS:
+: HELLO
+
+Collect a stream of key-value cons pairs into a hash table.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'enumerate #'hash-table '("a" "b" "c"))
+#+end_src
+
+#+RESULTS:
+: #<COMMON-LISP:HASH-TABLE :TEST EQUAL :COUNT 3 {1004E83BF3}>
+
+*** count, average, median
+
+Count the number of elements that made it through the transduction.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce #'pass #'count '(1 2 3 4 5))
+#+end_src
+
+#+RESULTS:
+: 5
+
+Calculate the average value of all numeric elements in a transduction.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce #'pass #'average '(1 2 3 4 5 6))
+#+end_src
+
+#+RESULTS:
+: 7/2
+
+Calculate the median value of all elements in a transduction, provided that they
+are numbers, strings, or characters. The elements are sorted once before the
+median is extracted.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce #'pass #'median '(1 1 1 0 2 4 1 4 9))
+#+end_src
+
+#+RESULTS:
+: 1
+
+*** anyp, allp
+
+Yield t if any element in the transduction satisfies PRED. Short-circuits the
+transduction as soon as the condition is met.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'pass (anyp #'evenp) '(1 3 5 7 9 2))
+#+end_src
+
+#+RESULTS:
+: T
+
+Yield t if all elements of the transduction satisfy PRED. Short-circuits with
+NIL if any element fails the test.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'pass (allp #'oddp) '(1 3 5 7 9))
+#+end_src
+
+#+RESULTS:
+: T
+
+*** first, last, find
+
+Yield the first value of the transduction. As soon as this first value is
+yielded, the entire transduction stops.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce (filter #'oddp) #'first '(2 4 6 7 10))
+#+end_src
+
+#+RESULTS:
+: 7
+
+Yield the last value of the transduction.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce #'pass #'last '(2 4 6 7 10))
+#+end_src
+
+#+RESULTS:
+: 10
+
+Find the first element in the transduction that satisfies a given PRED. Yields
+NIL if no such element were found.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce #'pass (find #'evenp) '(1 3 5 6 9))
+#+end_src
+
+#+RESULTS:
+: 6
+
+*** fold
+
+~fold~ is the fundamental reducer. ~fold~ creates an ad-hoc reducer based on
+a given 2-argument function. An optional SEED value can also be given as the
+initial accumulator value, which also becomes the return value in case there
+were no input left in the transduction.
+
+Functions like ~+~ and ~*~ are automatically valid reducers, because they yield sane
+values even when given 0 or 1 arguments. Other functions like ~cl:max~ cannot be
+used as-is as reducers since they can't be called without arguments. For
+functions like this, ~fold~ is appropriate.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce #'pass (fold #'cl:max) '(1 2 3 4 1000 5 6))
+#+end_src
+
+#+RESULTS:
+: 1000
+
+With a seed:
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce #'pass (fold #'cl:max 0) '())
+#+end_src
+
+#+RESULTS:
+: 0
+
+In Clojure this function is called =completing=.
+
+*** for-each
+
+Run through every item in a transduction for their side effects. Throws away all
+results and yields t.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (map (lambda (n) (format t "~a~%" n))) #'for-each #(1 2 3 4))
+#+end_src
+
+#+RESULTS:
+: T
+
+** Sources
+
+Data is pulled in an on-demand fashion from /Sources/. They can be either finite
+or infinite in length. A list is an example of a simple Source, but you can also
+pull from files and endless number generators.
+
+*** ints, random
+
+Yield all integers, beginning with START and advancing by an optional STEP value
+which can be positive or negative. If you only want a specific range within the
+transduction, then use ~take-while~ within your transducer chain.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (take 10) #'cons (ints 0 :step 2))
+#+end_src
+
+#+RESULTS:
+: (0 2 4 6 8 10 12 14 16 18)
+
+Yield an endless stream of random numbers, based on a given LIMIT.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (take 20) #'cons (random 10))
+#+end_src
+
+#+RESULTS:
+: (8 0 5 6 6 2 2 4 2 7 9 2 0 0 2 4 4 9 9 9)
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (take 5) #'cons (random 1.0))
+#+end_src
+
+#+RESULTS:
+: (0.4115485 0.35940528 0.0056368113 0.31019592 0.4214077)
+
+*** cycle, repeat, shuffle
+
+Yield the values of a given SEQ endlessly.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (take 10) #'cons (cycle '(1 2 3)))
+#+end_src
+
+#+RESULTS:
+: (1 2 3 1 2 3 1 2 3 1)
+
+Endlessly yield a given ITEM.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (take 4) #'cons (repeat 9))
+#+end_src
+
+#+RESULTS:
+: (9 9 9 9)
+
+Endlessly yield random elements from a given vector.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (take 5) #'cons (shuffle #("Alice" "Bob" "Dennis")))
+#+end_src
+
+#+RESULTS:
+: ("Alice" "Bob" "Alice" "Dennis" "Bob")
+
+Recall also that strings are vectors too:
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (take 15) #'string (shuffle "Númenor"))
+#+end_src
+
+#+RESULTS:
+: eeúúrúmnnremmno
+
+*** plist
+
+Yield key-value pairs from a Property List, usually known as a 'plist'. The
+pairs are passed as a cons cell.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce (map #'cdr) #'+ (plist '(:a 1 :b 2 :c 3)))
+#+end_src
+
+#+RESULTS:
+: 6
+
+See also the ~uncons~ transducer for another way to handle incoming cons cells.
+
+*** reversed
+
+Yield a vector's elements in reverse order.
+
+#+begin_src lisp :exports both :results verbatim
+(in-package :transducers)
+(transduce (take 2) #'cons (reversed #(1 2 3 4)))
+#+end_src
+
+#+RESULTS:
+: (4 3)
+
+Recall that strings are also vectors.
+
+#+begin_src lisp :exports both :results verbatim
+(in-package :transducers)
+(transduce #'pass #'string (reversed "Hello"))
+#+end_src
+
+#+RESULTS:
+: olleH
+
+** Utilities
+
+*** comp, const
+
+Function composition. You can pass as many functions as you like and they are
+applied from right to left.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(funcall (comp #'length #'reverse) #(1 2 3))
+#+end_src
+
+#+RESULTS:
+: 3
+
+For transducer functions specifically, they are /composed/ from right to left, but
+their effects are /applied/ from left to right. This is due to how the reducer
+function is chained through them all internally via ~transduce~.
+
+Notice here how ~drop~ is clearly applied first:
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (comp (drop 3) (take 2)) #'cons '(1 2 3 4 5 6))
+#+end_src
+
+#+RESULTS:
+: (4 5)
+
+Return a function that ignores its argument and returns ITEM instead.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(funcall (comp (const 108) (lambda (n) (* 2 n)) #'1+) 1)
+#+end_src
+
+#+RESULTS:
+: 108
+
+*** make-reduced, reduced-p, reduced-val
+
+When writing your own transducers and reducers, these functions allow you to
+short-circuit the entire operation.
+
+Here is a simplified definition of ~first~:
+
+#+begin_src lisp :exports code
+(in-package :transducers)
+(defun first (&optional (acc nil a-p) (input nil i-p))
+  (cond ((and a-p i-p) (make-reduced :val input))
+        ((and a-p (not i-p)) acc)
+        (t acc)))
+#+end_src
+
+You can see ~make-reduced~ being used to wrap the return value. ~transduce~ sees
+this wrapping and immediately halts further processing.
+
+~reduced-p~ and ~reduced-val~ can similarly be used (mostly within transducer
+functions) to check if some lower transducer (or the reducer) has signaled a
+short-circuit, and if so potentially perform some clean-up. This is important
+for transducers that carry internal state.
+
+* Example Gallery
+
+** Reading lines from a File
+
+Pathnames can be passed as-is as a Source. This yields their lines one by one.
+
+Counting words:
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce (comp (map #'str:words)
+                 #'concatenate)
+           #'count #p"README.org")
+#+end_src
+
+#+RESULTS:
+: 3661
+
+** Reducing into Property Lists and Assocation Lists
+
+There is no special reducer function for plists, because none is needed. If you
+have a stream of cons cells, you can break it up with ~uncons~ and then collect
+with ~cons~ as usual:
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (comp (map (lambda (pair) (cl:cons (car pair) (1+ (cdr pair)))))
+                 #'uncons)
+           #'cons (plist '(:a 1 :b 2 :c 3)))
+#+end_src
+
+#+RESULTS:
+: (:A 2 :B 3 :C 4)
+
+Likewise, Association Lists are already lists-of-cons-cells, so no special
+treatment is needed:
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce #'pass #'cons '((:a . 1) (:b . 2) (:c . 3)))
+#+end_src
+
+#+RESULTS:
+: ((:A . 1) (:B . 2) (:C . 3))
+
+** JSON: Calculating average age
+
+Since JSON Objects are parsed as Hash Tables, we use the usual functions to
+retrieve fields we want.
+
+#+begin_src lisp :exports both
+(in-package :transducers)
+(transduce (filter-map (lambda (ht) (gethash "age" ht)))
+           #'average
+           (transducers/jzon:read "[{\"age\": 34}, {\"age\": 25}]"))
+#+end_src
+
+#+RESULTS:
+: 59/2
+
+** Sieve of Eratosthenes
+
+An ancient method of calculating Prime Numbers.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(let ((xf (comp (inject (lambda (prime) (filter (lambda (n) (/= 0 (mod n prime))))))
+                (take 10))))
+  (cl:cons 2 (transduce xf #'cons (ints 3 :step 2))))
+#+end_src
+
+#+RESULTS:
+: (2 3 5 7 11 13 17 19 23 29 31)
+
+* Limitations
+
+1. This library is generally portable, but assumes your CL implementation
+   supports tail-call elimination within ~labels~.
+2. A way to model the common =zip= function has not yet been found, but I suspect
+   the answer lies in being able to pass multiple sources as ~&rest~ arguments.
+
+* Resources
+
+- [[https://clojure.org/reference/transducers][Clojure: Transducers]]
+- [[https://clojure.org/guides/faq#transducers_vs_seqs][Clojure: What are good uses cases for transducers?]]
+- [[https://www.youtube.com/watch?v=4KqUvG8HPYo][Youtube: Inside Transducers]] (Rich Hickey)
+- [[https://codeberg.org/fosskers/transducers.el][Emacs Lisp: Transducers]]
