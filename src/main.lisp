@@ -5,12 +5,24 @@
 
 ;; --- Types --- ;;
 
-(defstruct (game (:constructor game))
+;; NOTE: When you add a texture here, make sure to unload it in `ungame' below.
+(defstruct (textures (:constructor textures))
+  "A bank of the various loaded textures."
+  (fighter (raylib:load-texture "assets/fighter.png")))
+
+(defstruct game
   "The state of the running game."
-  (camera  (camera))
-  (fighter (fighter))
-  (blobs   (make-hash-table :size 16))
-  (frame   0))
+  (camera   (camera))
+  (textures nil)
+  (fighter  nil)
+  (blobs    (make-hash-table :size 16))
+  (frame    0))
+
+(defun game ()
+  "Initialise the various game resources."
+  (let ((textures (textures)))
+    (make-game :textures textures
+               :fighter (fighter :texture (textures-fighter textures)))))
 
 (defun camera ()
   "Initialise a 2D Camera."
@@ -22,7 +34,8 @@
 
 (defun ungame (game)
   "Release various resources."
-  (raylib:unload-texture (fighter-texture (game-fighter game))))
+  (let ((textures (game-textures game)))
+    (raylib:unload-texture (textures-fighter textures))))
 
 ;; --- Event Handling --- ;;
 
