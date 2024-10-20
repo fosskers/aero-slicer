@@ -26,8 +26,34 @@
 
 ;; TODO: use `filepaths' to produce the correct path to the PNG.
 
+(defun json->frame (json)
+  "Read a `frame' out of some JSON."
+  (let ((dim (gethash "frame" json)))
+    (make-frame :duration (gethash "duration" json)
+                :rect (raylib:make-rectangle
+                       :x (float (gethash "x" dim))
+                       :y (float (gethash "y" dim))
+                       :width (float (gethash "w" dim))
+                       :height (float (gethash "h" dim))))))
+
+(defun json->animation (frames json)
+  "Read an `animation' out of some JSON."
+  (let* ((from (gethash "from" json))
+         (to   (gethash "to" json))
+         (frs  (t:transduce (t:comp (t:drop from)
+                                    (t:take (1+ (- to from)))
+                                    (t:map #'json->frame))
+                            #'t:vector frames)))
+    (cons (gethash "name" json)
+          (make-animation :frames frs))))
+
 #+nil
-(let* ((json (jzon:parse #p"assets/fighter.json"))
-       (meta (gethash "meta" json))
-       (path (gethash "image" meta))
-       (frames (gethash "frames" json))))
+(let* ((json   (jzon:parse #p"assets/fighter.json"))
+       (meta   (gethash "meta" json))
+       (path   (gethash "image" meta))
+       (frames (gethash "frames" json))
+       (tags   (gethash "frameTags" meta))
+       (anims  (t:transduce (t:map (lambda (tag) (json->animation frames tag))) #'t:hash-table tags)))
+  (make-sprite :texture path
+               :animations anims))
+
