@@ -1,0 +1,363 @@
+#+title: filepaths
+
+(This README is best viewed on [[https://codeberg.org/fosskers/filepaths][Codeberg]]).
+
+Inspired by [[https://github.com/vindarel/cl-str][str]], this library offers modern and consistent filepath manipulation
+for Common Lisp.
+
+It addresses three main issues found with the status quo, namely:
+
+- Centrality: Functionality is spread across the standard library and =uiop=.
+- Completeness: A number of common operations found in newer languages are missing entirely.
+- Clarity: Function names are often unintuitive.
+
+The =filepaths= library solves these issues by offering functions commonly found
+elsewhere while naming them what you'd generally expect them to be. For
+instance:
+
+#+begin_src lisp :exports both
+(filepaths:join "/home/you/code" "common-lisp" "hello.lisp")
+#+end_src
+
+#+RESULTS:
+: #P"/home/you/code/common-lisp/hello.lisp"
+
+There are many more functions available.
+
+Note that this library is currently _Unix only_ and doesn't offer functions for
+communicating with the filesystem to test if files exist, etc.
+
+* Compatibility
+
+| Compiler | ~**.json~ | Verbatum ~..~ | Unicode Paths |
+|----------+---------+-------------+---------------|
+| SBCL     | Yes     | Yes         | Yes           |
+| ECL      | [[https://gitlab.com/embeddable-common-lisp/ecl/-/issues/751][No]]      | Yes         | Yes           |
+| ABCL     | Yes     | [[https://github.com/armedbear/abcl/issues/672][No]]          | Yes           |
+| CCL      | Yes     | [[https://github.com/Clozure/ccl/issues/477][No]]          | Yes           |
+| Clasp    | [[https://github.com/clasp-developers/clasp/issues/1594][No]]      | Yes         | Yes (2.7)     |
+| Allegro  | Yes     | No          | Yes           |
+
+* Installation
+
+This library is available on [[https://ultralisp.org/projects/fosskers/filepaths][Ultralisp]]. It uses only standard library functions
+and has no external dependencies.
+
+* Usage
+
+It is recommended that you import this library with the nickname =path= or =p=,
+although the usage examples further down all use the full name, =filepaths=.
+
+#+begin_src lisp
+(:local-nicknames (:p :filepaths))
+#+end_src
+
+Note that nearly every function here can be passed either a =pathname= or a
+=string=.
+
+** Structural Tests
+
+*** rootp, emptyp
+
+Is the given PATH the root directory?
+
+#+begin_src lisp :exports both
+(filepaths:rootp #p"/")
+#+end_src
+
+#+RESULTS:
+: T
+
+Is the given PATH an empty string?
+
+#+begin_src lisp :exports both
+(filepaths:emptyp #p"")
+#+end_src
+
+#+RESULTS:
+: T
+
+*** absolutep, relativep
+
+Yields T when the given PATH is a full, absolute path.
+
+#+begin_src lisp :exports both
+(filepaths:absolutep "/home/colin/foo.txt")
+#+end_src
+
+#+RESULTS:
+: T
+
+Yields T when the given PATH is a relative one.
+
+#+begin_src lisp :exports both
+(filepaths:relativep #p"bar/foo.txt")
+#+end_src
+
+#+RESULTS:
+: T
+
+*** starts-with-p, ends-with-p
+
+Are the initial components of a PATH some BASE?
+
+#+begin_src lisp :exports both
+(filepaths:starts-with-p #p"/foo/bar/baz/zing.json" "/foo/bar")
+#+end_src
+
+#+RESULTS:
+: T
+
+Are the final components of a PATH some given CHILD?
+
+#+begin_src lisp :exports both
+(filepaths:ends-with-p #p"/foo/bar/baz/zing.json" "baz/zing.json")
+#+end_src
+
+#+RESULTS:
+: T
+
+*** directoryp
+
+Yields T if the PATH represents a directory. It only tests for structure; the
+filesystem isn't probed.
+
+#+begin_src lisp :exports both
+(filepaths:directoryp #p"/foo/bar/")
+#+end_src
+
+#+RESULTS:
+: T
+
+#+begin_src lisp :exports both
+(filepaths:directoryp #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: NIL
+
+** Construction
+
+*** join
+
+Combine two or more components together.
+
+#+begin_src lisp :exports both
+(filepaths:join "/foo" "bar" "baz" "test.json")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz/test.json"
+
+#+begin_src lisp :exports both
+(filepaths:join #p"/bar/baz/" #p"foo.json")
+#+end_src
+
+#+RESULTS:
+: #P"/bar/baz/foo.json"
+
+** Component Access
+
+*** base, with-base
+
+ The non-extension, non-directory portion of the filename of a PATH.
+
+#+begin_src lisp :exports both
+(filepaths:base #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: baz
+
+Swap the base portion of a PATH with a NEW one. Yields a new path object.
+
+#+begin_src lisp :exports both
+(filepaths:with-base #p"/foo/bar/baz.txt" "jack")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/jack.txt"
+
+*** name, with-name
+
+The filename of a PATH with no other directory components.
+
+#+begin_src lisp :exports both
+(filepaths:name #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: baz.txt
+
+Swap the filename portion of a PATH with a NEW one. Yields a new path object.
+
+#+begin_src lisp :exports both
+(filepaths:with-name #p"/foo/bar/baz.txt" "jack.json")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/jack.json"
+
+*** parent, with-parent
+
+Yield PATH without its final component, if there is one.
+
+#+begin_src lisp :exports both
+(filepaths:parent #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/"
+
+Swap the parent portion of a PATH.
+
+#+begin_src lisp :exports both
+(filepaths:with-parent #p"/foo/bar/baz.json" #p"/zing")
+#+end_src
+
+#+RESULTS:
+: #P"/zing/baz.json"
+
+*** extension, with-extension, add-extension, drop-extension
+
+The extension of a given PATH.
+
+#+begin_src lisp :exports both
+(filepaths:extension #p"/foo/bar.json")
+#+end_src
+
+#+RESULTS:
+: json
+
+Swap the entire extension of a given PATH. Yields a new path object.
+
+#+begin_src lisp :exports both
+(filepaths:with-extension #p"/foo/bar/baz.txt" "json")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz.json"
+
+
+Add an extension to the given path, even if it already has one.
+
+#+begin_src lisp :exports both
+(filepaths:add-extension #p"/foo/bar/baz.txt" "zip")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz.txt.zip"
+
+Remove an extension from a PATH.
+
+#+begin_src lisp :exports both
+(filepaths:drop-extension #p"/foo/bar/baz.json")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz"
+
+#+begin_src lisp :exports both
+(filepaths:drop-extension #p"/foo/bar/baz.json.zip")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz.json"
+
+** Conversion
+
+*** components, from-list
+
+Every component of a PATH broken up as a list.
+
+#+begin_src lisp :results verbatim :exports both
+(filepaths:components #p"/foo/bar/baz.json")
+#+end_src
+
+#+RESULTS:
+: ("/" "foo" "bar" "baz.json")
+
+Given a LIST of path components, construct a proper pathname object.
+
+#+begin_src lisp :exports both
+(filepaths:from-list '("foo" "bar" "baz"))
+#+end_src
+
+#+RESULTS:
+: #P"foo/bar/baz"
+
+#+begin_src lisp :exports both
+(filepaths:from-list (filepaths:components "/foo/bar/baz/file.txt"))
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz/file.txt"
+
+*** ensure-directory, ensure-string, ensure-path
+
+If a given PATH doesn't end in a path separator, add one.
+
+#+begin_src lisp :exports both
+(filepaths:ensure-directory #p"/foo/bar/baz")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz/"
+
+A PATH is definitely a string after this.
+
+#+begin_src lisp :results verbatim :exports both
+(type-of (filepaths:ensure-string #p"/foo/bar"))
+#+end_src
+
+#+RESULTS:
+: (SIMPLE-BASE-STRING 8)
+
+A PATH is definitely a pathname after this.
+
+#+begin_src lisp :exports both
+(type-of (filepaths:ensure-path "/foo/bar"))
+#+end_src
+
+#+RESULTS:
+: PATHNAME
+
+*** to-string, from-string
+
+Convert a PATH object into string.
+
+#+begin_src lisp :exports both
+(filepaths:to-string #p"/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: /foo/bar/baz.txt
+
+Convert a string into a proper filepath object.
+
+#+begin_src lisp :exports both
+(filepaths:from-string "/foo/bar/baz.txt")
+#+end_src
+
+#+RESULTS:
+: #P"/foo/bar/baz.txt"
+
+** Conditions
+
+For certain functions in this library, it is not appropriate to return =nil= in
+case of an error. The following conditions are thus triggered under certain
+circumstances:
+
+- =no-filename=
+- =empty-path=
+- =root-no-parent=
+
+* Further Work
+
+- Windows support
+
+* See Also
+
+- https://shinmera.github.io/pathname-utils/
+- https://codeberg.org/fourier/ppath
+- https://quickdocs.org/uiop
