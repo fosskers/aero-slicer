@@ -5,20 +5,15 @@
 
 ;; --- Types --- ;;
 
-(defstruct (fighter (:constructor fighter))
+(defstruct fighter
   "The player's fighter ship."
-  (texture nil :read-only t)
-  (pos (raylib:make-vector2 :x 0.0 :y 0.0)))
-;; (bbox nil :read-only t))
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2))
 
-#+nil
-(defun fighter (texture)
-  "Read in the fighter texture and construct a `fighter'."
-  (let* ((sprite (raylib:load-texture "assets/fighter.png"))
-         (bbox   (raylib:make-rectangle :x 0.0 :y 0.0
-                                        :width  (float (raylib:texture-width sprite))
-                                        :height (float (raylib:texture-height sprite)))))
-    (make-fighter :texture sprite :bbox bbox)))
+(defun fighter (sprite)
+  "A smart-constructor for `fighter'."
+  (make-fighter :animated (animated :sprite sprite)
+                :pos (raylib:make-vector2 :x 0.0 :y 0.0)))
 
 ;; --- Generics --- ;;
 
@@ -32,7 +27,9 @@
   (+ 15 (raylib:vector2-y (fighter-pos fighter))))
 
 (defmethod draw ((fighter fighter))
-  (raylib:draw-texture-v (fighter-texture fighter) (fighter-pos fighter) raylib:+white+))
+  (raylib:draw-texture-v (sprite-texture (animated-sprite (fighter-animated fighter)))
+                         (fighter-pos fighter)
+                         raylib:+white+))
 
 (defmethod move ((fighter fighter))
   "Move the fighter depending on the current button presses."

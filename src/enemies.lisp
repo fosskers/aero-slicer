@@ -14,13 +14,13 @@
 
 (defstruct blob
   "An amorphous blob enemy that moves in a sin-wave."
-  (texture nil :read-only t)
-  (pos     nil)
-  (health  1))
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2)
+  (health   1   :type fixnum))
 
-(defun blob (texture)
+(defun blob (sprite)
   "Spawn a `blob' somewhere off the top of the screen."
-  (make-blob :texture texture
+  (make-blob :animated (animated :sprite sprite)
              :pos (raylib:make-vector2 :y (float (- +world-min-y+ 16))
                                        :x (float (- (random +world-pixels-x+)
                                                     +world-max-x+)))))
@@ -29,7 +29,9 @@
   (blob-pos blob))
 
 (defmethod draw ((blob blob))
-  (raylib:draw-texture-v (blob-texture blob) (blob-pos blob) raylib:+white+))
+  (raylib:draw-texture-v (sprite-texture (animated-sprite (blob-animated blob)))
+                         (blob-pos blob)
+                         raylib:+white+))
 
 (defmethod move ((blob blob))
   "Gradual sinusoidal movement down the screen."
@@ -38,7 +40,7 @@
 (defun maybe-spawn-blob (game)
   "Spawn a blob depending on the current frame."
   (when (= 0 (mod (game-frame game) (* 2 +frame-rate+)))
-    (let ((blob (blob (textures-blob (game-textures game)))))
+    (let ((blob (blob (sprites-blob (game-sprites game)))))
       (setf (gethash (game-frame game) (game-blobs game)) blob))))
 
 (defun move-all-blobs (game)

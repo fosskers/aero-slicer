@@ -4,24 +4,24 @@
 (launch)
 
 ;; NOTE: When you add a texture here, make sure to unload it in `ungame' below.
-(defstruct (textures (:constructor textures))
-  "A bank of the various loaded textures."
-  (fighter (raylib:load-texture "assets/fighter.png"))
-  (blob    (raylib:load-texture "assets/blob.png")))
+(defstruct (sprites (:constructor sprites))
+  "A bank of various sprites and their loaded textures."
+  (fighter (sprite #p"assets/fighter.json"))
+  (blob    (sprite #p"assets/blob.json")))
 
 (defstruct game
   "The state of the running game."
-  (camera   (camera))
-  (textures nil)
-  (fighter  nil)
-  (blobs    (make-hash-table :size 16))
-  (frame    0))
+  (camera  (camera))
+  (sprites nil)
+  (fighter nil)
+  (blobs   (make-hash-table :size 16))
+  (frame   0))
 
 (defun game ()
   "Initialise the various game resources."
-  (let ((textures (textures)))
-    (make-game :textures textures
-               :fighter (fighter :texture (textures-fighter textures)))))
+  (let ((sprites (sprites)))
+    (make-game :sprites sprites
+               :fighter (fighter (sprites-fighter sprites)))))
 
 (defun camera ()
   "Initialise a 2D Camera."
@@ -34,6 +34,6 @@
 
 (defun ungame (game)
   "Release various resources."
-  (let ((textures (game-textures game)))
-    (raylib:unload-texture (textures-fighter textures))
-    (raylib:unload-texture (textures-blob textures))))
+  (let ((sprites (game-sprites game)))
+    (raylib:unload-texture (sprite-texture (animated-sprite (fighter-animated (sprites-fighter sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-blob sprites)))))

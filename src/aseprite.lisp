@@ -1,30 +1,34 @@
+;;; Animated sprites, as pulled from an Aseprite sprite sheet.
+
 (in-package :aero-fighter)
 
 ;; Requirements:
 ;;
-;; - Know the location of the sprite sheet.
-;; - Know the distinct animations from the available `frameTags'.
-;; - Each frame knows its own rectangle dimensions within the sheet.
-;; - Each frame knows its own duration.
 ;; - A command to play the same animation as the current one should _not_ reset the animation.
 ;; - A completed animation should return to the default/first one.
 
 (defstruct frame
   "A single animation frame."
-  (rect nil)
-  (duration 0 :type fixnum))
+  (rect     nil :type raylib:rectangle)
+  (duration 0   :type fixnum))
 
 (defstruct animation
   "One or more frames of an animation."
   (frames nil :type vector))
 
 (defstruct sprite
-  "An animated sprite."
-  (texture    nil)
-  (animations nil :type hash-table)
-  (active     nil :type symbol))
+  "The base definition of an animated sprite. Should be created once and shared
+around multiple instances of an `animated'."
+  (texture    nil :type raylib:texture)
+  (animations nil :type hash-table))
 
-;; TODO: use `filepaths' to produce the correct path to the PNG.
+(defstruct (animated (:constructor animated))
+  "An actual animated sprite that tracks its own state. Should be one per living
+entity in the game, but all instances of the same entity type should share an
+underlying `sprite' definition."
+  (sprite  nil   :type sprite)
+  (default 'idle :type symbol)
+  (active  'idle :type symbol))
 
 (defun json->frame (json)
   "Read a `frame' out of some JSON."
@@ -47,13 +51,14 @@
     (cons (gethash "name" json)
           (make-animation :frames frs))))
 
-#+nil
-(let* ((json   (jzon:parse #p"assets/fighter.json"))
-       (meta   (gethash "meta" json))
-       (path   (gethash "image" meta))
-       (frames (gethash "frames" json))
-       (tags   (gethash "frameTags" meta))
-       (anims  (t:transduce (t:map (lambda (tag) (json->animation frames tag))) #'t:hash-table tags)))
-  (make-sprite :texture path
-               :animations anims))
-
+(defun sprite (path)
+  "Read animated sprite data from the given JSON file. Must be called after a GL
+context has been initialised via `raylib:init-window'."
+  (let* ((json   (jzon:parse path))
+         (meta   (gethash "meta" json))
+         (texture (raylib:load-texture (p:to-string (p:with-name path (gethash "image" meta)))))
+         (frames (gethash "frames" json))
+         (tags   (gethash "frameTags" meta))
+         (anims  (t:transduce (t:map (lambda (tag) (json->animation frames tag))) #'t:hash-table tags)))
+    (make-sprite :texture texture
+                 :animations anims)))

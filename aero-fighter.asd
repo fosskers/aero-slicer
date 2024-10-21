@@ -4,6 +4,7 @@
   :license "MPL-2.0"
   :depends-on (:claw-raylib
                :com.inuoe.jzon
+               :filepaths
                :transducers)
   :components ((:module "src"
                 :components ((:file "package")
