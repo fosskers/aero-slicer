@@ -35,5 +35,5 @@
 (defun ungame (game)
   "Release various resources."
   (let ((sprites (game-sprites game)))
-    (raylib:unload-texture (sprite-texture (animated-sprite (fighter-animated (sprites-fighter sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-fighter sprites)))
     (raylib:unload-texture (sprite-texture (sprites-blob sprites)))))

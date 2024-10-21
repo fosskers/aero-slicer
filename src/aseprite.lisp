@@ -48,7 +48,7 @@ underlying `sprite' definition."
                                     (t:take (1+ (- to from)))
                                     (t:map #'json->frame))
                             #'t:vector frames)))
-    (cons (gethash "name" json)
+    (cons (gethash "name" json) ;; FIXME: convert to symbol
           (make-animation :frames frs))))
 
 (defun sprite (path)
