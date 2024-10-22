@@ -28,7 +28,9 @@ entity in the game, but all instances of the same entity type should share an
 underlying `sprite' definition."
   (sprite  nil   :type sprite)
   (default 'idle :type symbol)
-  (active  'idle :type symbol))
+  (active  'idle :type symbol)
+  (frame   0     :type fixnum)
+  (started 0     :type fixnum))
 
 (defun json->frame (json)
   "Read a `frame' out of some JSON."
@@ -48,7 +50,7 @@ underlying `sprite' definition."
                                     (t:take (1+ (- to from)))
                                     (t:map #'json->frame))
                             #'t:vector frames)))
-    (cons (gethash "name" json) ;; FIXME: convert to symbol
+    (cons (intern (string-upcase (gethash "name" json)))
           (make-animation :frames frs))))
 
 (defun sprite (path)
@@ -62,3 +64,16 @@ context has been initialised via `raylib:init-window'."
          (anims  (t:transduce (t:map (lambda (tag) (json->animation frames tag))) #'t:hash-table tags)))
     (make-sprite :texture texture
                  :animations anims)))
+
+;; TODO: 2024-10-22 Move between frames depending on the current global frame count.
+(defun draw-animated (animated pos)
+  "Draw the given `animated' at a certain position."
+  (let* ((sprite    (animated-sprite animated))
+         (active    (animated-active animated))
+         (animation (gethash active (sprite-animations sprite)))
+         (frames    (animation-frames animation)))
+    (when (= 1 (length frames))
+      (raylib:draw-texture-rec (sprite-texture (animated-sprite animated))
+                               (frame-rect (aref frames 0))
+                               pos
+                               raylib:+white+))))

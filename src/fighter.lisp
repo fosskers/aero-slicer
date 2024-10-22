@@ -27,14 +27,7 @@
   (+ 15 (raylib:vector2-y (fighter-pos fighter))))
 
 (defmethod draw ((fighter fighter))
-  (let* ((animated  (fighter-animated fighter))
-         (sprite    (animated-sprite animated))
-         (animation (gethash "Idle" (sprite-animations sprite))))
-    (when (= 1 (length (animation-frames animation)))
-      (raylib:draw-texture-rec (sprite-texture (animated-sprite (fighter-animated fighter)))
-                               (frame-rect (aref (animation-frames animation) 0))
-                               (fighter-pos fighter)
-                               raylib:+white+))))
+  (draw-animated (fighter-animated fighter) (fighter-pos fighter)))
 
 (defmethod move ((fighter fighter))
   "Move the fighter depending on the current button presses."

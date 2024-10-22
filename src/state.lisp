@@ -11,11 +11,11 @@
 
 (defstruct game
   "The state of the running game."
-  (camera  (camera))
-  (sprites nil)
-  (fighter nil)
-  (blobs   (make-hash-table :size 16))
-  (frame   0))
+  (camera  (camera) :type raylib:camera-2d)
+  (sprites nil :type sprites)
+  (fighter nil :type fighter)
+  (blobs   (make-hash-table :size 16) :type hash-table)
+  (frame   0 :type fixnum))
 
 (defun game ()
   "Initialise the various game resources."
