@@ -16,6 +16,7 @@
 (defparameter +screen-width+ (* +world-pixels-x+ 3))
 (defparameter +screen-height+ (* +world-pixels-y+ 3))
 (defparameter +frame-rate+ 60)
+(defparameter +millis-per-frame+ (/ 1000 (float +frame-rate+)))
 (defparameter +world-min-x+ -128)
 (defparameter +world-max-x+ +127)
 (defparameter +world-min-y+ -120)
@@ -44,9 +45,6 @@
 
 (defgeneric move (sprite)
   (:documentation "Attempt to move the `sprite' on the screen."))
-
-(defgeneric draw (sprite)
-  (:documentation "Render the `sprite' on the screen."))
 
 (defgeneric pos (sprite)
   (:documentation "The location of a sprite as a `Vector2'."))

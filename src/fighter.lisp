@@ -26,8 +26,9 @@
 (defmethod max-y ((fighter fighter))
   (+ 15 (raylib:vector2-y (fighter-pos fighter))))
 
-(defmethod draw ((fighter fighter))
-  (draw-animated (fighter-animated fighter) (fighter-pos fighter)))
+(defun draw-fighter (fighter fc)
+  "Draw and animate the `fighter' based on the current frame count."
+  (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc))
 
 (defmethod move ((fighter fighter))
   "Move the fighter depending on the current button presses."

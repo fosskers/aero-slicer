@@ -28,11 +28,6 @@
 (defmethod pos ((blob blob))
   (blob-pos blob))
 
-(defmethod draw ((blob blob))
-  (raylib:draw-texture-v (sprite-texture (animated-sprite (blob-animated blob)))
-                         (blob-pos blob)
-                         raylib:+white+))
-
 (defmethod move ((blob blob))
   "Gradual sinusoidal movement down the screen."
   (incf (raylib:vector2-y (blob-pos blob)) 1.0))
@@ -55,6 +50,12 @@
                    (recurse)))))
       (recurse))))
 
+(defun draw-blob (blob)
+  "Draw and animate a `blob'."
+  (raylib:draw-texture-v (sprite-texture (animated-sprite (blob-animated blob)))
+                         (blob-pos blob)
+                         raylib:+white+))
+
 (defun draw-all-blobs (game)
   "Move all blobs currently spawned into the `game'."
   (with-hash-table-iterator (iter (game-blobs game))
@@ -62,7 +63,7 @@
                (multiple-value-bind (entry? key blob) (iter)
                  (declare (ignore key))
                  (when entry?
-                   (draw blob)
+                   (draw-blob blob)
                    (recurse)))))
       (recurse))))
 

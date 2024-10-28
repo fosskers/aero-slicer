@@ -19,7 +19,7 @@
     (with-2d-camera (game-camera game)
       (debugging-dots)
       (draw-all-blobs game)
-      (draw (game-fighter game)))
+      (draw-fighter (game-fighter game) (game-frame game)))
     (raylib:draw-fps 10 10)
     (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)))
 

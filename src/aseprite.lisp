@@ -7,26 +7,30 @@
 ;; - A command to play the same animation as the current one should _not_ reset the animation.
 ;; - A completed animation should return to the default/first one.
 
+#+nil
+(launch)
+
 (defstruct frame
   "A single animation frame."
-  (rect     nil :type raylib:rectangle)
-  (duration 0   :type fixnum))
+  (rect        nil :type raylib:rectangle :read-only t)
+  (duration-ms 0   :type fixnum :read-only t)
+  (duration-fs 0   :type fixnum :read-only t))
 
 (defstruct animation
   "One or more frames of an animation."
-  (frames nil :type vector))
+  (frames nil :type vector :read-only t))
 
 (defstruct sprite
   "The base definition of an animated sprite. Should be created once and shared
 around multiple instances of an `animated'."
-  (texture    nil :type raylib:texture)
-  (animations nil :type hash-table))
+  (texture    nil :type raylib:texture :read-only t)
+  (animations nil :type hash-table :read-only t))
 
 (defstruct (animated (:constructor animated))
   "An actual animated sprite that tracks its own state. Should be one per living
 entity in the game, but all instances of the same entity type should share an
 underlying `sprite' definition."
-  (sprite  nil   :type sprite)
+  (sprite  nil   :type sprite :read-only t)
   (default 'idle :type symbol)
   (active  'idle :type symbol)
   (frame   0     :type fixnum)
@@ -34,8 +38,10 @@ underlying `sprite' definition."
 
 (defun json->frame (json)
   "Read a `frame' out of some JSON."
-  (let ((dim (gethash "frame" json)))
-    (make-frame :duration (gethash "duration" json)
+  (let ((dim    (gethash "frame" json))
+        (millis (gethash "duration" json)))
+    (make-frame :duration-ms millis
+                :duration-fs (round (/ millis +millis-per-frame+))
                 :rect (raylib:make-rectangle
                        :x (float (gethash "x" dim))
                        :y (float (gethash "y" dim))
@@ -65,15 +71,35 @@ context has been initialised via `raylib:init-window'."
     (make-sprite :texture texture
                  :animations anims)))
 
-;; TODO: 2024-10-22 Move between frames depending on the current global frame count.
-(defun draw-animated (animated pos)
-  "Draw the given `animated' at a certain position."
+(defun draw-animated (animated pos fc)
+  "Draw the given `animated' sprite at a certain position, using the current frame
+count to determine how much time has passed. Each frame has a known max duration
+which is used to calculate the time difference."
   (let* ((sprite    (animated-sprite animated))
          (active    (animated-active animated))
          (animation (gethash active (sprite-animations sprite)))
          (frames    (animation-frames animation)))
-    (when (= 1 (length frames))
-      (raylib:draw-texture-rec (sprite-texture (animated-sprite animated))
-                               (frame-rect (aref frames 0))
-                               pos
-                               raylib:+white+))))
+    ;; Optimisation: When we know there is only one frame to the current
+    ;; animation, we don't need to bother with time differences and frame
+    ;; transitions. We just draw the one frame as-is.
+    (cond ((= 1 (length frames))
+           (raylib:draw-texture-rec (sprite-texture sprite)
+                                    (frame-rect (aref frames 0))
+                                    pos
+                                    raylib:+white+))
+          ;; Enough frames have passed in this particular animation frame, so we must advance.
+          ((> (- fc (animated-started animated))
+              (frame-duration-fs (aref frames (animated-frame animated))))
+           (setf (animated-started animated) fc)
+           (if (= (animated-frame animated) (1- (length frames)))
+               (setf (animated-frame animated) 0)
+               (incf (animated-frame animated)))
+           (raylib:draw-texture-rec (sprite-texture sprite)
+                                    (frame-rect (aref frames (animated-frame animated)))
+                                    pos
+                                    raylib:+white+))
+          ;; This frame is still not over, so we draw as normal.
+          (t (raylib:draw-texture-rec (sprite-texture sprite)
+                                      (frame-rect (aref frames (animated-frame animated)))
+                                      pos
+                                      raylib:+white+)))))
