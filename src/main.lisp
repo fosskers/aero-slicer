@@ -10,7 +10,8 @@
   (incf (game-frame game))
   (maybe-spawn-blob game)
   (move-all-blobs game)
-  (move (game-fighter game)))
+  (move (game-fighter game))
+  (update-fighter-status (game-fighter game) (game-frame game)))
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
@@ -46,11 +47,16 @@
     (render game)
     (event-loop game)))
 
+(defun temp-damage-fighter (fighter)
+  (setf (fighter-status fighter) 'damaged)
+  (setf (animated-active (fighter-animated fighter)) 'damaged))
+
 (defun launch ()
   "Launch the game."
   (raylib:init-window +screen-width+ +screen-height+ "raylib/CL Example")
   (raylib:set-target-fps +frame-rate+)
   (let ((game (game)))
+    (temp-damage-fighter (game-fighter game))
     (event-loop game)
     (ungame game))
   (raylib:close-window))

@@ -7,13 +7,25 @@
 
 (defstruct fighter
   "The player's fighter ship."
-  (animated nil :type animated)
-  (pos      nil :type raylib:vector2))
+  (animated  nil :type animated)
+  (pos       nil :type raylib:vector2)
+  (status    'ok :type symbol)
+  (status-fc 0   :type fixnum))
 
 (defun fighter (sprite)
   "A smart-constructor for `fighter'."
   (make-fighter :animated (animated :sprite sprite)
                 :pos (raylib:make-vector2 :x 0.0 :y 0.0)))
+
+;; --- Status --- ;;
+
+(defun update-fighter-status (fighter fc)
+  "Alter the fighter's status depending on how much time has passed. This will then
+be later reflected in animations."
+  (cond ((and (eq 'damaged (fighter-status fighter))
+              (> (- fc (fighter-status-fc fighter)) +frame-rate+))
+         (setf (fighter-status fighter) 'ok)
+         (setf (animated-active (fighter-animated fighter)) 'idle))))
 
 ;; --- Generics --- ;;
 
