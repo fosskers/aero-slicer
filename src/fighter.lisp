@@ -26,12 +26,18 @@
 
 ;; --- Status --- ;;
 
+(defun damage-fighter (fighter fc)
+  (setf (fighter-status fighter) 'damaged)
+  (setf (fighter-status-fc fighter) fc)
+  (setf (animated-active (fighter-animated fighter)) 'damaged))
+
 (defun update-fighter-status (fighter fc)
   "Alter the fighter's status depending on how much time has passed. This will then
 be later reflected in animations."
   (cond ((and (eq 'damaged (fighter-status fighter))
               (> (- fc (fighter-status-fc fighter)) +frame-rate+))
          (setf (fighter-status fighter) 'ok)
+         (setf (fighter-status-fc fighter) fc)
          (setf (animated-active (fighter-animated fighter)) 'idle))))
 
 ;; --- Generics --- ;;

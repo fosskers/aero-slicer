@@ -9,6 +9,8 @@
 #+nil
 (launch)
 
+;; --- Abstract --- ;;
+
 (defun euclidean-distance (v1 v2)
   "The distance between two `raylib:vector2'."
   (sqrt (+ (expt (- (raylib:vector2-x v2)
@@ -27,3 +29,18 @@
   "Are two sprites in the same general vicinity?"
   (let ((distance (euclidean-distance (pos a) (pos b))))
     (< distance +nearness-radius+)))
+
+(defun colliding? (a b)
+  "Are two near sprites actually colliding?"
+  (raylib:check-collision-recs (bbox a) (bbox b)))
+
+;; --- Specific --- ;;
+
+(defun blob-collision (fighter blobs fc)
+  "If the fighter is colliding with any blob, make him flash."
+  (let ((blob (t:transduce (t:comp (t:map #'cdr)
+                                   (t:filter (lambda (blob) (near? fighter blob)))
+                                   (t:filter (lambda (blob) (colliding? fighter blob))))
+                           (first-or nil) blobs)))
+    (when (and blob (eq 'ok (fighter-status fighter)))
+      (damage-fighter fighter fc))))

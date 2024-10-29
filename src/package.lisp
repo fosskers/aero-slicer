@@ -63,3 +63,13 @@ collision check.")
   (:documentation "The lowest (closest to 0) Y value occupied by this sprite."))
 (defgeneric max-y (sprite)
   (:documentation "The highest (furthest to 0) Y value occupied by this sprite."))
+
+;; --- Transducers --- ;;
+
+(defun first-or (default)
+  "Reducer: A variant of `first' that doesn't raise a condition when the
+transduction is empty."
+  (lambda (&optional (acc nil a-p) (input nil i-p))
+    (cond ((and a-p i-p) (t:make-reduced :val input))
+          ((and a-p (not i-p)) acc)
+          (t default))))
