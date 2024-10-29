@@ -53,6 +53,12 @@ be later reflected in animations."
   "Draw and animate the `fighter' based on the current frame count."
   (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc))
 
+(defmethod pos ((fighter fighter))
+  (fighter-pos fighter))
+
+(defmethod bbox ((fighter fighter))
+  (fighter-bbox fighter))
+
 (defmethod move ((fighter fighter))
   "Move the fighter depending on the current button presses."
   (let* ((pos  (fighter-pos fighter))

@@ -36,6 +36,9 @@
 (defmethod pos ((blob blob))
   (blob-pos blob))
 
+(defmethod bbox ((blob blob))
+  (blob-bbox blob))
+
 ;; TODO: 2024-10-29 Actual wave movement.
 (defmethod move ((blob blob))
   "Gradual sinusoidal movement down the screen."

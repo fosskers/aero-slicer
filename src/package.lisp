@@ -21,6 +21,9 @@
 (defparameter +world-max-x+ +127)
 (defparameter +world-min-y+ -120)
 (defparameter +world-max-y+ +119)
+(defparameter +nearness-radius+ 32.0
+  "The minimum distance between two sprites to be considered near enough for a
+collision check.")
 
 ;; --- Keys --- ;;
 
@@ -47,7 +50,10 @@
   (:documentation "Attempt to move the `sprite' on the screen."))
 
 (defgeneric pos (sprite)
-  (:documentation "The location of a sprite as a `Vector2'."))
+  (:documentation "The location of a sprite as a `raylib:vector2'."))
+
+(defgeneric bbox (sprite)
+  (:documentation "A `raylib:rectangle' that represents the bounding box of a sprite."))
 
 (defgeneric min-x (sprite)
   (:documentation "The lowest (closest to 0) X value occupied by this sprite."))

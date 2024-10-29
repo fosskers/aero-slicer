@@ -1,3 +1,8 @@
+;;; The mutable state of the running game.
+;;;
+;;; Calling `game' initialises it, and likewise `ungame' unloads various
+;;; textures that had been loaded into the GPU by Raylib.
+
 (in-package :aero-fighter)
 
 #+nil

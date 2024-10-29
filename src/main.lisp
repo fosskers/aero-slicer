@@ -20,7 +20,8 @@
     (with-2d-camera (game-camera game)
       (debugging-dots)
       (draw-all-blobs game)
-      (draw-fighter (game-fighter game) (game-frame game)))
+      (draw-fighter (game-fighter game) (game-frame game))
+      (debugging-nearness (game-fighter game) (game-blobs game)))
     (raylib:draw-fps 10 10)
     (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)))
 
@@ -31,6 +32,13 @@
   (raylib:draw-pixel +world-min-x+ +world-max-y+ raylib:+red+)
   (raylib:draw-pixel +world-max-x+ +world-max-y+ raylib:+red+)
   (raylib:draw-pixel +world-max-x+ +world-min-y+ raylib:+red+))
+
+(defun debugging-nearness (fighter blobs)
+  "Testing whether nearness detection is sufficient."
+  (t:transduce (t:comp (t:map #'cdr)
+                       (t:filter (lambda (blob) (near? fighter blob)))
+                       (t:map (lambda (blob) (raylib:draw-line-v (pos fighter) (pos blob) raylib:+green+))))
+               #'t:for-each blobs))
 
 #+nil
 (defun debugging-lines ()
