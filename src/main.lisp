@@ -8,11 +8,26 @@
 (defun update (game)
   "Following TEA, update the game state."
   (incf (game-frame game))
+  (case (game-mode game)
+    (playing (update-playing game))
+    (waiting (update-waiting game))
+    (dead    (update-dead game))))
+
+(defun update-waiting (game)
+  "We're waiting for the player to start the game."
+  nil)
+
+(defun update-playing (game)
+  "Logic specific to a started game."
   (maybe-spawn-blob game)
   (move-all-blobs game)
   (move (game-fighter game))
   (blob-collision (game-fighter game) (game-blobs game) (game-frame game))
   (update-fighter-status (game-fighter game) (game-frame game)))
+
+(defun update-dead (game)
+  "The player is dead, and they might restart the game."
+  nil)
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
@@ -20,11 +35,26 @@
     (raylib:clear-background raylib:+raywhite+)
     (with-2d-camera (game-camera game)
       (debugging-dots)
-      (draw-all-blobs game)
-      (draw-fighter (game-fighter game) (game-frame game))
-      (debugging-nearness (game-fighter game) (game-blobs game)))
-    (raylib:draw-fps 10 10)
+      (case (game-mode game)
+        (playing (render-playing game))
+        (waiting (render-waiting game))
+        (dead    (render-dead game))))
+    (raylib:draw-fps 10 (- +screen-height+ 50))
     (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)))
+
+(defun render-waiting (game)
+  "Render a splash screen."
+  nil)
+
+(defun render-playing (game)
+  "Render a running game."
+  (draw-all-blobs game)
+  (draw-fighter (game-fighter game) (game-frame game))
+  (debugging-nearness (game-fighter game) (game-blobs game)))
+
+(defun render-dead (game)
+  "Render the Game Over screen."
+  nil)
 
 (defun debugging-dots ()
   "For confirmation of certain coordinates in the game world."

@@ -19,8 +19,12 @@
   (camera  (camera) :type raylib:camera-2d)
   (sprites nil :type sprites)
   (fighter nil :type fighter)
+  ;; The key is the frame number upon which the blob was spawned.
   (blobs   (make-hash-table :size 16) :type hash-table)
-  (frame   0 :type fixnum))
+  (frame   0 :type fixnum)
+  (lives   3 :type fixnum)
+  ;; Waiting / Playing / Dead
+  (mode    'waiting :type symbol))
 
 (defun game ()
   "Initialise the various game resources."
