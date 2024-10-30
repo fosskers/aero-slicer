@@ -24,13 +24,19 @@
   (frame   0 :type fixnum)
   (lives   3 :type fixnum)
   ;; Waiting / Playing / Dead
-  (mode    'waiting :type symbol))
+  (mode    'playing :type symbol))
 
 (defun game ()
   "Initialise the various game resources."
   (let ((sprites (sprites)))
     (make-game :sprites sprites
                :fighter (fighter (sprites-fighter sprites)))))
+
+(defun reset-game (game)
+  "Reset the `game' to an initial, reusable state."
+  (setf (game-lives game) 3)
+  (setf (game-blobs game) (make-hash-table :size 16))
+  (setf (game-mode game) 'playing))
 
 (defun camera ()
   "Initialise a 2D Camera."

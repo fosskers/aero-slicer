@@ -15,19 +15,25 @@
 
 (defun update-waiting (game)
   "We're waiting for the player to start the game."
-  nil)
+  (when (raylib:is-key-down +key-space+)
+    (setf (game-mode game) 'playing)))
 
 (defun update-playing (game)
   "Logic specific to a started game."
   (maybe-spawn-blob game)
   (move-all-blobs game)
   (move (game-fighter game))
-  (blob-collision (game-fighter game) (game-blobs game) (game-frame game))
+  (when (blob-collision? (game-fighter game) (game-blobs game))
+    (kill-fighter (game-fighter game) (game-frame game))
+    (decf (game-lives game))
+    (when (<= (game-lives game) 0)
+      (setf (game-mode game) 'dead)))
   (update-fighter-status (game-fighter game) (game-frame game)))
 
 (defun update-dead (game)
   "The player is dead, and they might restart the game."
-  nil)
+  (when (raylib:is-key-down +key-space+)
+    (reset-game game)))
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
@@ -44,17 +50,29 @@
 
 (defun render-waiting (game)
   "Render a splash screen."
-  nil)
+  (declare (ignore game))
+  (raylib:draw-text (format nil "PRESS SPACE TO PLAY")
+                    (- 0 55) 0 10 raylib:+gray+))
 
 (defun render-playing (game)
   "Render a running game."
   (draw-all-blobs game)
   (draw-fighter (game-fighter game) (game-frame game))
+  (draw-hud game)
   (debugging-nearness (game-fighter game) (game-blobs game)))
 
 (defun render-dead (game)
   "Render the Game Over screen."
-  nil)
+  (declare (ignore game))
+  (raylib:draw-text (format nil "GAME OVER, DUDE")
+                    (- 0 45) 0 10 raylib:+gray+))
+
+(defun draw-hud (game)
+  "The various status conditions that the player needs to see."
+  (raylib:draw-text (format nil "LIVES: ~a" (game-lives game))
+                    (+ +world-min-x+ 5)
+                    (+ +world-min-y+ 5)
+                    10 raylib:+gray+))
 
 (defun debugging-dots ()
   "For confirmation of certain coordinates in the game world."
@@ -63,6 +81,18 @@
   (raylib:draw-pixel +world-min-x+ +world-max-y+ raylib:+red+)
   (raylib:draw-pixel +world-max-x+ +world-max-y+ raylib:+red+)
   (raylib:draw-pixel +world-max-x+ +world-min-y+ raylib:+red+))
+
+(defun debugging-keypress ()
+  "Print the key currently being pressed."
+  (let ((key (raylib:get-key-pressed)))
+    (when (and key (not (zerop key)))
+      (break (format nil "KEY: ~a" key))
+      #+nil
+      (raylib:draw-text (format nil "KEY: ~a" key)
+                        (- +screen-width+ 75)
+                        (- +screen-height+ 25)
+                        20
+                        raylib:+lightgray+))))
 
 (defun debugging-nearness (fighter blobs)
   "Testing whether nearness detection is sufficient."

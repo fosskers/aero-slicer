@@ -24,6 +24,10 @@
 (defparameter +nearness-radius+ 32.0
   "The minimum distance between two sprites to be considered near enough for a
 collision check.")
+(defparameter +fighter-spawn-x+ -8.0
+  "The X coordinate of the fighter's spawn point (after death, etc.).")
+(defparameter +fighter-spawn-y+ (float (- +world-max-y+ 24))
+  "The Y coordinate of the fighter's spawn point.")
 
 ;; --- Keys --- ;;
 
@@ -31,6 +35,7 @@ collision check.")
 (defparameter +key-left+  263)
 (defparameter +key-down+  264)
 (defparameter +key-up+    265)
+(defparameter +key-space+ 32)
 
 ;; --- Macros --- ;;
 

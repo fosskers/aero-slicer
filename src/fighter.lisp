@@ -10,6 +10,7 @@
   (animated  nil :type animated)
   (pos       nil :type raylib:vector2)
   (bbox      nil :type raylib:rectangle)
+  ;; Ok / Hit
   (status    'ok :type symbol)
   (status-fc 0   :type fixnum))
 
@@ -18,23 +19,29 @@
   (let* ((animated (animated :sprite sprite))
          (rect     (bounding-box animated)))
     (make-fighter :animated animated
-                  :pos (raylib:make-vector2 :x 0.0 :y 0.0)
-                  :bbox (raylib:make-rectangle :x 0.0
-                                               :y 0.0
+                  :pos (raylib:make-vector2 :x +fighter-spawn-x+
+                                            :y +fighter-spawn-y+)
+                  :bbox (raylib:make-rectangle :x +fighter-spawn-x+
+                                               :y +fighter-spawn-y+
                                                :width (raylib:rectangle-width rect)
                                                :height (raylib:rectangle-height rect)))))
 
 ;; --- Status --- ;;
 
-(defun damage-fighter (fighter fc)
-  (setf (fighter-status fighter) 'damaged)
+(defun kill-fighter (fighter fc)
+  (setf (fighter-status fighter) 'hit)
   (setf (fighter-status-fc fighter) fc)
-  (setf (animated-active (fighter-animated fighter)) 'damaged))
+  (setf (animated-active (fighter-animated fighter)) 'damaged)
+  ;; Move him back to the initial spawn position.
+  (setf (raylib:vector2-x (fighter-pos fighter)) +fighter-spawn-x+)
+  (setf (raylib:vector2-y (fighter-pos fighter)) +fighter-spawn-y+)
+  (setf (raylib:rectangle-x (fighter-bbox fighter)) +fighter-spawn-x+)
+  (setf (raylib:rectangle-y (fighter-bbox fighter)) +fighter-spawn-y+))
 
 (defun update-fighter-status (fighter fc)
   "Alter the fighter's status depending on how much time has passed. This will then
 be later reflected in animations."
-  (cond ((and (eq 'damaged (fighter-status fighter))
+  (cond ((and (eq 'hit (fighter-status fighter))
               (> (- fc (fighter-status-fc fighter)) +frame-rate+))
          (setf (fighter-status fighter) 'ok)
          (setf (fighter-status-fc fighter) fc)

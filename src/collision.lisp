@@ -36,11 +36,9 @@
 
 ;; --- Specific --- ;;
 
-(defun blob-collision (fighter blobs fc)
-  "If the fighter is colliding with any blob, make him flash."
-  (let ((blob (t:transduce (t:comp (t:map #'cdr)
-                                   (t:filter (lambda (blob) (near? fighter blob)))
-                                   (t:filter (lambda (blob) (colliding? fighter blob))))
-                           (first-or nil) blobs)))
-    (when (and blob (eq 'ok (fighter-status fighter)))
-      (damage-fighter fighter fc))))
+(defun blob-collision? (fighter blobs)
+  "Is the fighter colliding with any blob?"
+  (when (eq 'ok (fighter-status fighter))
+    (t:transduce (t:comp (t:map #'cdr)
+                         (t:filter (lambda (blob) (near? fighter blob))))
+                 (t:anyp (lambda (blob) (colliding? fighter blob))) blobs)))
