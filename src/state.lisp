@@ -12,6 +12,7 @@
 (defstruct (sprites (:constructor sprites))
   "A bank of various sprites and their loaded textures."
   (fighter  (sprite #p"assets/fighter.json"))
+  (beam     (sprite #p"assets/beam.json"))
   (blob     (sprite #p"assets/blob.json"))
   (building (sprite #p"assets/building.json")))
 
@@ -32,7 +33,8 @@
   "Initialise the various game resources."
   (let ((sprites (sprites)))
     (make-game :sprites sprites
-               :fighter (fighter (sprites-fighter sprites)))))
+               :fighter (fighter (sprites-fighter sprites)
+                                 (sprites-beam sprites)))))
 
 (defun reset-game (game)
   "Reset the `game' to an initial, reusable state."

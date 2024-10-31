@@ -1,9 +1,26 @@
+;;; Everything involving the fighter and his beam weapon.
+;;;
+;;; The beam weapon comes in three strengths, represented by beam width. The
+;;; initial beam is 4 pixels wide. The next is 8, and the final is 16, the full
+;;; width of the ship.
+
 (in-package :aero-fighter)
 
 #+nil
 (launch)
 
 ;; --- Types --- ;;
+
+(defstruct beam
+  "The beam shot from the ship."
+  (animated  nil :type animated)
+  (pos       nil :type raylib:vector2)
+  (bbox      nil :type raylib:rectangle)
+  (shooting? nil :type symbol)
+  ;; The frame on which the shot was started.
+  (shot-fc   0   :type fixnum)
+  ;; The total duration, in frames, that the shot should be active for.
+  (shot-dur  0   :type fixnum :read-only t))
 
 (defstruct fighter
   "The player's fighter ship."
@@ -12,19 +29,29 @@
   (bbox      nil :type raylib:rectangle)
   ;; Ok / Hit
   (status    'ok :type symbol)
-  (status-fc 0   :type fixnum))
+  (status-fc 0   :type fixnum)
+  (beam      nil :type beam))
 
-(defun fighter (sprite)
+(defun fighter (fighter-sprite beam-sprite)
   "A smart-constructor for `fighter'."
-  (let* ((animated (make-animated :sprite sprite))
-         (rect     (bounding-box animated)))
-    (make-fighter :animated animated
+  (let* ((f-animated (make-animated :sprite fighter-sprite))
+         (f-rect     (bounding-box f-animated))
+         (b-animated (make-animated :sprite beam-sprite :default 'shooting :active 'shooting))
+         (b-rect     (bounding-box b-animated)))
+    (make-fighter :animated f-animated
                   :pos (raylib:make-vector2 :x +fighter-spawn-x+
                                             :y +fighter-spawn-y+)
                   :bbox (raylib:make-rectangle :x +fighter-spawn-x+
                                                :y +fighter-spawn-y+
-                                               :width (raylib:rectangle-width rect)
-                                               :height (raylib:rectangle-height rect)))))
+                                               :width (raylib:rectangle-width f-rect)
+                                               :height (raylib:rectangle-height f-rect))
+                  :beam (make-beam :animated b-animated
+                                   :pos (raylib:make-vector2 :x (+ 6 +fighter-spawn-x+)
+                                                             :y (+ 15 +fighter-spawn-y+))
+                                   :bbox (raylib:make-rectangle :x (+ 6 +fighter-spawn-x+)
+                                                                :y (+ 15 +fighter-spawn-y+)
+                                                                :width (raylib:rectangle-width b-rect)
+                                                                :height (raylib:rectangle-height b-rect))))))
 
 ;; --- Status --- ;;
 

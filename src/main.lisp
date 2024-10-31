@@ -60,8 +60,8 @@
 
 (defun render-playing (game)
   "Render a running game."
-  (draw-all-blobs game)
   (draw-all-buildings game)
+  (draw-all-blobs game)
   (draw-fighter (game-fighter game) (game-frame game))
   (draw-hud game)
   (debugging-nearness (game-fighter game) (game-blobs game)))
