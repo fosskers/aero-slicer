@@ -26,6 +26,7 @@
   (when (blob-collision? (game-fighter game) (game-blobs game))
     (kill-fighter (game-fighter game) (game-frame game))
     (decf (game-lives game))
+    #+nil
     (when (<= (game-lives game) 0)
       (setf (game-mode game) 'dead)))
   (update-fighter-status (game-fighter game) (game-frame game)))

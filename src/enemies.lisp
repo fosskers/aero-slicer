@@ -15,6 +15,10 @@
 (defstruct blob
   "An amorphous blob enemy that moves in a sin-wave."
   (animated nil :type animated)
+  ;; We need to know the original X value of the spawn point in order to
+  ;; consistently calculate the position following a sine wave. See `move'
+  ;; below.
+  (orig-x   nil :type single-float)
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle)
   (health   1   :type fixnum))
@@ -27,6 +31,7 @@
          (animated (animated :sprite sprite))
          (rect (bounding-box animated)))
     (make-blob :animated animated
+               :orig-x (raylib:vector2-x pos)
                :pos pos
                :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
                                             :y (raylib:vector2-y pos)
@@ -39,11 +44,14 @@
 (defmethod bbox ((blob blob))
   (blob-bbox blob))
 
-;; TODO: 2024-10-29 Actual wave movement.
 (defmethod move ((blob blob))
   "Gradual sinusoidal movement down the screen."
-  (incf (raylib:vector2-y (blob-pos blob)) 1.0)
-  (incf (raylib:rectangle-y (blob-bbox blob)) 1.0))
+  (let* ((x-diff (coerce (* 16 (sin (* pi 1/32 (raylib:vector2-y (blob-pos blob))))) 'single-float))
+         (new-x  (+ x-diff (blob-orig-x blob))))
+    (setf (raylib:vector2-x   (blob-pos blob)) new-x)
+    (setf (raylib:rectangle-x (blob-bbox blob)) new-x)
+    (incf (raylib:vector2-y   (blob-pos blob)) 1.0)
+    (incf (raylib:rectangle-y (blob-bbox blob)) 1.0)))
 
 (defun maybe-spawn-blob (game)
   "Spawn a blob depending on the current frame."
