@@ -16,7 +16,7 @@
 
 (defun fighter (sprite)
   "A smart-constructor for `fighter'."
-  (let* ((animated (animated :sprite sprite))
+  (let* ((animated (make-animated :sprite sprite))
          (rect     (bounding-box animated)))
     (make-fighter :animated animated
                   :pos (raylib:make-vector2 :x +fighter-spawn-x+

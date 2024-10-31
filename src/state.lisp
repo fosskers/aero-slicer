@@ -11,8 +11,9 @@
 ;; NOTE: When you add a texture here, make sure to unload it in `ungame' below.
 (defstruct (sprites (:constructor sprites))
   "A bank of various sprites and their loaded textures."
-  (fighter (sprite #p"assets/fighter.json"))
-  (blob    (sprite #p"assets/blob.json")))
+  (fighter  (sprite #p"assets/fighter.json"))
+  (blob     (sprite #p"assets/blob.json"))
+  (building (sprite #p"assets/building.json")))
 
 (defstruct game
   "The state of the running game."
@@ -21,6 +22,7 @@
   (fighter nil :type fighter)
   ;; The key is the frame number upon which the blob was spawned.
   (blobs   (make-hash-table :size 16) :type hash-table)
+  (buildings (make-hash-table :size 16) :type hash-table)
   (frame   0 :type fixnum)
   (lives   3 :type fixnum)
   ;; Waiting / Playing / Dead
@@ -36,6 +38,7 @@
   "Reset the `game' to an initial, reusable state."
   (setf (game-lives game) 3)
   (setf (game-blobs game) (make-hash-table :size 16))
+  (setf (game-buildings game) (make-hash-table :size 16))
   (setf (game-mode game) 'playing))
 
 (defun camera ()
@@ -51,4 +54,5 @@
   "Release various resources."
   (let ((sprites (game-sprites game)))
     (raylib:unload-texture (sprite-texture (sprites-fighter sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-blob sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-blob sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-building sprites)))))

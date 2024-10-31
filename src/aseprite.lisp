@@ -26,7 +26,7 @@ around multiple instances of an `animated'."
   (texture    nil :type raylib:texture :read-only t)
   (animations nil :type hash-table :read-only t))
 
-(defstruct (animated (:constructor animated))
+(defstruct animated
   "An actual animated sprite that tracks its own state. Should be one per living
 entity in the game, but all instances of the same entity type should share an
 underlying `sprite' definition."

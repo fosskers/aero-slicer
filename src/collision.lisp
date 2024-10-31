@@ -36,9 +36,9 @@
 
 ;; --- Specific --- ;;
 
-(defun blob-collision? (fighter blobs)
-  "Is the fighter colliding with any blob?"
+(defun enemy-collision? (fighter enemies-ht)
+  "Is the fighter colliding with any enemy?"
   (when (eq 'ok (fighter-status fighter))
     (t:transduce (t:comp (t:map #'cdr)
-                         (t:filter (lambda (blob) (near? fighter blob))))
-                 (t:anyp (lambda (blob) (colliding? fighter blob))) blobs)))
+                         (t:filter (lambda (enemy) (near? fighter enemy))))
+                 (t:anyp (lambda (enemy) (colliding? fighter enemy))) enemies-ht)))

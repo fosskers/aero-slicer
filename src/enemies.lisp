@@ -28,7 +28,7 @@
   (let* ((pos (raylib:make-vector2 :y (float (- +world-min-y+ 16))
                                    :x (float (- (random +world-pixels-x+)
                                                 +world-max-x+))))
-         (animated (animated :sprite sprite))
+         (animated (make-animated :sprite sprite))
          (rect (bounding-box animated)))
     (make-blob :animated animated
                :orig-x (raylib:vector2-x pos)
@@ -85,6 +85,81 @@
                  (declare (ignore key))
                  (when entry?
                    (draw-blob blob)
+                   (recurse)))))
+      (recurse))))
+
+;; --- Buildings --- ;;
+
+(defstruct building
+  "A building structure that the fighter shouldn't crash into."
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2)
+  (bbox     nil :type raylib:rectangle))
+
+(defun building (sprite)
+  "Spawn a `building' somewhere off the top of the screen."
+  (let* ((pos (raylib:make-vector2 :y (float (- +world-min-y+ 16))
+                                   :x (float (- (random +world-pixels-x+)
+                                                +world-max-x+))))
+         (animated (make-animated :sprite sprite))
+         (rect (bounding-box animated)))
+    (make-building :animated animated
+                   :pos pos
+                   :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
+                                                :y (raylib:vector2-y pos)
+                                                :width (raylib:rectangle-width rect)
+                                                :height (raylib:rectangle-height rect)))))
+
+(defmethod pos ((building building))
+  (building-pos building))
+
+(defmethod bbox ((building building))
+  (building-bbox building))
+
+(defmethod move ((building building))
+  "Straight movement down the screen."
+  (incf (raylib:vector2-y   (building-pos building)) 0.5)
+  (incf (raylib:rectangle-y (building-bbox building)) 0.5))
+
+(defun move-all-buildings (game)
+  "Move all buildings currently spawned into the `game'."
+  (with-hash-table-iterator (iter (game-buildings game))
+    (labels ((recurse ()
+               (multiple-value-bind (entry? key buildings) (iter)
+                 (when entry?
+                   (move buildings)
+                   (when (offscreen-vert? buildings)
+                     (remhash key (game-buildings game)))
+                   (recurse)))))
+      (recurse))))
+
+(defun maybe-spawn-building (game)
+  "Spawn a building depending on the current frame."
+  (when (= 0 (mod (game-frame game) (* 3 +frame-rate+)))
+    (let ((building (building (sprites-building (game-sprites game)))))
+      (setf (gethash (game-frame game) (game-buildings game)) building))))
+
+;; TODO: 2024-11-01 Consider consolidating into something generic if this
+;; pattern continues. Although I suspect that buildings will be the only things
+;; that don't actually animate. For everything else, `draw-animated' would be
+;; used.
+;;
+;; What about sprite-based UI elements, like Lives and Bombs? Those don't need
+;; to animate either.
+(defun draw-building (building)
+  "Draw and animate a `building'."
+  (raylib:draw-texture-v (sprite-texture (animated-sprite (building-animated building)))
+                         (building-pos building)
+                         raylib:+white+))
+
+(defun draw-all-buildings (game)
+  "Move all buildings currently spawned into the `game'."
+  (with-hash-table-iterator (iter (game-buildings game))
+    (labels ((recurse ()
+               (multiple-value-bind (entry? key building) (iter)
+                 (declare (ignore key))
+                 (when entry?
+                   (draw-building building)
                    (recurse)))))
       (recurse))))
 

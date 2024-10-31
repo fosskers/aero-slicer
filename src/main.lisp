@@ -21,9 +21,12 @@
 (defun update-playing (game)
   "Logic specific to a started game."
   (maybe-spawn-blob game)
+  (maybe-spawn-building game)
   (move-all-blobs game)
+  (move-all-buildings game)
   (move (game-fighter game))
-  (when (blob-collision? (game-fighter game) (game-blobs game))
+  (when (or (enemy-collision? (game-fighter game) (game-blobs game))
+            (enemy-collision? (game-fighter game) (game-buildings game)))
     (kill-fighter (game-fighter game) (game-frame game))
     (decf (game-lives game))
     #+nil
@@ -58,6 +61,7 @@
 (defun render-playing (game)
   "Render a running game."
   (draw-all-blobs game)
+  (draw-all-buildings game)
   (draw-fighter (game-fighter game) (game-frame game))
   (draw-hud game)
   (debugging-nearness (game-fighter game) (game-blobs game)))
