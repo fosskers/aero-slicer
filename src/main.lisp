@@ -18,26 +18,40 @@
   (when (raylib:is-key-down +key-space+)
     (setf (game-mode game) 'playing)))
 
+(defun update-dead (game)
+  "The player is dead, and they might restart the game."
+  (when (raylib:is-key-down +key-space+)
+    (reset-game game)))
+
 (defun update-playing (game)
   "Logic specific to a started game."
   (maybe-spawn-blob game)
   (maybe-spawn-building game)
   (move-all-blobs game)
   (move-all-buildings game)
-  (move (game-fighter game))
-  (when (or (enemy-collision? (game-fighter game) (game-blobs game))
-            (enemy-collision? (game-fighter game) (game-buildings game)))
-    (kill-fighter (game-fighter game) (game-frame game))
-    (decf (game-lives game))
-    #+nil
-    (when (<= (game-lives game) 0)
-      (setf (game-mode game) 'dead)))
-  (update-fighter-status (game-fighter game) (game-frame game)))
+  (handle-player-input game)
+  (let ((fighter (game-fighter game))
+        (fc      (game-frame game)))
+    (when (or (enemy-collision? fighter (game-blobs game))
+              (enemy-collision? fighter (game-buildings game)))
+      (kill-fighter fighter fc)
+      (decf (game-lives game))
+      #+nil
+      (when (<= (game-lives game) 0)
+        (setf (game-mode game) 'dead)))
+    (update-fighter-status fighter fc)
+    (update-beam-status (fighter-beam fighter) fc)))
 
-(defun update-dead (game)
-  "The player is dead, and they might restart the game."
-  (when (raylib:is-key-down +key-space+)
-    (reset-game game)))
+(defun handle-player-input (game)
+  "Alter the state according to what the human player is doing."
+  (let* ((fighter (game-fighter game))
+         (beam    (fighter-beam fighter)))
+    (move fighter)
+    (when (and (not (beam-shooting? beam))
+               ;; Can't shoot while respawning.
+               (not (eq 'hit (fighter-status fighter)))
+               (raylib:is-key-down +key-space+))
+      (shoot-beam beam (game-frame game)))))
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
@@ -62,7 +76,12 @@
   "Render a running game."
   (draw-all-buildings game)
   (draw-all-blobs game)
-  (draw-fighter (game-fighter game) (game-frame game))
+  (let* ((fighter (game-fighter game))
+         (beam    (fighter-beam fighter))
+         (fc      (game-frame game)))
+    (when (beam-shooting? beam)
+      (draw-beam beam fc))
+    (draw-fighter fighter fc))
   (draw-hud game)
   (debugging-nearness (game-fighter game) (game-blobs game)))
 

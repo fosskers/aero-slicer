@@ -37,7 +37,12 @@
   (let* ((f-animated (make-animated :sprite fighter-sprite))
          (f-rect     (bounding-box f-animated))
          (b-animated (make-animated :sprite beam-sprite :default 'shooting :active 'shooting))
-         (b-rect     (bounding-box b-animated)))
+         (b-rect     (bounding-box b-animated))
+         (shot-dur   (t:transduce (t:comp (t:map #'cdr)
+                                          (t:map #'animation-frames)
+                                          #'t:concatenate
+                                          (t:map #'frame-duration-fs))
+                                  #'+ (sprite-animations (animated-sprite b-animated)))))
     (make-fighter :animated f-animated
                   :pos (raylib:make-vector2 :x +fighter-spawn-x+
                                             :y +fighter-spawn-y+)
@@ -46,12 +51,13 @@
                                                :width (raylib:rectangle-width f-rect)
                                                :height (raylib:rectangle-height f-rect))
                   :beam (make-beam :animated b-animated
-                                   :pos (raylib:make-vector2 :x (+ 6 +fighter-spawn-x+)
-                                                             :y (+ 15 +fighter-spawn-y+))
-                                   :bbox (raylib:make-rectangle :x (+ 6 +fighter-spawn-x+)
-                                                                :y (+ 15 +fighter-spawn-y+)
+                                   :pos (raylib:make-vector2 :x (+ +beam-x-offset+ +fighter-spawn-x+)
+                                                             :y (+ +beam-y-offset+ +fighter-spawn-y+ 224))
+                                   :bbox (raylib:make-rectangle :x (+ +beam-x-offset+ +fighter-spawn-x+)
+                                                                :y (+ +beam-y-offset+ +fighter-spawn-y+)
                                                                 :width (raylib:rectangle-width b-rect)
-                                                                :height (raylib:rectangle-height b-rect))))))
+                                                                :height (raylib:rectangle-height b-rect))
+                                   :shot-dur shot-dur))))
 
 ;; --- Status --- ;;
 
@@ -63,7 +69,14 @@
   (setf (raylib:vector2-x (fighter-pos fighter)) +fighter-spawn-x+)
   (setf (raylib:vector2-y (fighter-pos fighter)) +fighter-spawn-y+)
   (setf (raylib:rectangle-x (fighter-bbox fighter)) +fighter-spawn-x+)
-  (setf (raylib:rectangle-y (fighter-bbox fighter)) +fighter-spawn-y+))
+  (setf (raylib:rectangle-y (fighter-bbox fighter)) +fighter-spawn-y+)
+  ;; Turn off the beam if it were firing.
+  (let ((beam (fighter-beam fighter)))
+    (setf (beam-shooting? beam) nil)
+    (setf (raylib:vector2-x (beam-pos beam)) (+ +beam-x-offset+ +fighter-spawn-x+))
+    (setf (raylib:vector2-y (beam-pos beam)) (+ +beam-y-offset+ +fighter-spawn-y+))
+    (setf (raylib:rectangle-x (beam-bbox beam)) (+ +beam-x-offset+ +fighter-spawn-x+))
+    (setf (raylib:rectangle-y (beam-bbox beam)) (+ +beam-y-offset+ +fighter-spawn-y+))))
 
 (defun update-fighter-status (fighter fc)
   "Alter the fighter's status depending on how much time has passed. This will then
@@ -73,6 +86,18 @@ be later reflected in animations."
          (setf (fighter-status fighter) 'ok)
          (setf (fighter-status-fc fighter) fc)
          (setf (animated-active (fighter-animated fighter)) 'idle))))
+
+(defun update-beam-status (beam fc)
+  "Turn the beam off, etc., depending on how much time has passed."
+  (cond ((and (beam-shooting? beam)
+              (> (- fc (beam-shot-fc beam))
+                 (beam-shot-dur beam)))
+         (setf (beam-shooting? beam) nil))))
+
+(defun shoot-beam (beam fc)
+  "Fire away!"
+  (setf (beam-shooting? beam) t)
+  (setf (beam-shot-fc beam) fc))
 
 ;; --- Generics --- ;;
 
@@ -93,6 +118,10 @@ be later reflected in animations."
   "Draw and animate the `fighter' based on the current frame count."
   (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc))
 
+(defun draw-beam (beam fc)
+  "Draw and animate the `beam' based on the current frame count."
+  (draw-animated (beam-animated beam) (beam-pos beam) fc))
+
 (defmethod pos ((fighter fighter))
   (fighter-pos fighter))
 
@@ -101,21 +130,31 @@ be later reflected in animations."
 
 (defmethod move ((fighter fighter))
   "Move the fighter depending on the current button presses."
-  (let* ((pos  (fighter-pos fighter))
-         (bbox (fighter-bbox fighter)))
+  (let* ((pos    (fighter-pos fighter))
+         (bbox   (fighter-bbox fighter))
+         (b-pos  (beam-pos (fighter-beam fighter)))
+         (b-bbox (beam-bbox (fighter-beam fighter))))
     (when (raylib:is-key-down +key-right+)
       (let ((new (min +112.0 (+ +2.0 (raylib:vector2-x pos)))))
         (setf (raylib:vector2-x pos) new)
-        (setf (raylib:rectangle-x bbox) new)))
+        (setf (raylib:rectangle-x bbox) new)
+        (setf (raylib:vector2-x b-pos) (+ new +beam-x-offset+))
+        (setf (raylib:rectangle-x b-bbox) (+ new +beam-x-offset+))))
     (when (raylib:is-key-down +key-left+)
       (let ((new (max -128.0 (+ -2.0 (raylib:vector2-x pos)))))
         (setf (raylib:vector2-x pos) new)
-        (setf (raylib:rectangle-x bbox) new)))
+        (setf (raylib:rectangle-x bbox) new)
+        (setf (raylib:vector2-x b-pos) (+ new +beam-x-offset+))
+        (setf (raylib:rectangle-x b-bbox) (+ new +beam-x-offset+))))
     (when (raylib:is-key-down +key-down+)
       (let ((new (min +104.0 (+ +2.0 (raylib:vector2-y pos)))))
         (setf (raylib:vector2-y pos) new)
-        (setf (raylib:rectangle-y bbox) new)))
+        (setf (raylib:rectangle-y bbox) new)
+        (setf (raylib:vector2-y b-pos) (+ new +beam-y-offset+))
+        (setf (raylib:rectangle-y b-bbox) (+ new +beam-y-offset+))))
     (when (raylib:is-key-down +key-up+)
       (let ((new (max -120.0 (+ -2.0 (raylib:vector2-y pos)))))
         (setf (raylib:vector2-y pos) new)
-        (setf (raylib:rectangle-y bbox) new)))))
+        (setf (raylib:rectangle-y bbox) new)
+        (setf (raylib:vector2-y b-pos) (+ new +beam-y-offset+))
+        (setf (raylib:rectangle-y b-bbox) (+ new +beam-y-offset+))))))

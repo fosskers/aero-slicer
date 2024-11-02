@@ -28,6 +28,10 @@ collision check.")
   "The X coordinate of the fighter's spawn point (after death, etc.).")
 (defparameter +fighter-spawn-y+ (float (- +world-max-y+ 24))
   "The Y coordinate of the fighter's spawn point.")
+(defparameter +beam-x-offset+ 6
+  "The X position of the beam relative to the fighter.")
+(defparameter +beam-y-offset+ -224
+  "The Y position of the beam relative to the fighter.")
 
 ;; --- Keys --- ;;
 
