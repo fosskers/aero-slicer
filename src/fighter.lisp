@@ -125,8 +125,14 @@ be later reflected in animations."
 (defmethod pos ((fighter fighter))
   (fighter-pos fighter))
 
+(defmethod pos ((beam beam))
+  (beam-pos beam))
+
 (defmethod bbox ((fighter fighter))
   (fighter-bbox fighter))
+
+(defmethod bbox ((beam beam))
+  (beam-bbox beam))
 
 (defmethod move ((fighter fighter))
   "Move the fighter depending on the current button presses."

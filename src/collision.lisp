@@ -38,7 +38,11 @@
 
 (defun enemy-collision? (fighter enemies-ht)
   "Is the fighter colliding with any enemy?"
-  (when (eq 'ok (fighter-status fighter))
-    (t:transduce (t:comp (t:map #'cdr)
-                         (t:filter (lambda (enemy) (near? fighter enemy))))
-                 (t:anyp (lambda (enemy) (colliding? fighter enemy))) enemies-ht)))
+  (t:transduce (t:comp (t:map #'cdr)
+                       (t:filter (lambda (enemy) (near? fighter enemy))))
+               (t:anyp (lambda (enemy) (colliding? fighter enemy))) enemies-ht))
+
+(defun enemies-hit-by-beam (beam enemies-ht)
+  "Find all enemies that the beam is hitting."
+  (t:transduce (t:filter (lambda (enemy) (colliding? beam (cdr enemy))))
+               #'t:cons enemies-ht))
