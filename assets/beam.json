@@ -34,6 +34,42 @@
     "spriteSourceSize": { "x": 6, "y": 0, "w": 4, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
     "duration": 100
+   },
+   {
+    "filename": "beam 4.ase",
+    "frame": { "x": 16, "y": 0, "w": 4, "h": 240 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 6, "y": 0, "w": 4, "h": 240 },
+    "sourceSize": { "w": 16, "h": 240 },
+    "duration": 100
+   },
+   {
+    "filename": "beam 5.ase",
+    "frame": { "x": 20, "y": 0, "w": 4, "h": 240 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 6, "y": 0, "w": 4, "h": 240 },
+    "sourceSize": { "w": 16, "h": 240 },
+    "duration": 100
+   },
+   {
+    "filename": "beam 6.ase",
+    "frame": { "x": 24, "y": 0, "w": 4, "h": 240 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 6, "y": 0, "w": 4, "h": 240 },
+    "sourceSize": { "w": 16, "h": 240 },
+    "duration": 100
+   },
+   {
+    "filename": "beam 7.ase",
+    "frame": { "x": 28, "y": 0, "w": 4, "h": 240 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 6, "y": 0, "w": 4, "h": 240 },
+    "sourceSize": { "w": 16, "h": 240 },
+    "duration": 100
    }
  ],
  "meta": {
@@ -41,10 +77,10 @@
   "version": "1.3.8.1-dev",
   "image": "beam.png",
   "format": "I8",
-  "size": { "w": 16, "h": 240 },
+  "size": { "w": 32, "h": 240 },
   "scale": "1",
   "frameTags": [
-   { "name": "Shooting", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" }
+   { "name": "Shooting", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" }
   ],
   "layers": [
    { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
