@@ -35,11 +35,11 @@ collision check.")
 
 ;; --- Keys --- ;;
 
-(defparameter +key-right+ 262)
-(defparameter +key-left+  263)
-(defparameter +key-down+  264)
-(defparameter +key-up+    265)
-(defparameter +key-space+ 32)
+(defparameter +key-right+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :right))
+(defparameter +key-left+  #.(cffi:foreign-enum-value 'raylib:keyboard-key :left))
+(defparameter +key-down+  #.(cffi:foreign-enum-value 'raylib:keyboard-key :down))
+(defparameter +key-up+    #.(cffi:foreign-enum-value 'raylib:keyboard-key :up))
+(defparameter +key-space+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :space))
 
 ;; --- Macros --- ;;
 
