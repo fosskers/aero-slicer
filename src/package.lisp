@@ -68,19 +68,25 @@ collision check.")
 (defgeneric bbox (sprite)
   (:documentation "A `raylib:rectangle' that represents the bounding box of a sprite."))
 
-(defgeneric draw (entity)
+(defgeneric draw (entity fc)
   (:documentation "Anything that can be drawn to the screen."))
 
-(defmethod draw ((entities hash-table))
+(defmethod draw ((entities hash-table) fc)
   "Multiple drawable things collected into a `hash-table'."
   (with-hash-table-iterator (iter entities)
     (labels ((recurse ()
                (multiple-value-bind (entry? key entity) (iter)
                  (declare (ignore key))
                  (when entry?
-                   (draw entity)
+                   (draw entity fc)
                    (recurse)))))
       (recurse))))
+
+(defgeneric health (entity)
+  (:documentation "The amount of health the unit has."))
+
+(defgeneric apply-damage (entity)
+  (:documentation "Mutably apply damage to some entity."))
 
 (defgeneric min-x (sprite)
   (:documentation "The lowest (closest to 0) X value occupied by this sprite."))

@@ -71,7 +71,9 @@ despawn them."
   (incf (raylib:vector2-y   (beam-pos (tank-beam tank))) 0.5)
   (incf (raylib:rectangle-y (beam-bbox (tank-beam tank))) 0.5))
 
-(defmethod draw ((tank tank))
+(defmethod draw ((tank tank) fc)
+  (when (beam-shooting? (tank-beam tank))
+    (draw (tank-beam tank) fc))
   (raylib:draw-texture-v (sprite-texture (animated-sprite (tank-animated tank)))
                          (tank-pos tank)
                          raylib:+white+))
@@ -83,6 +85,18 @@ despawn them."
            (tank (tank (sprites-tank sprites)
                        (sprites-beam sprites))))
       (setf (gethash (game-frame game) (game-tanks game)) tank))))
+
+(defun maybe-tank-shoot (tank fc)
+  "Make the tank fire if conditions are met."
+  (when (and (zerop (mod fc (* 2 +frame-rate+)))
+             (not (beam-shooting? (tank-beam tank))))
+    (shoot-beam (tank-beam tank) fc)))
+
+(defmethod health ((tank tank))
+  (tank-health tank))
+
+(defmethod apply-damage ((tank tank))
+  (decf (tank-health tank)))
 
 ;; --- Blobs --- ;;
 
@@ -133,10 +147,16 @@ despawn them."
     (let ((blob (blob (sprites-blob (game-sprites game)))))
       (setf (gethash (game-frame game) (game-blobs game)) blob))))
 
-(defmethod draw ((blob blob))
+(defmethod draw ((blob blob) fc)
   (raylib:draw-texture-v (sprite-texture (animated-sprite (blob-animated blob)))
                          (blob-pos blob)
                          raylib:+white+))
+
+(defmethod health ((blob blob))
+  (blob-health blob))
+
+(defmethod apply-damage ((blob blob))
+  (decf (blob-health blob)))
 
 ;; --- Buildings --- ;;
 
@@ -186,7 +206,7 @@ despawn them."
 ;; to animate either.
 ;;
 ;; 2024-11-04 I've made these a `defmethod' to reduce some overall duplication.
-(defmethod draw ((building building))
+(defmethod draw ((building building) fc)
   (raylib:draw-texture-v (sprite-texture (animated-sprite (building-animated building)))
                          (building-pos building)
                          raylib:+white+))

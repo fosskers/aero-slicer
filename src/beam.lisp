@@ -37,8 +37,7 @@
 
 ;; --- Generics --- ;;
 
-(defun draw-beam (beam fc)
-  "Draw and animate the `beam' based on the current frame count."
+(defmethod draw ((beam beam) fc)
   (draw-animated (beam-animated beam) (beam-pos beam) fc))
 
 (defmethod pos ((beam beam))

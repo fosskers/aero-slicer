@@ -73,8 +73,7 @@ be later reflected in animations."
 
 ;; --- Generics --- ;;
 
-(defun draw-fighter (fighter fc)
-  "Draw and animate the `fighter' based on the current frame count."
+(defmethod draw ((fighter fighter) fc)
   (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc))
 
 (defmethod pos ((fighter fighter))
