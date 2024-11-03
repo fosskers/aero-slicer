@@ -10,6 +10,7 @@
                 :components ((:file "package")
                              (:file "state")
                              (:file "aseprite")
+                             (:file "beam")
                              (:file "fighter")
                              (:file "enemies")
                              (:file "collision")

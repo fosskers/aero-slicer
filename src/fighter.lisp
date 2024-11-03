@@ -11,17 +11,6 @@
 
 ;; --- Types --- ;;
 
-(defstruct beam
-  "The beam shot from the ship."
-  (animated  nil :type animated)
-  (pos       nil :type raylib:vector2)
-  (bbox      nil :type raylib:rectangle)
-  (shooting? nil :type symbol)
-  ;; The frame on which the shot was started.
-  (shot-fc   0   :type fixnum)
-  ;; The total duration, in frames, that the shot should be active for.
-  (shot-dur  0   :type fixnum :read-only t))
-
 (defstruct fighter
   "The player's fighter ship."
   (animated  nil :type animated)
@@ -37,12 +26,7 @@
   (let* ((f-animated (make-animated :sprite fighter-sprite))
          (f-rect     (bounding-box f-animated))
          (b-animated (make-animated :sprite beam-sprite :default 'shooting :active 'shooting))
-         (b-rect     (bounding-box b-animated))
-         (shot-dur   (t:transduce (t:comp (t:map #'cdr)
-                                          (t:map #'animation-frames)
-                                          #'t:concatenate
-                                          (t:map #'frame-duration-fs))
-                                  #'+ (sprite-animations (animated-sprite b-animated)))))
+         (b-rect     (bounding-box b-animated)))
     (make-fighter :animated f-animated
                   :pos (raylib:make-vector2 :x +fighter-spawn-x+
                                             :y +fighter-spawn-y+)
@@ -57,7 +41,7 @@
                                                                 :y (+ +beam-y-offset+ +fighter-spawn-y+)
                                                                 :width (raylib:rectangle-width b-rect)
                                                                 :height (raylib:rectangle-height b-rect))
-                                   :shot-dur shot-dur))))
+                                   :shot-dur (shot-duration (animated-sprite b-animated))))))
 
 ;; --- Status --- ;;
 
@@ -87,52 +71,17 @@ be later reflected in animations."
          (setf (fighter-status-fc fighter) fc)
          (setf (animated-active (fighter-animated fighter)) 'idle))))
 
-(defun update-beam-status (beam fc)
-  "Turn the beam off, etc., depending on how much time has passed."
-  (cond ((and (beam-shooting? beam)
-              (> (- fc (beam-shot-fc beam))
-                 (beam-shot-dur beam)))
-         (setf (beam-shooting? beam) nil))))
-
-(defun shoot-beam (beam fc)
-  "Fire away!"
-  (setf (beam-shooting? beam) t)
-  (setf (beam-shot-fc beam) fc))
-
 ;; --- Generics --- ;;
-
-#+nil
-(defmethod min-x ((fighter fighter))
-  (raylib:vector2-x (fighter-pos fighter)))
-#+nil
-(defmethod max-x ((fighter fighter))
-  (+ 15 (raylib:vector2-x (fighter-pos fighter))))
-#+nil
-(defmethod min-y ((fighter fighter))
-  (raylib:vector2-y (fighter-pos fighter)))
-#+nil
-(defmethod max-y ((fighter fighter))
-  (+ 15 (raylib:vector2-y (fighter-pos fighter))))
 
 (defun draw-fighter (fighter fc)
   "Draw and animate the `fighter' based on the current frame count."
   (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc))
 
-(defun draw-beam (beam fc)
-  "Draw and animate the `beam' based on the current frame count."
-  (draw-animated (beam-animated beam) (beam-pos beam) fc))
-
 (defmethod pos ((fighter fighter))
   (fighter-pos fighter))
 
-(defmethod pos ((beam beam))
-  (beam-pos beam))
-
 (defmethod bbox ((fighter fighter))
   (fighter-bbox fighter))
-
-(defmethod bbox ((beam beam))
-  (beam-bbox beam))
 
 (defmethod move ((fighter fighter))
   "Move the fighter depending on the current button presses."

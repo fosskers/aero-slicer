@@ -14,6 +14,7 @@
   (fighter  (sprite #p"assets/fighter.json"))
   (beam     (sprite #p"assets/beam.json"))
   (blob     (sprite #p"assets/blob.json"))
+  (tank     (sprite #p"assets/tank.json"))
   (building (sprite #p"assets/building.json")))
 
 (defstruct game
@@ -23,6 +24,7 @@
   (fighter nil :type fighter)
   ;; The key is the frame number upon which the blob was spawned.
   (blobs   (make-hash-table :size 16) :type hash-table)
+  (tanks   (make-hash-table :size 16) :type hash-table)
   (buildings (make-hash-table :size 16) :type hash-table)
   (frame   0 :type fixnum)
   (lives   3 :type fixnum)
@@ -40,6 +42,7 @@
   "Reset the `game' to an initial, reusable state."
   (setf (game-lives game) 3)
   (setf (game-blobs game) (make-hash-table :size 16))
+  (setf (game-tanks game) (make-hash-table :size 16))
   (setf (game-buildings game) (make-hash-table :size 16))
   (setf (game-mode game) 'playing))
 
@@ -57,4 +60,5 @@
   (let ((sprites (game-sprites game)))
     (raylib:unload-texture (sprite-texture (sprites-fighter sprites)))
     (raylib:unload-texture (sprite-texture (sprites-blob sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-tank sprites)))
     (raylib:unload-texture (sprite-texture (sprites-building sprites)))))

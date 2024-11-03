@@ -32,6 +32,10 @@ collision check.")
   "The X position of the beam relative to the fighter.")
 (defparameter +beam-y-offset+ -224
   "The Y position of the beam relative to the fighter.")
+(defparameter +tank-beam-x-offset+ 4
+  "The X position of the beam relative to a tank.")
+(defparameter +tank-beam-y-offset+ 15
+  "The Y position of the beam relative to a tank.")
 
 ;; --- Keys --- ;;
 
@@ -63,6 +67,20 @@ collision check.")
 
 (defgeneric bbox (sprite)
   (:documentation "A `raylib:rectangle' that represents the bounding box of a sprite."))
+
+(defgeneric draw (entity)
+  (:documentation "Anything that can be drawn to the screen."))
+
+(defmethod draw ((entities hash-table))
+  "Multiple drawable things collected into a `hash-table'."
+  (with-hash-table-iterator (iter entities)
+    (labels ((recurse ()
+               (multiple-value-bind (entry? key entity) (iter)
+                 (declare (ignore key))
+                 (when entry?
+                   (draw entity)
+                   (recurse)))))
+      (recurse))))
 
 (defgeneric min-x (sprite)
   (:documentation "The lowest (closest to 0) X value occupied by this sprite."))

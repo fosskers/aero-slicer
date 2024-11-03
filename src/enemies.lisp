@@ -10,6 +10,80 @@
   (let ((y (raylib:vector2-y (pos guy))))
     (> y +world-max-y+)))
 
+(defun move-enemies (enemies)
+  "Move all enemies of a certain type. If they move off the end of the screen,
+despawn them."
+  (with-hash-table-iterator (iter enemies)
+    (labels ((recurse ()
+               (multiple-value-bind (entry? key enemy) (iter)
+                 (when entry?
+                   (move enemy)
+                   (when (offscreen-vert? enemy)
+                     (remhash key enemies))
+                   (recurse)))))
+      (recurse))))
+
+;; --- Tanks --- ;;
+
+(defstruct tank
+  "Tanks that shoot back at the fighter."
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2)
+  (bbox     nil :type raylib:rectangle)
+  (health   1   :type fixnum)
+  (beam     nil :type beam))
+
+(defun tank (tank-sprite beam-sprite)
+  "Spawn a `tank' with an associated `beam'."
+  (let* ((pos (raylib:make-vector2 :y (float (- +world-min-y+ 16))
+                                   :x (float (- (random +world-pixels-x+)
+                                                +world-max-x+))))
+         (t-animated (make-animated :sprite tank-sprite))
+         (t-rect     (bounding-box t-animated))
+         (b-animated (make-animated :sprite beam-sprite :default 'shooting :active 'shooting))
+         (b-rect     (bounding-box b-animated)))
+    (make-tank :animated t-animated
+               :pos pos
+               :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
+                                            :y (raylib:vector2-y pos)
+                                            :width (raylib:rectangle-width t-rect)
+                                            :height (raylib:rectangle-height t-rect))
+               :beam (make-beam :animated b-animated
+                                :pos (raylib:make-vector2 :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
+                                                          :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos)))
+                                :bbox (raylib:make-rectangle :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
+                                                             :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos))
+                                                             :width (raylib:rectangle-width b-rect)
+                                                             :height (raylib:rectangle-height b-rect))
+                                :shot-dur (shot-duration (animated-sprite b-animated))))))
+
+(defmethod pos ((tank tank))
+  (tank-pos tank))
+
+(defmethod bbox ((tank tank))
+  (tank-bbox tank))
+
+;; TODO: 2024-11-04 The reversals.
+(defmethod move ((tank tank))
+  "Steady movement down the screen with occasional reversals."
+  (incf (raylib:vector2-y   (tank-pos tank)) 0.5)
+  (incf (raylib:rectangle-y (tank-bbox tank)) 0.5)
+  (incf (raylib:vector2-y   (beam-pos (tank-beam tank))) 0.5)
+  (incf (raylib:rectangle-y (beam-bbox (tank-beam tank))) 0.5))
+
+(defmethod draw ((tank tank))
+  (raylib:draw-texture-v (sprite-texture (animated-sprite (tank-animated tank)))
+                         (tank-pos tank)
+                         raylib:+white+))
+
+(defun maybe-spawn-tank (game)
+  "Spawn a tank depending on the current frame."
+  (when (= 0 (mod (game-frame game) (* 4 +frame-rate+)))
+    (let* ((sprites (game-sprites game))
+           (tank (tank (sprites-tank sprites)
+                       (sprites-beam sprites))))
+      (setf (gethash (game-frame game) (game-tanks game)) tank))))
+
 ;; --- Blobs --- ;;
 
 (defstruct blob
@@ -59,34 +133,10 @@
     (let ((blob (blob (sprites-blob (game-sprites game)))))
       (setf (gethash (game-frame game) (game-blobs game)) blob))))
 
-(defun move-all-blobs (game)
-  "Move all blobs currently spawned into the `game'."
-  (with-hash-table-iterator (iter (game-blobs game))
-    (labels ((recurse ()
-               (multiple-value-bind (entry? key blob) (iter)
-                 (when entry?
-                   (move blob)
-                   (when (offscreen-vert? blob)
-                     (remhash key (game-blobs game)))
-                   (recurse)))))
-      (recurse))))
-
-(defun draw-blob (blob)
-  "Draw and animate a `blob'."
+(defmethod draw ((blob blob))
   (raylib:draw-texture-v (sprite-texture (animated-sprite (blob-animated blob)))
                          (blob-pos blob)
                          raylib:+white+))
-
-(defun draw-all-blobs (game)
-  "Move all blobs currently spawned into the `game'."
-  (with-hash-table-iterator (iter (game-blobs game))
-    (labels ((recurse ()
-               (multiple-value-bind (entry? key blob) (iter)
-                 (declare (ignore key))
-                 (when entry?
-                   (draw-blob blob)
-                   (recurse)))))
-      (recurse))))
 
 ;; --- Buildings --- ;;
 
@@ -121,18 +171,6 @@
   (incf (raylib:vector2-y   (building-pos building)) 0.5)
   (incf (raylib:rectangle-y (building-bbox building)) 0.5))
 
-(defun move-all-buildings (game)
-  "Move all buildings currently spawned into the `game'."
-  (with-hash-table-iterator (iter (game-buildings game))
-    (labels ((recurse ()
-               (multiple-value-bind (entry? key buildings) (iter)
-                 (when entry?
-                   (move buildings)
-                   (when (offscreen-vert? buildings)
-                     (remhash key (game-buildings game)))
-                   (recurse)))))
-      (recurse))))
-
 (defun maybe-spawn-building (game)
   "Spawn a building depending on the current frame."
   (when (= 0 (mod (game-frame game) (* 3 +frame-rate+)))
@@ -146,23 +184,11 @@
 ;;
 ;; What about sprite-based UI elements, like Lives and Bombs? Those don't need
 ;; to animate either.
-(defun draw-building (building)
-  "Draw and animate a `building'."
+;;
+;; 2024-11-04 I've made these a `defmethod' to reduce some overall duplication.
+(defmethod draw ((building building))
   (raylib:draw-texture-v (sprite-texture (animated-sprite (building-animated building)))
                          (building-pos building)
                          raylib:+white+))
-
-(defun draw-all-buildings (game)
-  "Move all buildings currently spawned into the `game'."
-  (with-hash-table-iterator (iter (game-buildings game))
-    (labels ((recurse ()
-               (multiple-value-bind (entry? key building) (iter)
-                 (declare (ignore key))
-                 (when entry?
-                   (draw-building building)
-                   (recurse)))))
-      (recurse))))
-
-;; --- Tanks --- ;;
 
 ;; --- Shadow Fighters --- ;;
