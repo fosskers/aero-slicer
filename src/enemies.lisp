@@ -32,7 +32,11 @@ despawn them."
   (bbox       nil :type raylib:rectangle)
   (health     1   :type fixnum)
   (beam       nil :type beam)
-  (reversing? nil :type symbol))
+  (reversing? nil :type symbol)
+  ;; Ok / Charging
+  (status     'ok :type symbol)
+  (status-fc  0   :type fixnum)
+  (charge-dur 0   :type fixnum))
 
 (defun tank (tank-sprite beam-sprite)
   "Spawn a `tank' with an associated `beam'."
@@ -49,6 +53,7 @@ despawn them."
                                             :y (raylib:vector2-y pos)
                                             :width (raylib:rectangle-width t-rect)
                                             :height (raylib:rectangle-height t-rect))
+               :charge-dur (* 2 (charge-duration tank-sprite))
                :beam (make-beam :animated b-animated
                                 :pos (raylib:make-vector2 :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
                                                           :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos)))
@@ -56,7 +61,14 @@ despawn them."
                                                              :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos))
                                                              :width (raylib:rectangle-width b-rect)
                                                              :height (raylib:rectangle-height b-rect))
+                                ;; TODO: 2024-11-05 Optimization: Precalculate
+                                ;; this duration and share it among all tanks.
                                 :shot-dur (shot-duration (animated-sprite b-animated))))))
+
+(defun charge-duration (sprite)
+  "How long does the charging animation last in frames?"
+  (t:transduce (t:map #'frame-duration-fs)
+               #'+ (animation-frames (gethash 'charging (sprite-animations sprite)))))
 
 (defmethod pos ((tank tank))
   (tank-pos tank))
@@ -66,7 +78,7 @@ despawn them."
 
 (defmethod move ((tank tank))
   "Steady movement down the screen with occasional reversals."
-  (let ((movement (if (tank-reversing? tank) 0.0 0.5)))
+  (let ((movement (if (tank-reversing? tank) -0.25 0.75)))
     (incf (raylib:vector2-y   (tank-pos tank)) movement)
     (incf (raylib:rectangle-y (tank-bbox tank)) movement)
     (incf (raylib:vector2-y   (beam-pos (tank-beam tank))) movement)
@@ -75,9 +87,7 @@ despawn them."
 (defmethod draw ((tank tank) fc)
   (when (beam-shooting? (tank-beam tank))
     (draw (tank-beam tank) fc))
-  (raylib:draw-texture-v (sprite-texture (animated-sprite (tank-animated tank)))
-                         (tank-pos tank)
-                         raylib:+white+))
+  (draw-animated (tank-animated tank) (tank-pos tank) fc))
 
 (defun maybe-spawn-tank (game)
   "Spawn a tank depending on the current frame."
@@ -89,10 +99,20 @@ despawn them."
 
 (defun maybe-tank-shoot (tank fc)
   "Make the tank fire if conditions are met."
-  (when (and (zerop (mod fc (* +frame-rate+)))
-             (not (beam-shooting? (tank-beam tank)))
-             (< (random 10) 3))
-    (shoot-beam (tank-beam tank) fc)))
+  (cond ((and (eq 'ok (tank-status tank))
+              (not (beam-shooting? (tank-beam tank)))
+              (zerop (mod fc (* +frame-rate+)))
+              (< (random 10) 3))
+         (setf (tank-status tank) 'charging)
+         (setf (tank-status-fc tank) fc)
+         (setf (animated-active (tank-animated tank)) 'charging))
+        ((and (eq 'charging (tank-status tank))
+              (> (- fc (tank-status-fc tank))
+                 (tank-charge-dur tank)))
+         (setf (tank-status tank) 'ok)
+         (setf (tank-status-fc tank) fc)
+         (setf (animated-active (tank-animated tank)) 'idle)
+         (shoot-beam (tank-beam tank) fc))))
 
 (defmethod health ((tank tank))
   (tank-health tank))
@@ -103,8 +123,8 @@ despawn them."
 (defun update-tank-status (tank fc)
   "Turn off the beam, etc."
   (update-beam-status (tank-beam tank) fc)
-  (cond ((and (zerop (mod fc (* 3 +frame-rate+)))
-              (not (tank-reversing? tank))
+  (cond ((and (not (tank-reversing? tank))
+              (zerop (mod fc (* 3 +frame-rate+)))
               (< (random 10) 3))
          (setf (tank-reversing? tank) t))
         ((and (tank-reversing? tank)

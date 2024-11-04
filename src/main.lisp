@@ -112,8 +112,8 @@
     (when (beam-shooting? beam)
       (draw beam fc))
     (draw fighter fc))
-  (draw-hud game)
-  (debugging-nearness (game-fighter game) (game-blobs game)))
+  (draw-hud game))
+;; (debugging-nearness (game-fighter game) (game-blobs game)))
 
 (defun render-dead (game)
   "Render the Game Over screen."
