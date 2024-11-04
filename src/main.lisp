@@ -40,7 +40,13 @@
          (fc      (game-frame game)))
     (when (and (eq 'ok (fighter-status fighter))
                (or (enemy-collision? fighter (game-blobs game))
-                   (enemy-collision? fighter (game-buildings game))))
+                   (enemy-collision? fighter (game-buildings game))
+                   (t:transduce #'t:pass
+                                (t:anyp (lambda (pair)
+                                          (let* ((beam (tank-beam (cdr pair))))
+                                            (and (beam-shooting? beam)
+                                                 (colliding? fighter beam)))))
+                                (game-tanks game))))
       (kill-fighter fighter fc)
       (decf (game-lives game))
       #+nil
