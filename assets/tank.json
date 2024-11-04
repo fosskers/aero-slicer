@@ -1,7 +1,43 @@
 { "frames": [
    {
-    "filename": "tank.ase",
+    "filename": "tank 0.ase",
     "frame": { "x": 0, "y": 0, "w": 12, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 0, "w": 12, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "tank 1.ase",
+    "frame": { "x": 12, "y": 0, "w": 12, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 0, "w": 12, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "tank 2.ase",
+    "frame": { "x": 24, "y": 0, "w": 12, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 0, "w": 12, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "tank 3.ase",
+    "frame": { "x": 36, "y": 0, "w": 12, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 0, "w": 12, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "tank 4.ase",
+    "frame": { "x": 48, "y": 0, "w": 12, "h": 16 },
     "rotated": false,
     "trimmed": true,
     "spriteSourceSize": { "x": 2, "y": 0, "w": 12, "h": 16 },
@@ -14,10 +50,11 @@
   "version": "1.3.8.1-dev",
   "image": "tank.png",
   "format": "I8",
-  "size": { "w": 12, "h": 16 },
+  "size": { "w": 60, "h": 16 },
   "scale": "1",
   "frameTags": [
-   { "name": "Idle", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" }
+   { "name": "Idle", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
+   { "name": "Charging", "from": 1, "to": 4, "direction": "forward", "color": "#000000ff" }
   ],
   "layers": [
    { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
