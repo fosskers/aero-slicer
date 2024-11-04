@@ -27,11 +27,12 @@ despawn them."
 
 (defstruct tank
   "Tanks that shoot back at the fighter."
-  (animated nil :type animated)
-  (pos      nil :type raylib:vector2)
-  (bbox     nil :type raylib:rectangle)
-  (health   1   :type fixnum)
-  (beam     nil :type beam))
+  (animated   nil :type animated)
+  (pos        nil :type raylib:vector2)
+  (bbox       nil :type raylib:rectangle)
+  (health     1   :type fixnum)
+  (beam       nil :type beam)
+  (reversing? nil :type symbol))
 
 (defun tank (tank-sprite beam-sprite)
   "Spawn a `tank' with an associated `beam'."
@@ -63,13 +64,13 @@ despawn them."
 (defmethod bbox ((tank tank))
   (tank-bbox tank))
 
-;; TODO: 2024-11-04 The reversals.
 (defmethod move ((tank tank))
   "Steady movement down the screen with occasional reversals."
-  (incf (raylib:vector2-y   (tank-pos tank)) 0.5)
-  (incf (raylib:rectangle-y (tank-bbox tank)) 0.5)
-  (incf (raylib:vector2-y   (beam-pos (tank-beam tank))) 0.5)
-  (incf (raylib:rectangle-y (beam-bbox (tank-beam tank))) 0.5))
+  (let ((movement (if (tank-reversing? tank) 0.0 0.5)))
+    (incf (raylib:vector2-y   (tank-pos tank)) movement)
+    (incf (raylib:rectangle-y (tank-bbox tank)) movement)
+    (incf (raylib:vector2-y   (beam-pos (tank-beam tank))) movement)
+    (incf (raylib:rectangle-y (beam-bbox (tank-beam tank))) movement)))
 
 (defmethod draw ((tank tank) fc)
   (when (beam-shooting? (tank-beam tank))
@@ -90,7 +91,7 @@ despawn them."
   "Make the tank fire if conditions are met."
   (when (and (zerop (mod fc (* +frame-rate+)))
              (not (beam-shooting? (tank-beam tank)))
-             (< 4 (random 10)))
+             (< (random 10) 3))
     (shoot-beam (tank-beam tank) fc)))
 
 (defmethod health ((tank tank))
@@ -101,7 +102,14 @@ despawn them."
 
 (defun update-tank-status (tank fc)
   "Turn off the beam, etc."
-  (update-beam-status (tank-beam tank) fc))
+  (update-beam-status (tank-beam tank) fc)
+  (cond ((and (zerop (mod fc (* 3 +frame-rate+)))
+              (not (tank-reversing? tank))
+              (< (random 10) 3))
+         (setf (tank-reversing? tank) t))
+        ((and (tank-reversing? tank)
+              (zerop (mod fc (* 3 +frame-rate+))))
+         (setf (tank-reversing? tank) nil))))
 
 ;; --- Blobs --- ;;
 
