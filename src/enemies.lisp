@@ -88,8 +88,9 @@ despawn them."
 
 (defun maybe-tank-shoot (tank fc)
   "Make the tank fire if conditions are met."
-  (when (and (zerop (mod fc (* 2 +frame-rate+)))
-             (not (beam-shooting? (tank-beam tank))))
+  (when (and (zerop (mod fc (* +frame-rate+)))
+             (not (beam-shooting? (tank-beam tank)))
+             (< 4 (random 10)))
     (shoot-beam (tank-beam tank) fc)))
 
 (defmethod health ((tank tank))
