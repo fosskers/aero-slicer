@@ -98,6 +98,10 @@ despawn them."
 (defmethod apply-damage ((tank tank))
   (decf (tank-health tank)))
 
+(defun update-tank-status (tank fc)
+  "Turn off the beam, etc."
+  (update-beam-status (tank-beam tank) fc))
+
 ;; --- Blobs --- ;;
 
 (defstruct blob

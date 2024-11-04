@@ -50,7 +50,9 @@
       (damage-from-shot beam (game-blobs game))
       (damage-from-shot beam (game-tanks game)))
     (update-fighter-status fighter fc)
-    (update-beam-status (fighter-beam fighter) fc)))
+    (update-beam-status (fighter-beam fighter) fc)
+    (t:transduce (t:map (lambda (tank) (update-tank-status (cdr tank) (game-frame game))))
+                 #'t:for-each (game-tanks game))))
 
 (defun damage-from-shot (beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."
