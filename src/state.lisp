@@ -41,10 +41,14 @@
 (defun reset-game! (game)
   "Reset the `game' to an initial, reusable state."
   (setf (game-lives game) 3)
-  (setf (game-blobs game) (make-hash-table :size 16))
-  (setf (game-tanks game) (make-hash-table :size 16))
+  (clear-all-enemies! game)
   (setf (game-buildings game) (make-hash-table :size 16))
   (setf (game-mode game) 'playing))
+
+(defun clear-all-enemies! (game)
+  "From a bomb or otherwise, clear all the damageable enemies."
+  (setf (game-blobs game) (make-hash-table :size 16))
+  (setf (game-tanks game) (make-hash-table :size 16)))
 
 (defun camera ()
   "Initialise a 2D Camera."

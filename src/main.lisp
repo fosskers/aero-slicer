@@ -85,7 +85,13 @@
                ;; Can't shoot while respawning.
                (not (eq 'hit (fighter-status fighter)))
                (raylib:is-key-down +key-space+))
-      (shoot-beam! beam fc))))
+      (shoot-beam! beam fc))
+    (when (and (can-bomb? fighter fc)
+               (eq 'ok (fighter-status fighter))
+               (raylib:is-key-down +key-enter+))
+      (decf (fighter-bombs fighter))
+      (setf (fighter-bomb-fc fighter) fc)
+      (clear-all-enemies! game))))
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
@@ -131,6 +137,10 @@
   (raylib:draw-text (format nil "LIVES: ~a" (game-lives game))
                     (+ +world-min-x+ 5)
                     (+ +world-min-y+ 5)
+                    10 raylib:+gray+)
+  (raylib:draw-text (format nil "BOMBS: ~a" (fighter-bombs (game-fighter game)))
+                    (+ +world-min-x+ 5)
+                    (+ +world-min-x+ 25)
                     10 raylib:+gray+))
 
 (defun debugging-dots ()

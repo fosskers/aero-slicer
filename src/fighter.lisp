@@ -23,7 +23,10 @@
   (warp-next? nil :type symbol)
   ;; The last time that the player did "warp movement".
   (warp-fc   0   :type fixnum)
-  (beam      nil :type beam))
+  (beam      nil :type beam)
+  (bombs     3   :type fixnum)
+  ;; The last time a bomb was used.
+  (bomb-fc   0   :type fixnum))
 
 (defun fighter (fighter-sprite beam-sprite)
   "A smart-constructor for `fighter'."
@@ -54,7 +57,14 @@
   (> (- fc (fighter-warp-fc fighter))
      +warp-cooldown+))
 
+(defun can-bomb? (fighter fc)
+  "Could the fighter launch a bomb on this frame?"
+  (and (> (fighter-bombs fighter) 0)
+       (> (- fc (fighter-bomb-fc fighter))
+          +bomb-cooldown+)))
+
 (defun kill-fighter! (fighter fc)
+  "Reset the fighter's position and animation."
   (setf (fighter-status fighter) 'hit)
   (setf (fighter-status-fc fighter) fc)
   (setf (animated-active (fighter-animated fighter)) 'damaged)

@@ -32,6 +32,8 @@ collision check.")
   "How soon the player can warp the fighter again.")
 (defparameter +warp-distance+ 32
   "The pixel distance moved by the fighter during a warp.")
+(defparameter +bomb-cooldown+ (* 2 +frame-rate+)
+  "How soon the player can use another bomb.")
 (defparameter +beam-x-offset+ 6
   "The X position of the beam relative to the fighter.")
 (defparameter +beam-y-offset+ -224
@@ -49,6 +51,7 @@ collision check.")
 (defparameter +key-up+    #.(cffi:foreign-enum-value 'raylib:keyboard-key :up))
 (defparameter +key-space+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :space))
 (defparameter +key-tab+   #.(cffi:foreign-enum-value 'raylib:keyboard-key :tab))
+(defparameter +key-enter+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :enter))
 
 ;; --- Macros --- ;;
 

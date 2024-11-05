@@ -1,5 +1,8 @@
 (in-package :aero-fighter)
 
+#+nil
+(launch)
+
 ;; --- Types --- ;;
 
 (defstruct beam
