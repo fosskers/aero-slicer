@@ -54,7 +54,7 @@
   (> (- fc (fighter-warp-fc fighter))
      +warp-cooldown+))
 
-(defun kill-fighter (fighter fc)
+(defun kill-fighter! (fighter fc)
   (setf (fighter-status fighter) 'hit)
   (setf (fighter-status-fc fighter) fc)
   (setf (animated-active (fighter-animated fighter)) 'damaged)
@@ -71,7 +71,7 @@
     (setf (raylib:rectangle-x (beam-bbox beam)) (+ +beam-x-offset+ +fighter-spawn-x+))
     (setf (raylib:rectangle-y (beam-bbox beam)) (+ +beam-y-offset+ +fighter-spawn-y+))))
 
-(defun update-fighter-status (fighter fc)
+(defun update-fighter-status! (fighter fc)
   "Alter the fighter's status depending on how much time has passed. This will then
 be later reflected in animations."
   (cond ((and (eq 'hit (fighter-status fighter))
@@ -98,7 +98,7 @@ be later reflected in animations."
              +warp-distance+)
       2.0))
 
-(defmethod move ((fighter fighter))
+(defmethod move! ((fighter fighter))
   "Move the fighter depending on the current button presses."
   (let* ((pos    (fighter-pos fighter))
          (bbox   (fighter-bbox fighter))

@@ -64,7 +64,7 @@ collision check.")
 
 ;; --- Generics --- ;;
 
-(defgeneric move (sprite)
+(defgeneric move! (sprite)
   (:documentation "Attempt to move the `sprite' on the screen."))
 
 (defgeneric pos (sprite)
@@ -90,7 +90,7 @@ collision check.")
 (defgeneric health (entity)
   (:documentation "The amount of health the unit has."))
 
-(defgeneric apply-damage (entity)
+(defgeneric damage! (entity)
   (:documentation "Mutably apply damage to some entity."))
 
 (defgeneric min-x (sprite)

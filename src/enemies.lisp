@@ -10,14 +10,14 @@
   (let ((y (raylib:vector2-y (pos guy))))
     (> y +world-max-y+)))
 
-(defun move-enemies (enemies)
+(defun move-enemies! (enemies)
   "Move all enemies of a certain type. If they move off the end of the screen,
 despawn them."
   (with-hash-table-iterator (iter enemies)
     (labels ((recurse ()
                (multiple-value-bind (entry? key enemy) (iter)
                  (when entry?
-                   (move enemy)
+                   (move! enemy)
                    (when (offscreen-vert? enemy)
                      (remhash key enemies))
                    (recurse)))))
@@ -78,7 +78,7 @@ despawn them."
 (defmethod bbox ((tank tank))
   (tank-bbox tank))
 
-(defmethod move ((tank tank))
+(defmethod move! ((tank tank))
   "Steady movement down the screen with occasional reversals."
   (let ((movement (if (tank-reversing? tank) -0.25 0.75)))
     (incf (raylib:vector2-y   (tank-pos tank)) movement)
@@ -91,7 +91,7 @@ despawn them."
     (draw (tank-beam tank) fc))
   (draw-animated (tank-animated tank) (tank-pos tank) fc))
 
-(defun maybe-spawn-tank (game)
+(defun maybe-spawn-tank! (game)
   "Spawn a tank depending on the current frame."
   (when (= 0 (mod (game-frame game) (* 4 +frame-rate+)))
     (let* ((sprites (game-sprites game))
@@ -99,7 +99,7 @@ despawn them."
                        (sprites-beam sprites))))
       (setf (gethash (game-frame game) (game-tanks game)) tank))))
 
-(defun maybe-tank-shoot (tank fc)
+(defun maybe-tank-shoot! (tank fc)
   "Make the tank fire if conditions are met."
   (cond ((and (eq 'ok (tank-status tank))
               (not (beam-shooting? (tank-beam tank)))
@@ -114,17 +114,17 @@ despawn them."
          (setf (tank-status tank) 'ok)
          (setf (tank-status-fc tank) fc)
          (setf (animated-active (tank-animated tank)) 'idle)
-         (shoot-beam (tank-beam tank) fc))))
+         (shoot-beam! (tank-beam tank) fc))))
 
 (defmethod health ((tank tank))
   (tank-health tank))
 
-(defmethod apply-damage ((tank tank))
+(defmethod damage! ((tank tank))
   (decf (tank-health tank)))
 
-(defun update-tank-status (tank fc)
+(defun update-tank-status! (tank fc)
   "Turn off the beam, etc."
-  (update-beam-status (tank-beam tank) fc)
+  (update-beam-status! (tank-beam tank) fc)
   (cond ((and (not (tank-reversing? tank))
               (zerop (mod fc (* 3 +frame-rate+)))
               (< (random 10) 3))
@@ -167,7 +167,7 @@ despawn them."
 (defmethod bbox ((blob blob))
   (blob-bbox blob))
 
-(defmethod move ((blob blob))
+(defmethod move! ((blob blob))
   "Gradual sinusoidal movement down the screen."
   (let* ((x-diff (coerce (* 16 (sin (* pi 1/32 (raylib:vector2-y (blob-pos blob))))) 'single-float))
          (new-x  (+ x-diff (blob-orig-x blob))))
@@ -176,7 +176,7 @@ despawn them."
     (incf (raylib:vector2-y   (blob-pos blob)) 1.0)
     (incf (raylib:rectangle-y (blob-bbox blob)) 1.0)))
 
-(defun maybe-spawn-blob (game)
+(defun maybe-spawn-blob! (game)
   "Spawn a blob depending on the current frame."
   (when (= 0 (mod (game-frame game) (* 2 +frame-rate+)))
     (let ((blob (blob (sprites-blob (game-sprites game)))))
@@ -190,7 +190,7 @@ despawn them."
 (defmethod health ((blob blob))
   (blob-health blob))
 
-(defmethod apply-damage ((blob blob))
+(defmethod damage! ((blob blob))
   (decf (blob-health blob)))
 
 ;; --- Buildings --- ;;
@@ -221,12 +221,12 @@ despawn them."
 (defmethod bbox ((building building))
   (building-bbox building))
 
-(defmethod move ((building building))
+(defmethod move! ((building building))
   "Straight movement down the screen."
   (incf (raylib:vector2-y   (building-pos building)) 0.5)
   (incf (raylib:rectangle-y (building-bbox building)) 0.5))
 
-(defun maybe-spawn-building (game)
+(defun maybe-spawn-building! (game)
   "Spawn a building depending on the current frame."
   (when (= 0 (mod (game-frame game) (* 3 +frame-rate+)))
     (let ((building (building (sprites-building (game-sprites game)))))

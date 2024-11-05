@@ -23,14 +23,14 @@
 
 ;; --- Status --- ;;
 
-(defun update-beam-status (beam fc)
+(defun update-beam-status! (beam fc)
   "Turn the beam off, etc., depending on how much time has passed."
   (cond ((and (beam-shooting? beam)
               (> (- fc (beam-shot-fc beam))
                  (beam-shot-dur beam)))
          (setf (beam-shooting? beam) nil))))
 
-(defun shoot-beam (beam fc)
+(defun shoot-beam! (beam fc)
   "Fire away!"
   (setf (beam-shooting? beam) t)
   (setf (beam-shot-fc beam) fc))

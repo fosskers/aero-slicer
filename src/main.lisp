@@ -5,36 +5,36 @@
 
 ;; --- Event Handling --- ;;
 
-(defun update (game)
+(defun update! (game)
   "Following TEA, update the game state."
   (incf (game-frame game))
   (case (game-mode game)
-    (playing (update-playing game))
-    (waiting (update-waiting game))
-    (dead    (update-dead game))))
+    (playing (update-playing! game))
+    (waiting (update-waiting! game))
+    (dead    (update-dead! game))))
 
-(defun update-waiting (game)
+(defun update-waiting! (game)
   "We're waiting for the player to start the game."
   (when (raylib:is-key-down +key-space+)
     (setf (game-mode game) 'playing)))
 
-(defun update-dead (game)
+(defun update-dead! (game)
   "The player is dead, and they might restart the game."
   (when (raylib:is-key-down +key-space+)
-    (reset-game game)))
+    (reset-game! game)))
 
-(defun update-playing (game)
+(defun update-playing! (game)
   "Logic specific to a started game."
-  (maybe-spawn-blob game)
-  (maybe-spawn-building game)
-  (maybe-spawn-tank game)
-  (move-enemies (game-blobs game))
-  (move-enemies (game-buildings game))
-  (move-enemies (game-tanks game))
+  (maybe-spawn-blob! game)
+  (maybe-spawn-building! game)
+  (maybe-spawn-tank! game)
+  (move-enemies! (game-blobs game))
+  (move-enemies! (game-buildings game))
+  (move-enemies! (game-tanks game))
   (t:transduce (t:comp (t:map #'cdr)
-                       (t:map (lambda (tank) (maybe-tank-shoot tank (game-frame game)))))
+                       (t:map (lambda (tank) (maybe-tank-shoot! tank (game-frame game)))))
                #'t:for-each (game-tanks game))
-  (handle-player-input game)
+  (handle-player-input! game)
   (let* ((fighter (game-fighter game))
          (beam    (fighter-beam fighter))
          (fc      (game-frame game)))
@@ -47,31 +47,31 @@
                                             (and (beam-shooting? beam)
                                                  (colliding? fighter beam)))))
                                 (game-tanks game))))
-      (kill-fighter fighter fc)
+      (kill-fighter! fighter fc)
       (decf (game-lives game))
       #+nil
       (when (<= (game-lives game) 0)
         (setf (game-mode game) 'dead)))
     (when (beam-shooting? beam)
-      (damage-from-shot beam (game-blobs game))
-      (damage-from-shot beam (game-tanks game)))
-    (update-fighter-status fighter fc)
-    (update-beam-status (fighter-beam fighter) fc)
-    (t:transduce (t:map (lambda (tank) (update-tank-status (cdr tank) (game-frame game))))
+      (damage-from-shot! beam (game-blobs game))
+      (damage-from-shot! beam (game-tanks game)))
+    (update-fighter-status! fighter fc)
+    (update-beam-status! (fighter-beam fighter) fc)
+    (t:transduce (t:map (lambda (tank) (update-tank-status! (cdr tank) (game-frame game))))
                  #'t:for-each (game-tanks game))))
 
-(defun damage-from-shot (beam enemies)
+(defun damage-from-shot! (beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."
   (let ((hits (enemies-hit-by-beam beam enemies)))
     (t:transduce (t:comp (t:map (lambda (enemy)
-                                  (apply-damage (cdr enemy))
+                                  (damage! (cdr enemy))
                                   enemy))
                          ;; Despawn the enemy if it's dead.
                          (t:filter (lambda (enemy) (<= (health (cdr enemy)) 0)))
                          (t:map (lambda (enemy) (remhash (car enemy) enemies))))
                  #'t:for-each hits)))
 
-(defun handle-player-input (game)
+(defun handle-player-input! (game)
   "Alter the state according to what the human player is doing."
   (let* ((fighter (game-fighter game))
          (beam    (fighter-beam fighter))
@@ -80,12 +80,12 @@
                (can-warp? fighter fc))
       (setf (fighter-warp-next? fighter) t)
       (setf (fighter-warp-fc fighter) fc))
-    (move fighter)
+    (move! fighter)
     (when (and (not (beam-shooting? beam))
                ;; Can't shoot while respawning.
                (not (eq 'hit (fighter-status fighter)))
                (raylib:is-key-down +key-space+))
-      (shoot-beam beam fc))))
+      (shoot-beam! beam fc))))
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
@@ -171,7 +171,7 @@
 (defun event-loop (game)
   "Loop until a signal to quit has been received."
   (unless (raylib:window-should-close)
-    (update game)
+    (update! game)
     (render game)
     (event-loop game)))
 

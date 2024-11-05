@@ -38,7 +38,7 @@
                :fighter (fighter (sprites-fighter sprites)
                                  (sprites-beam sprites)))))
 
-(defun reset-game (game)
+(defun reset-game! (game)
   "Reset the `game' to an initial, reusable state."
   (setf (game-lives game) 3)
   (setf (game-blobs game) (make-hash-table :size 16))
