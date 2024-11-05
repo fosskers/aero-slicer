@@ -19,6 +19,10 @@
   ;; Ok / Hit
   (status    'ok :type symbol)
   (status-fc 0   :type fixnum)
+  ;; The next movement should be a warp.
+  (warp-next? nil :type symbol)
+  ;; The last time that the player did "warp movement".
+  (warp-fc   0   :type fixnum)
   (beam      nil :type beam))
 
 (defun fighter (fighter-sprite beam-sprite)
@@ -44,6 +48,11 @@
                                    :shot-dur (shot-duration (animated-sprite b-animated))))))
 
 ;; --- Status --- ;;
+
+(defun can-warp? (fighter fc)
+  "Could the fighter warp on this frame?"
+  (> (- fc (fighter-warp-fc fighter))
+     +warp-cooldown+))
 
 (defun kill-fighter (fighter fc)
   (setf (fighter-status fighter) 'hit)
@@ -82,6 +91,13 @@ be later reflected in animations."
 (defmethod bbox ((fighter fighter))
   (fighter-bbox fighter))
 
+(defun distance-of-move! (fighter)
+  "What's the distance to be moved on this frame? Mutable and frame-specific."
+  (if (fighter-warp-next? fighter)
+      (progn (setf (fighter-warp-next? fighter) nil)
+             +warp-distance+)
+      2.0))
+
 (defmethod move ((fighter fighter))
   "Move the fighter depending on the current button presses."
   (let* ((pos    (fighter-pos fighter))
@@ -89,25 +105,29 @@ be later reflected in animations."
          (b-pos  (beam-pos (fighter-beam fighter)))
          (b-bbox (beam-bbox (fighter-beam fighter))))
     (when (raylib:is-key-down +key-right+)
-      (let ((new (min +112.0 (+ +2.0 (raylib:vector2-x pos)))))
+      (let* ((dist (distance-of-move! fighter))
+             (new  (min +112.0 (+ dist (raylib:vector2-x pos)))))
         (setf (raylib:vector2-x pos) new)
         (setf (raylib:rectangle-x bbox) new)
         (setf (raylib:vector2-x b-pos) (+ new +beam-x-offset+))
         (setf (raylib:rectangle-x b-bbox) (+ new +beam-x-offset+))))
     (when (raylib:is-key-down +key-left+)
-      (let ((new (max -128.0 (+ -2.0 (raylib:vector2-x pos)))))
+      (let* ((dist (distance-of-move! fighter))
+             (new  (max -128.0 (- (raylib:vector2-x pos) dist))))
         (setf (raylib:vector2-x pos) new)
         (setf (raylib:rectangle-x bbox) new)
         (setf (raylib:vector2-x b-pos) (+ new +beam-x-offset+))
         (setf (raylib:rectangle-x b-bbox) (+ new +beam-x-offset+))))
     (when (raylib:is-key-down +key-down+)
-      (let ((new (min +104.0 (+ +2.0 (raylib:vector2-y pos)))))
+      (let* ((dist (distance-of-move! fighter))
+             (new  (min +104.0 (+ dist (raylib:vector2-y pos)))))
         (setf (raylib:vector2-y pos) new)
         (setf (raylib:rectangle-y bbox) new)
         (setf (raylib:vector2-y b-pos) (+ new +beam-y-offset+))
         (setf (raylib:rectangle-y b-bbox) (+ new +beam-y-offset+))))
     (when (raylib:is-key-down +key-up+)
-      (let ((new (max -120.0 (+ -2.0 (raylib:vector2-y pos)))))
+      (let* ((dist (distance-of-move! fighter))
+             (new  (max -120.0 (- (raylib:vector2-y pos) dist))))
         (setf (raylib:vector2-y pos) new)
         (setf (raylib:rectangle-y bbox) new)
         (setf (raylib:vector2-y b-pos) (+ new +beam-y-offset+))

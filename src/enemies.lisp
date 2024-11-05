@@ -53,6 +53,8 @@ despawn them."
                                             :y (raylib:vector2-y pos)
                                             :width (raylib:rectangle-width t-rect)
                                             :height (raylib:rectangle-height t-rect))
+               ;; Doubling the duration has the effect of running the charge
+               ;; animation twice before actually firing.
                :charge-dur (* 2 (charge-duration tank-sprite))
                :beam (make-beam :animated b-animated
                                 :pos (raylib:make-vector2 :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))

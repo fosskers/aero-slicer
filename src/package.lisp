@@ -28,6 +28,10 @@ collision check.")
   "The X coordinate of the fighter's spawn point (after death, etc.).")
 (defparameter +fighter-spawn-y+ (float (- +world-max-y+ 24))
   "The Y coordinate of the fighter's spawn point.")
+(defparameter +warp-cooldown+ (* 2 +frame-rate+)
+  "How soon the player can warp the fighter again.")
+(defparameter +warp-distance+ 32
+  "The pixel distance moved by the fighter during a warp.")
 (defparameter +beam-x-offset+ 6
   "The X position of the beam relative to the fighter.")
 (defparameter +beam-y-offset+ -224
@@ -44,6 +48,7 @@ collision check.")
 (defparameter +key-down+  #.(cffi:foreign-enum-value 'raylib:keyboard-key :down))
 (defparameter +key-up+    #.(cffi:foreign-enum-value 'raylib:keyboard-key :up))
 (defparameter +key-space+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :space))
+(defparameter +key-tab+   #.(cffi:foreign-enum-value 'raylib:keyboard-key :tab))
 
 ;; --- Macros --- ;;
 

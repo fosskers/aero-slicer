@@ -74,13 +74,18 @@
 (defun handle-player-input (game)
   "Alter the state according to what the human player is doing."
   (let* ((fighter (game-fighter game))
-         (beam    (fighter-beam fighter)))
+         (beam    (fighter-beam fighter))
+         (fc      (game-frame game)))
+    (when (and (raylib:is-key-down +key-tab+)
+               (can-warp? fighter fc))
+      (setf (fighter-warp-next? fighter) t)
+      (setf (fighter-warp-fc fighter) fc))
     (move fighter)
     (when (and (not (beam-shooting? beam))
                ;; Can't shoot while respawning.
                (not (eq 'hit (fighter-status fighter)))
                (raylib:is-key-down +key-space+))
-      (shoot-beam beam (game-frame game)))))
+      (shoot-beam beam fc))))
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
