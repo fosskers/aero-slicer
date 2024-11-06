@@ -38,7 +38,7 @@ despawn them."
   (status-fc  0   :type fixnum)
   (charge-dur 0   :type fixnum))
 
-(defun tank (tank-sprite beam-sprite)
+(defun tank (tank-sprite beam-sprite fc)
   "Spawn a `tank' with an associated `beam'."
   (let* ((pos (raylib:make-vector2 :y (float (- +world-min-y+ 16))
                                    :x (float (- (random +world-pixels-x+)
@@ -65,7 +65,10 @@ despawn them."
                                                              :height (raylib:rectangle-height b-rect))
                                 ;; TODO: 2024-11-05 Optimization: Precalculate
                                 ;; this duration and share it among all tanks.
-                                :shot-dur (shot-duration (animated-sprite b-animated))))))
+                                :shot-dur (shot-duration (animated-sprite b-animated))
+                                ;; Ensures that a newly spawned, offscreen tank
+                                ;; can't start shooting. Increase this if necessary.
+                                :shot-fc fc))))
 
 (defun charge-duration (sprite)
   "How long does the charging animation last in frames?"
@@ -93,11 +96,13 @@ despawn them."
 
 (defun maybe-spawn-tank! (game)
   "Spawn a tank depending on the current frame."
-  (when (= 0 (mod (game-frame game) (* 4 +frame-rate+)))
-    (let* ((sprites (game-sprites game))
-           (tank (tank (sprites-tank sprites)
-                       (sprites-beam sprites))))
-      (setf (gethash (game-frame game) (game-tanks game)) tank))))
+  (let ((fc (game-frame game)))
+    (when (= 0 (mod fc (* 4 +frame-rate+)))
+      (let* ((sprites (game-sprites game))
+             (tank (tank (sprites-tank sprites)
+                         (sprites-beam sprites)
+                         fc)))
+        (setf (gethash fc (game-tanks game)) tank)))))
 
 (defun maybe-tank-shoot! (tank fc)
   "Make the tank fire if conditions are met."
