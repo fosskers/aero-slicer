@@ -63,6 +63,10 @@ collision check.")
 (defparameter +gamepad+ 0)
 (defparameter +gamepad-a+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-right))
 (defparameter +gamepad-b+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-down))
+(defparameter +gamepad-up+    #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-up))
+(defparameter +gamepad-down+  #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-down))
+(defparameter +gamepad-left+  #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-left))
+(defparameter +gamepad-right+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-right))
 
 ;; --- Macros --- ;;
 
