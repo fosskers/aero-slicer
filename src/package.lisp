@@ -34,6 +34,7 @@ collision check.")
   "The pixel distance moved by the fighter during a warp.")
 (defparameter +bomb-cooldown+ (* 2 +frame-rate+)
   "How soon the player can use another bomb.")
+(defparameter +bomb-ammo-spawn-timeout+ (* 5 +frame-rate+))
 (defparameter +beam-x-offset+ 6
   "The X position of the beam relative to the fighter.")
 (defparameter +beam-y-offset+ -224

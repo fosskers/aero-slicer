@@ -15,8 +15,10 @@
   (beam     (sprite #p"assets/beam.json"))
   (blob     (sprite #p"assets/blob.json"))
   (tank     (sprite #p"assets/tank.json"))
-  (building (sprite #p"assets/building.json")))
+  (building (sprite #p"assets/building.json"))
+  (bomb     (sprite #p"assets/bomb.json")))
 
+;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 (defstruct game
   "The state of the running game."
   (camera  (camera) :type raylib:camera-2d)
@@ -26,6 +28,7 @@
   (blobs   (make-hash-table :size 16) :type hash-table)
   (tanks   (make-hash-table :size 16) :type hash-table)
   (buildings (make-hash-table :size 16) :type hash-table)
+  (powerups (make-hash-table :size 16) :type hash-table)
   (frame   0 :type fixnum)
   (lives   3 :type fixnum)
   ;; Waiting / Playing / Dead
@@ -43,6 +46,7 @@
   (setf (game-lives game) 3)
   (clear-all-enemies! game)
   (setf (game-buildings game) (make-hash-table :size 16))
+  (setf (game-powerups game) (make-hash-table :size 16))
   (setf (game-mode game) 'playing))
 
 (defun clear-all-enemies! (game)
@@ -63,6 +67,8 @@
   "Release various resources."
   (let ((sprites (game-sprites game)))
     (raylib:unload-texture (sprite-texture (sprites-fighter sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-beam sprites)))
     (raylib:unload-texture (sprite-texture (sprites-blob sprites)))
     (raylib:unload-texture (sprite-texture (sprites-tank sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-building sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-building sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-bomb sprites)))))
