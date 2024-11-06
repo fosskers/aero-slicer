@@ -53,6 +53,17 @@ collision check.")
 (defparameter +key-tab+   #.(cffi:foreign-enum-value 'raylib:keyboard-key :tab))
 (defparameter +key-enter+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :enter))
 
+;; --- Gamepad --- ;;
+
+#+nil
+(raylib:is-gamepad-available 0)
+#+nil
+(raylib:get-gamepad-name 0)
+
+(defparameter +gamepad+ 0)
+(defparameter +gamepad-a+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-right))
+(defparameter +gamepad-b+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-down))
+
 ;; --- Macros --- ;;
 
 (defmacro with-drawing (&body body)

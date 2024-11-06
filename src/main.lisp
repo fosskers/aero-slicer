@@ -84,14 +84,23 @@
     (when (and (not (beam-shooting? beam))
                ;; Can't shoot while respawning.
                (not (eq 'hit (fighter-status fighter)))
-               (raylib:is-key-down +key-space+))
+               (or (raylib:is-key-down +key-space+)
+                   ;; Doesn't crash if the gamepad isn't plugged in.
+                   (raylib:is-gamepad-button-down +gamepad+ +gamepad-a+)))
       (shoot-beam! beam fc))
     (when (and (can-bomb? fighter fc)
                (eq 'ok (fighter-status fighter))
-               (raylib:is-key-down +key-enter+))
+               (or (raylib:is-key-down +key-enter+)
+                   (raylib:is-gamepad-button-down +gamepad+ +gamepad-b+)))
       (decf (fighter-bombs fighter))
       (setf (fighter-bomb-fc fighter) fc)
       (clear-all-enemies! game))))
+;; (debugging-gamepad))
+
+(defun debugging-gamepad ()
+  (let ((last-pressed (raylib:get-gamepad-button-pressed)))
+    (when (not (zerop last-pressed))
+      (break (format nil "Button: ~a" last-pressed)))))
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
