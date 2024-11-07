@@ -35,6 +35,8 @@ collision check.")
 (defparameter +bomb-cooldown+ (* 2 +frame-rate+)
   "How soon the player can use another bomb.")
 (defparameter +bomb-ammo-spawn-timeout+ (* 5 +frame-rate+))
+(defparameter +bomb-max-capacity+ 3
+  "The max number of bombs that the fighter has hold.")
 (defparameter +beam-x-offset+ 6
   "The X position of the beam relative to the fighter.")
 (defparameter +beam-y-offset+ -224
@@ -111,6 +113,9 @@ collision check.")
 
 (defgeneric damage! (entity)
   (:documentation "Mutably apply damage to some entity."))
+
+(defgeneric expired? (powerup fc)
+  (:documentation "Has too much timed passed since the powerup spawned?"))
 
 (defgeneric min-x (sprite)
   (:documentation "The lowest (closest to 0) X value occupied by this sprite."))

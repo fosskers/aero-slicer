@@ -58,13 +58,16 @@
       (damage-from-shot! beam (game-tanks game)))
     (let ((pu (colliding-powerup fighter (game-powerups game))))
       (typecase (cdr pu)
-        (ammo (when (< (fighter-bombs fighter) 3)
+        (ammo (when (< (fighter-bombs fighter) +bomb-max-capacity+)
                 (remhash (car pu) (game-powerups game))
                 (incf (fighter-bombs fighter))))))
     (update-fighter-status! fighter fc)
     (update-beam-status! (fighter-beam fighter) fc)
     (t:transduce (t:map (lambda (tank) (update-tank-status! (cdr tank) (game-frame game))))
-                 #'t:for-each (game-tanks game))))
+                 #'t:for-each (game-tanks game))
+    (t:transduce (t:comp (t:filter (lambda (pu) (expired? (cdr pu) fc)))
+                         (t:map (lambda (pu) (remhash (car pu) (game-powerups game)))))
+                 #'t:for-each (game-powerups game))))
 
 (defun damage-from-shot! (beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."

@@ -27,16 +27,13 @@
                                             :width (raylib:rectangle-width rect)
                                             :height (raylib:rectangle-height rect)))))
 
-(defun ammo-expired? (ammo fc)
-  "Has too much time passed since the bomb spawned? Should it despawn?"
-  (> (- fc (ammo-spawn-fc ammo))
-     +bomb-ammo-spawn-timeout+))
-
 (defun maybe-spawn-ammo! (game)
   "Spawn some bomb ammo depending on the current frame."
-  (let ((fc (game-frame game)))
+  (let ((fighter (game-fighter game))
+        (fc (game-frame game)))
     ;; TODO: 2024-11-08 Make more robust. Use randomness, etc.
-    (when (zerop (mod fc (* 20 +frame-rate+)))
+    (when (and (< (fighter-bombs fighter) +bomb-max-capacity+)
+               (zerop (mod fc (* 20 +frame-rate+))))
       (let ((ammo (ammo (sprites-bomb (game-sprites game)) fc)))
         (setf (gethash fc (game-powerups game)) ammo)))))
 
@@ -50,3 +47,7 @@
   (draw-animated (ammo-animated ammo)
                  (ammo-pos ammo)
                  fc))
+
+(defmethod expired? ((ammo ammo) fc)
+  (> (- fc (ammo-spawn-fc ammo))
+     +bomb-ammo-spawn-timeout+))
