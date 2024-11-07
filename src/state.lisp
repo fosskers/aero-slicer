@@ -31,6 +31,7 @@
   (powerups (make-hash-table :size 16) :type hash-table)
   (frame   0 :type fixnum)
   (lives   3 :type fixnum)
+  (score   0 :type fixnum)
   ;; Waiting / Playing / Dead
   (mode    'playing :type symbol))
 
@@ -47,6 +48,7 @@
   (clear-all-enemies! game)
   (setf (game-buildings game) (make-hash-table :size 16))
   (setf (game-powerups game) (make-hash-table :size 16))
+  (setf (game-score game) 0)
   (setf (game-mode game) 'playing))
 
 (defun clear-all-enemies! (game)

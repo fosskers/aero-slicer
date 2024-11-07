@@ -45,6 +45,8 @@ collision check.")
   "The X position of the beam relative to a tank.")
 (defparameter +tank-beam-y-offset+ 15
   "The Y position of the beam relative to a tank.")
+(defparameter +blob-points+ 100)
+(defparameter +tank-points+ 200)
 
 ;; --- Keys --- ;;
 

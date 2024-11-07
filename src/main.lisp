@@ -54,8 +54,8 @@
       (when (<= (game-lives game) 0)
         (setf (game-mode game) 'dead)))
     (when (beam-shooting? beam)
-      (damage-from-shot! beam (game-blobs game))
-      (damage-from-shot! beam (game-tanks game)))
+      (damage-from-shot! game beam (game-blobs game) +blob-points+)
+      (damage-from-shot! game beam (game-tanks game) +tank-points+))
     (let ((pu (colliding-powerup fighter (game-powerups game))))
       (typecase (cdr pu)
         (ammo (when (< (fighter-bombs fighter) +bomb-max-capacity+)
@@ -63,21 +63,28 @@
                 (incf (fighter-bombs fighter))))))
     (update-fighter-status! fighter fc)
     (update-beam-status! (fighter-beam fighter) fc)
-    (t:transduce (t:map (lambda (tank) (update-tank-status! (cdr tank) (game-frame game))))
+    (t:transduce (t:map (lambda (tank) (update-tank-status! (cdr tank) fc)))
                  #'t:for-each (game-tanks game))
-    (t:transduce (t:comp (t:filter (lambda (pu) (expired? (cdr pu) fc)))
-                         (t:map (lambda (pu) (remhash (car pu) (game-powerups game)))))
-                 #'t:for-each (game-powerups game))))
+    (despawn-powerups (game-powerups game) fc))
+  (bumb-score-by-frame game))
 
-(defun damage-from-shot! (beam enemies)
+(defun bumb-score-by-frame (game)
+  "Gradually increase the score over time."
+  (when (zerop (mod (game-frame game) +frame-rate+))
+    (incf (game-score game))))
+
+(defun damage-from-shot! (game beam enemies reward)
   "Check for hits by the fighter's beam and apply damage if necessary."
   (let ((hits (enemies-hit-by-beam beam enemies)))
     (t:transduce (t:comp (t:map (lambda (enemy)
                                   (damage! (cdr enemy))
                                   enemy))
-                         ;; Despawn the enemy if it's dead.
+                         ;; Despawn the enemy if it's dead, and reward the
+                         ;; player with some points.
                          (t:filter (lambda (enemy) (<= (health (cdr enemy)) 0)))
-                         (t:map (lambda (enemy) (remhash (car enemy) enemies))))
+                         (t:map (lambda (enemy)
+                                  (remhash (car enemy) enemies)
+                                  (incf (game-score game) reward))))
                  #'t:for-each hits)))
 
 (defun handle-player-input! (game)
@@ -159,7 +166,11 @@
                     10 raylib:+gray+)
   (raylib:draw-text (format nil "BOMBS: ~a" (fighter-bombs (game-fighter game)))
                     (+ +world-min-x+ 5)
-                    (+ +world-min-x+ 25)
+                    (+ +world-min-y+ 15)
+                    10 raylib:+gray+)
+  (raylib:draw-text (format nil "SCORE: ~a" (game-score game))
+                    (+ +world-min-x+ 5)
+                    (+ +world-min-y+ 25)
                     10 raylib:+gray+))
 
 (defun debugging-dots ()
