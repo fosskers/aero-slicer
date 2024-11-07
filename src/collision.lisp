@@ -46,3 +46,9 @@
   "Find all enemies that the beam is hitting."
   (t:transduce (t:filter (lambda (enemy) (colliding? beam (cdr enemy))))
                #'t:cons enemies-ht))
+
+(defun colliding-powerup (fighter powerups-ht)
+  "Find a powerup that the fighter is currently colliding with."
+  (t:transduce (t:filter (lambda (pu) (near? fighter (cdr pu))))
+               (t:find (lambda (pu) (colliding? fighter (cdr pu))))
+               powerups-ht))

@@ -121,12 +121,14 @@ collision check.")
 (defgeneric max-y (sprite)
   (:documentation "The highest (furthest to 0) Y value occupied by this sprite."))
 
-;; --- Transducers --- ;;
+;; --- Utilities --- ;;
 
-(defun first-or (default)
-  "Reducer: A variant of `first' that doesn't raise a condition when the
-transduction is empty."
-  (lambda (&optional (acc nil a-p) (input nil i-p))
-    (cond ((and a-p i-p) (t:make-reduced :val input))
-          ((and a-p (not i-p)) acc)
-          (t default))))
+(defun random-position ()
+  "A random position within the visible area of the world. Useful for spawning
+powerups."
+  (raylib:make-vector2 :x (float (- (random +world-pixels-x+) +world-max-x+))
+                       :y (float (- (random +world-pixels-y+) +world-max-y+))))
+
+#+nil
+(random-position)
+
