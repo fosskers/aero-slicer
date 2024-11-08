@@ -41,9 +41,9 @@ collision check.")
   "The X position of the beam relative to the fighter.")
 (defparameter +beam-y-offset+ -224
   "The Y position of the beam relative to the fighter.")
-(defparameter +tank-beam-x-offset+ 4
+(defparameter +tank-beam-x-offset+ 5
   "The X position of the beam relative to a tank.")
-(defparameter +tank-beam-y-offset+ 15
+(defparameter +tank-beam-y-offset+ 14
   "The Y position of the beam relative to a tank.")
 (defparameter +blob-points+ 100)
 (defparameter +tank-points+ 200)
