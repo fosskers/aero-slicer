@@ -43,7 +43,7 @@
                                                :height (raylib:rectangle-height f-rect))
                   :beam (make-beam :animated b-animated
                                    :pos (raylib:make-vector2 :x (+ +beam-x-offset+ +fighter-spawn-x+)
-                                                             :y (+ +beam-y-offset+ +fighter-spawn-y+ 224))
+                                                             :y (+ +beam-y-offset+ +fighter-spawn-y+))
                                    :bbox (raylib:make-rectangle :x (+ +beam-x-offset+ +fighter-spawn-x+)
                                                                 :y (+ +beam-y-offset+ +fighter-spawn-y+)
                                                                 :width (raylib:rectangle-width b-rect)
