@@ -26,19 +26,19 @@
 
 ;; --- Status --- ;;
 
-(defun update-beam-status! (beam fc)
-  "Turn the beam off, etc., depending on how much time has passed."
-  (cond ((and (beam-shooting? beam)
-              (> (- fc (beam-shot-fc beam))
-                 (beam-shot-dur beam)))
-         (setf (beam-shooting? beam) nil))))
-
 (defun shoot-beam! (beam fc)
   "Fire away!"
   (setf (beam-shooting? beam) t)
   (setf (beam-shot-fc beam) fc))
 
 ;; --- Generics --- ;;
+
+(defmethod tick! ((beam beam) fc)
+  "Turn the beam off, etc., depending on how much time has passed."
+  (cond ((and (beam-shooting? beam)
+              (> (- fc (beam-shot-fc beam))
+                 (beam-shot-dur beam)))
+         (setf (beam-shooting? beam) nil))))
 
 (defmethod draw ((beam beam) fc)
   (draw-animated (beam-animated beam) (beam-pos beam) fc))

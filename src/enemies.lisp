@@ -104,6 +104,7 @@ despawn them."
                          fc)))
         (setf (gethash fc (game-tanks game)) tank)))))
 
+;; TODO: 2024-11-09 Merge with `tick!'?
 (defun maybe-tank-shoot! (tank fc)
   "Make the tank fire if conditions are met."
   (cond ((and (eq 'ok (tank-status tank))
@@ -127,9 +128,9 @@ despawn them."
 (defmethod damage! ((tank tank))
   (decf (tank-health tank)))
 
-(defun update-tank-status! (tank fc)
+(defmethod tick! ((tank tank) fc)
   "Turn off the beam, etc."
-  (update-beam-status! (tank-beam tank) fc)
+  (tick! (tank-beam tank) fc)
   (cond ((and (not (tank-reversing? tank))
               (zerop (mod fc (* 3 +frame-rate+)))
               (< (random 10) 3))

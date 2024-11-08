@@ -81,16 +81,15 @@
     (setf (raylib:rectangle-x (beam-bbox beam)) (+ +beam-x-offset+ +fighter-spawn-x+))
     (setf (raylib:rectangle-y (beam-bbox beam)) (+ +beam-y-offset+ +fighter-spawn-y+))))
 
-(defun update-fighter-status! (fighter fc)
-  "Alter the fighter's status depending on how much time has passed. This will then
-be later reflected in animations."
+;; --- Generics --- ;;
+
+(defmethod tick! ((fighter fighter) fc)
+  "Resetting of the fighter's flashing respawn status, etc."
   (cond ((and (eq 'hit (fighter-status fighter))
               (> (- fc (fighter-status-fc fighter)) +frame-rate+))
          (setf (fighter-status fighter) 'ok)
          (setf (fighter-status-fc fighter) fc)
          (setf (animated-active (fighter-animated fighter)) 'idle))))
-
-;; --- Generics --- ;;
 
 (defmethod draw ((fighter fighter) fc)
   (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc))

@@ -56,6 +56,12 @@
                  (ammo-pos ammo)
                  fc))
 
+(defmethod tick! ((ammo ammo) fc)
+  "Start to despawn the `ammo' if too much time has passed."
+  (when (> (- fc (ammo-spawn-fc ammo))
+           +bomb-ammo-newness-timeout+)
+    (setf (animated-active (ammo-animated ammo)) 'flashing)))
+
 (defmethod expired? ((ammo ammo) fc)
   (> (- fc (ammo-spawn-fc ammo))
      +bomb-ammo-spawn-timeout+))

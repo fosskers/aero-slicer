@@ -34,7 +34,10 @@ collision check.")
   "The pixel distance moved by the fighter during a warp.")
 (defparameter +bomb-cooldown+ (* 2 +frame-rate+)
   "How soon the player can use another bomb.")
-(defparameter +bomb-ammo-spawn-timeout+ (* 5 +frame-rate+))
+(defparameter +bomb-ammo-newness-timeout+ (* 3 +frame-rate+)
+  "After which the ammo should start flashing.")
+(defparameter +bomb-ammo-spawn-timeout+ (* 5 +frame-rate+)
+  "After which the ammo should despawn entirely.")
 (defparameter +bomb-max-capacity+ 3
   "The max number of bombs that the fighter has hold.")
 (defparameter +beam-x-offset+ 6
@@ -86,6 +89,13 @@ collision check.")
           (raylib:end-mode-2d)))
 
 ;; --- Generics --- ;;
+
+(defgeneric tick! (entity fc)
+  (:documentation "Update some internal timer-based state of an `entity'."))
+
+(defmethod tick! ((entities hash-table) fc)
+  "Tick multiple objects collected into a Hash Table."
+  (t:transduce (t:map (lambda (entity) (tick! (cdr entity) fc))) #'t:for-each entities))
 
 (defgeneric move! (sprite)
   (:documentation "Attempt to move the `sprite' on the screen."))
