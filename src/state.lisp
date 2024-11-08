@@ -16,7 +16,8 @@
   (blob     (sprite #p"assets/blob.json"))
   (tank     (sprite #p"assets/tank.json"))
   (building (sprite #p"assets/building.json"))
-  (bomb     (sprite #p"assets/bomb.json")))
+  (bomb     (sprite #p"assets/bomb.json"))
+  (wide     (sprite #p"assets/wide-laser.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 (defstruct game
@@ -73,4 +74,5 @@
     (raylib:unload-texture (sprite-texture (sprites-blob sprites)))
     (raylib:unload-texture (sprite-texture (sprites-tank sprites)))
     (raylib:unload-texture (sprite-texture (sprites-building sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-bomb sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-bomb sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-wide sprites)))))
