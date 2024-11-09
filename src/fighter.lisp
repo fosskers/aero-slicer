@@ -31,9 +31,7 @@
 (defun fighter (fighter-sprite beam-sprite)
   "A smart-constructor for `fighter'."
   (let* ((f-animated (make-animated :sprite fighter-sprite))
-         (f-rect     (bounding-box f-animated))
-         (b-animated (make-animated :sprite beam-sprite :default 'shooting :active 'shooting))
-         (b-rect     (bounding-box b-animated)))
+         (f-rect     (bounding-box f-animated)))
     (make-fighter :animated f-animated
                   :pos (raylib:make-vector2 :x +fighter-spawn-x+
                                             :y +fighter-spawn-y+)
@@ -41,14 +39,7 @@
                                                :y +fighter-spawn-y+
                                                :width (raylib:rectangle-width f-rect)
                                                :height (raylib:rectangle-height f-rect))
-                  :beam (make-beam :animated b-animated
-                                   :pos (raylib:make-vector2 :x (+ +beam-x-offset+ +fighter-spawn-x+)
-                                                             :y (+ +beam-y-offset+ +fighter-spawn-y+))
-                                   :bbox (raylib:make-rectangle :x (+ +beam-x-offset+ +fighter-spawn-x+)
-                                                                :y (+ +beam-y-offset+ +fighter-spawn-y+)
-                                                                :width (raylib:rectangle-width b-rect)
-                                                                :height (raylib:rectangle-height b-rect))
-                                   :shot-dur (shot-duration (animated-sprite b-animated))))))
+                  :beam (beam-1 beam-sprite))))
 
 ;; --- Status --- ;;
 

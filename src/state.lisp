@@ -13,6 +13,7 @@
   "A bank of various sprites and their loaded textures."
   (fighter  (sprite #p"assets/fighter.json"))
   (beam     (sprite #p"assets/beam.json"))
+  (beam-2   (sprite #p"assets/beam-2.json"))
   (blob     (sprite #p"assets/blob.json"))
   (tank     (sprite #p"assets/tank.json"))
   (building (sprite #p"assets/building.json"))
@@ -71,6 +72,7 @@
   (let ((sprites (game-sprites game)))
     (raylib:unload-texture (sprite-texture (sprites-fighter sprites)))
     (raylib:unload-texture (sprite-texture (sprites-beam sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-beam-2 sprites)))
     (raylib:unload-texture (sprite-texture (sprites-blob sprites)))
     (raylib:unload-texture (sprite-texture (sprites-tank sprites)))
     (raylib:unload-texture (sprite-texture (sprites-building sprites)))

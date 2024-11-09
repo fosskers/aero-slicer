@@ -24,6 +24,20 @@
                        (t:map #'frame-duration-fs))
                #'+ (sprite-animations sprite)))
 
+;; TODO: 2024-11-09 Beam offset should depend on beam width.
+(defun beam-1 (sprite)
+  "Construct the narrowest beam."
+  (let* ((animated (make-animated :sprite sprite :default 'shooting :active 'shooting))
+         (rect     (bounding-box animated)))
+    (make-beam :animated animated
+               :pos (raylib:make-vector2 :x (+ +beam-x-offset+ +fighter-spawn-x+)
+                                         :y (+ +beam-y-offset+ +fighter-spawn-y+))
+               :bbox (raylib:make-rectangle :x (+ +beam-x-offset+ +fighter-spawn-x+)
+                                            :y (+ +beam-y-offset+ +fighter-spawn-y+)
+                                            :width (raylib:rectangle-width rect)
+                                            :height (raylib:rectangle-height rect))
+               :shot-dur (shot-duration (animated-sprite animated)))))
+
 ;; --- Status --- ;;
 
 (defun shoot-beam! (beam fc)
