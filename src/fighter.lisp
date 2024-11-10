@@ -55,7 +55,7 @@
        (> (- fc (fighter-bomb-fc fighter))
           +bomb-cooldown+)))
 
-(defun kill-fighter! (fighter fc)
+(defun kill-fighter! (fighter beam-sprite fc)
   "Reset the fighter's position and animation."
   (setf (fighter-status fighter) 'hit)
   (setf (fighter-status-fc fighter) fc)
@@ -65,13 +65,12 @@
   (setf (raylib:vector2-y (fighter-pos fighter)) +fighter-spawn-y+)
   (setf (raylib:rectangle-x (fighter-bbox fighter)) +fighter-spawn-x+)
   (setf (raylib:rectangle-y (fighter-bbox fighter)) +fighter-spawn-y+)
-  ;; Turn off the beam if it were firing.
-  (let ((beam (fighter-beam fighter)))
-    (setf (beam-shooting? beam) nil)
-    (setf (raylib:vector2-x (beam-pos beam)) (+ (beam-x-offset beam) +fighter-spawn-x+))
-    (setf (raylib:vector2-y (beam-pos beam)) (+ +beam-y-offset+ +fighter-spawn-y+))
-    (setf (raylib:rectangle-x (beam-bbox beam)) (+ (beam-x-offset beam) +fighter-spawn-x+))
-    (setf (raylib:rectangle-y (beam-bbox beam)) (+ +beam-y-offset+ +fighter-spawn-y+))))
+  ;; One of the punishments for dying is the loss of your awesome beam width.
+  (reset-beam! fighter beam-sprite))
+
+(defun reset-beam! (fighter beam-sprite)
+  "Shrink the beam back to its original size because the fighter was destroyed, etc."
+  (setf (fighter-beam fighter) (beam beam-sprite (fighter-pos fighter))))
 
 ;; --- Generics --- ;;
 

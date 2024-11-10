@@ -57,7 +57,9 @@
   (setf (game-buildings game) (make-hash-table :size 16))
   (setf (game-powerups game) (make-hash-table :size 16))
   (setf (game-score game) 0)
-  (setf (game-mode game) 'playing))
+  (setf (game-mode game) 'playing)
+  (let ((fighter (game-fighter game)))
+    (setf (fighter-bombs fighter) 3)))
 
 (defun clear-all-enemies! (game)
   "From a bomb or otherwise, clear all the damageable enemies."
@@ -71,7 +73,7 @@
          (offset   (raylib:make-vector2 :x center-x :y center-y))
          (target   (raylib:make-vector2 :x 0.0 :y 0.0)))
     ;; TODO: Restore to Zoom 3 once testing is done.
-    (raylib:make-camera-2d :offset offset :target target :rotation 0.0 :zoom 2.0)))
+    (raylib:make-camera-2d :offset offset :target target :rotation 0.0 :zoom 3.0)))
 
 (defun ungame (game)
   "Release various resources."

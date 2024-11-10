@@ -67,13 +67,14 @@
     (when (and (eq 'ok (fighter-status fighter))
                (or (enemy-collision? fighter (game-blobs game))
                    (enemy-collision? fighter (game-buildings game))
+                   (enemy-collision? fighter (game-tanks game))
                    (t:transduce #'t:pass
                                 (t:anyp (lambda (pair)
                                           (let* ((beam (tank-beam (cdr pair))))
                                             (and (beam-shooting? beam)
                                                  (colliding? fighter beam)))))
                                 (game-tanks game))))
-      (kill-fighter! fighter fc)
+      (kill-fighter! fighter (sprites-beam-1 (game-sprites game)) fc)
       (decf (game-lives game))
       #+nil
       (when (<= (game-lives game) 0)
