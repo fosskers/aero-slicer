@@ -12,7 +12,7 @@
 (defstruct (sprites (:constructor sprites))
   "A bank of various sprites and their loaded textures."
   (fighter  (sprite #p"assets/fighter.json"))
-  (beam     (sprite #p"assets/beam.json"))
+  (beam-1   (sprite #p"assets/beam.json"))
   (beam-2   (sprite #p"assets/beam-2.json"))
   (blob     (sprite #p"assets/blob.json"))
   (tank     (sprite #p"assets/tank.json"))
@@ -26,6 +26,9 @@
   (camera  (camera) :type raylib:camera-2d)
   (sprites nil :type sprites)
   (fighter nil :type fighter)
+  ;; For use in determining the next width of beam when a beam powerup has been
+  ;; collected.
+  (beams   nil :type hash-table)
   ;; The key is the frame number upon which the blob was spawned.
   (blobs   (make-hash-table :size 16) :type hash-table)
   (tanks   (make-hash-table :size 16) :type hash-table)
@@ -39,10 +42,13 @@
 
 (defun game ()
   "Initialise the various game resources."
-  (let ((sprites (sprites)))
+  (let ((sprites (sprites))
+        (beams   (make-hash-table)))
+    (setf (gethash (sprites-beam-1 sprites) beams) (sprites-beam-2 sprites))
     (make-game :sprites sprites
+               :beams beams
                :fighter (fighter (sprites-fighter sprites)
-                                 (sprites-beam sprites)))))
+                                 (sprites-beam-1 sprites)))))
 
 (defun reset-game! (game)
   "Reset the `game' to an initial, reusable state."
@@ -71,7 +77,7 @@
   "Release various resources."
   (let ((sprites (game-sprites game)))
     (raylib:unload-texture (sprite-texture (sprites-fighter sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-beam sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-beam-1 sprites)))
     (raylib:unload-texture (sprite-texture (sprites-beam-2 sprites)))
     (raylib:unload-texture (sprite-texture (sprites-blob sprites)))
     (raylib:unload-texture (sprite-texture (sprites-tank sprites)))

@@ -100,7 +100,7 @@ despawn them."
     (when (= 0 (mod fc (* 4 +frame-rate+)))
       (let* ((sprites (game-sprites game))
              (tank (tank (sprites-tank sprites)
-                         (sprites-beam sprites)
+                         (sprites-beam-1 sprites)
                          fc)))
         (setf (gethash fc (game-tanks game)) tank)))))
 
