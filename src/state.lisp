@@ -9,11 +9,13 @@
 (launch)
 
 ;; NOTE: When you add a texture here, make sure to unload it in `ungame' below.
+;; NOTE: When you add a new beam width, account for it in the hash table in `game'.
 (defstruct (sprites (:constructor sprites))
   "A bank of various sprites and their loaded textures."
   (fighter  (sprite #p"assets/fighter.json"))
-  (beam-1   (sprite #p"assets/beam.json"))
   (beam-2   (sprite #p"assets/beam-2.json"))
+  (beam-4   (sprite #p"assets/beam-4.json"))
+  (beam-8   (sprite #p"assets/beam-8.json"))
   (blob     (sprite #p"assets/blob.json"))
   (tank     (sprite #p"assets/tank.json"))
   (building (sprite #p"assets/building.json"))
@@ -46,11 +48,11 @@
   "Initialise the various game resources."
   (let ((sprites (sprites))
         (beams   (make-hash-table)))
-    (setf (gethash (sprites-beam-1 sprites) beams) (sprites-beam-2 sprites))
+    (setf (gethash (sprites-beam-2 sprites) beams) (sprites-beam-4 sprites))
     (make-game :sprites sprites
                :beams beams
                :fighter (fighter (sprites-fighter sprites)
-                                 (sprites-beam-1 sprites)))))
+                                 (sprites-beam-2 sprites)))))
 
 (defun reset-game! (game)
   "Reset the `game' to an initial, reusable state."
@@ -82,8 +84,9 @@
   "Release various resources."
   (let ((sprites (game-sprites game)))
     (raylib:unload-texture (sprite-texture (sprites-fighter sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-beam-1 sprites)))
     (raylib:unload-texture (sprite-texture (sprites-beam-2 sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-beam-4 sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-beam-8 sprites)))
     (raylib:unload-texture (sprite-texture (sprites-blob sprites)))
     (raylib:unload-texture (sprite-texture (sprites-tank sprites)))
     (raylib:unload-texture (sprite-texture (sprites-building sprites)))

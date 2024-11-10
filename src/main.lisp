@@ -81,7 +81,7 @@
                                             (and (beam-shooting? beam)
                                                  (colliding? fighter beam)))))
                                 (game-tanks game))))
-      (kill-fighter! fighter (sprites-beam-1 (game-sprites game)) fc)
+      (kill-fighter! fighter (sprites-beam-2 (game-sprites game)) fc)
       (decf (game-lives game))
       #+nil
       (when (<= (game-lives game) 0)
