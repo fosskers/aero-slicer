@@ -19,17 +19,15 @@
   "A wide laser powerup."
   (animated nil :type animated)
   (pos      nil :type raylib:vector2)
-  (bbox     nil :type raylib:rectangle)
-  (spawn-fc 0   :type fixnum))
+  (bbox     nil :type raylib:rectangle))
 
-(defun wide (sprite fc)
+(defun wide (sprite)
   "A smart-consturctor for `wide'."
   (let* ((pos      (random-position))
          (animated (make-animated :sprite sprite))
          (rect     (bounding-box animated)))
     (make-wide :animated animated
                :pos pos
-               :spawn-fc fc
                :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
                                             :y (raylib:vector2-y pos)
                                             :width (raylib:rectangle-width rect)
@@ -44,7 +42,7 @@
     ;; 2024-11-10 Actually JP says this is supposed to be based on points, but I
     ;; need more clarification.
     (when (and (zerop (mod fc (* 30 +frame-rate+))))
-      (let ((wide (wide (sprites-wide (game-sprites game)) fc)))
+      (let ((wide (wide (sprites-wide (game-sprites game)))))
         (setf (gethash fc (game-powerups game)) wide)))))
 
 (defmethod pos ((wide wide))
@@ -59,14 +57,11 @@
                  fc))
 
 (defmethod tick! ((wide wide) fc)
-  "Start to despawn the `wide' if too much time has passed."
-  (when (> (- fc (wide-spawn-fc wide))
-           +powerup-newness-timeout+)
-    (setf (animated-active (wide-animated wide)) 'flashing)))
+  nil)
 
 (defmethod expired? ((wide wide) fc)
-  (> (- fc (wide-spawn-fc wide))
-     +powerup-spawn-timeout+))
+  "The beam widener can never expire."
+  nil)
 
 ;; --- Bombs --- ;;
 
