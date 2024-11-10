@@ -40,7 +40,10 @@
   (let ((fc (game-frame game)))
     ;; BUG: 2024-11-08 Make more robust. Use randomness, etc. Currently there's
     ;; a bug here if a bomb and wide laser would spawn on the same framee.
-    (when (and (zerop (mod fc (* 5 +frame-rate+))))
+    ;;
+    ;; 2024-11-10 Actually JP says this is supposed to be based on points, but I
+    ;; need more clarification.
+    (when (and (zerop (mod fc (* 30 +frame-rate+))))
       (let ((wide (wide (sprites-wide (game-sprites game)) fc)))
         (setf (gethash fc (game-powerups game)) wide)))))
 

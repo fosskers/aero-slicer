@@ -73,7 +73,10 @@ context has been initialised via `raylib:init-window'."
 
 (defun bounding-box (animated)
   "Yield the `raylib:rectangle' of the first frame of the default animation. This
-is assumed to be sufficient as a bounding box for collisions."
+is assumed to be sufficient as a bounding box for collisions.
+
+Note that Aseprite does not over-trim individual frames - each frame is given
+the width of the widest one."
   (frame-rect (aref (animation-frames (gethash (animated-default animated)
                                                (sprite-animations (animated-sprite animated))))
                     0)))

@@ -30,16 +30,17 @@
 
 (defun fighter (fighter-sprite beam-sprite)
   "A smart-constructor for `fighter'."
-  (let* ((f-animated (make-animated :sprite fighter-sprite))
-         (f-rect     (bounding-box f-animated)))
-    (make-fighter :animated f-animated
-                  :pos (raylib:make-vector2 :x +fighter-spawn-x+
-                                            :y +fighter-spawn-y+)
+  (let* ((animated (make-animated :sprite fighter-sprite))
+         (rect     (bounding-box animated))
+         (pos      (raylib:make-vector2 :x +fighter-spawn-x+
+                                        :y +fighter-spawn-y+)))
+    (make-fighter :animated animated
+                  :pos pos
                   :bbox (raylib:make-rectangle :x +fighter-spawn-x+
                                                :y +fighter-spawn-y+
-                                               :width (raylib:rectangle-width f-rect)
-                                               :height (raylib:rectangle-height f-rect))
-                  :beam (beam-1 beam-sprite))))
+                                               :width (raylib:rectangle-width rect)
+                                               :height (raylib:rectangle-height rect))
+                  :beam (beam beam-sprite pos))))
 
 ;; --- Status --- ;;
 
@@ -67,9 +68,9 @@
   ;; Turn off the beam if it were firing.
   (let ((beam (fighter-beam fighter)))
     (setf (beam-shooting? beam) nil)
-    (setf (raylib:vector2-x (beam-pos beam)) (+ +beam-x-offset+ +fighter-spawn-x+))
+    (setf (raylib:vector2-x (beam-pos beam)) (+ (beam-x-offset beam) +fighter-spawn-x+))
     (setf (raylib:vector2-y (beam-pos beam)) (+ +beam-y-offset+ +fighter-spawn-y+))
-    (setf (raylib:rectangle-x (beam-bbox beam)) (+ +beam-x-offset+ +fighter-spawn-x+))
+    (setf (raylib:rectangle-x (beam-bbox beam)) (+ (beam-x-offset beam) +fighter-spawn-x+))
     (setf (raylib:rectangle-y (beam-bbox beam)) (+ +beam-y-offset+ +fighter-spawn-y+))))
 
 ;; --- Generics --- ;;
@@ -102,6 +103,7 @@
   "Move the fighter depending on the current button presses."
   (let* ((pos    (fighter-pos fighter))
          (bbox   (fighter-bbox fighter))
+         (beam   (fighter-beam fighter))
          (b-pos  (beam-pos (fighter-beam fighter)))
          (b-bbox (beam-bbox (fighter-beam fighter))))
     (when (or (raylib:is-key-down +key-right+)
@@ -110,16 +112,16 @@
              (new  (min +112.0 (+ dist (raylib:vector2-x pos)))))
         (setf (raylib:vector2-x pos) new)
         (setf (raylib:rectangle-x bbox) new)
-        (setf (raylib:vector2-x b-pos) (+ new +beam-x-offset+))
-        (setf (raylib:rectangle-x b-bbox) (+ new +beam-x-offset+))))
+        (setf (raylib:vector2-x b-pos) (+ new (beam-x-offset beam)))
+        (setf (raylib:rectangle-x b-bbox) (+ new (beam-x-offset beam)))))
     (when (or (raylib:is-key-down +key-left+)
               (raylib:is-gamepad-button-down +gamepad+ +gamepad-left+))
       (let* ((dist (distance-of-move! fighter))
              (new  (max -128.0 (- (raylib:vector2-x pos) dist))))
         (setf (raylib:vector2-x pos) new)
         (setf (raylib:rectangle-x bbox) new)
-        (setf (raylib:vector2-x b-pos) (+ new +beam-x-offset+))
-        (setf (raylib:rectangle-x b-bbox) (+ new +beam-x-offset+))))
+        (setf (raylib:vector2-x b-pos) (+ new (beam-x-offset beam)))
+        (setf (raylib:rectangle-x b-bbox) (+ new (beam-x-offset beam)))))
     (when (or (raylib:is-key-down +key-down+)
               (raylib:is-gamepad-button-down +gamepad+ +gamepad-down+))
       (let* ((dist (distance-of-move! fighter))

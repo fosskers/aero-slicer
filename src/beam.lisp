@@ -10,6 +10,7 @@
   (animated  nil :type animated)
   (pos       nil :type raylib:vector2)
   (bbox      nil :type raylib:rectangle)
+  (x-offset  0.0 :type single-float)
   (shooting? nil :type symbol)
   ;; The frame on which the shot was started.
   (shot-fc   0   :type fixnum)
@@ -24,18 +25,20 @@
                        (t:map #'frame-duration-fs))
                #'+ (sprite-animations sprite)))
 
-;; TODO: 2024-11-09 Beam offset should depend on beam width.
-(defun beam-1 (sprite)
+(defun beam (sprite fighter-pos)
   "Construct the narrowest beam."
   (let* ((animated (make-animated :sprite sprite :default 'shooting :active 'shooting))
-         (rect     (bounding-box animated)))
+         (rect     (bounding-box animated))
+         (x-offset (- 8 (/ (raylib:rectangle-width rect) 2)))
+         (x        (+ x-offset (raylib:vector2-x fighter-pos)))
+         (y        (+ +beam-y-offset+ (raylib:vector2-y fighter-pos))))
     (make-beam :animated animated
-               :pos (raylib:make-vector2 :x (+ +beam-x-offset+ +fighter-spawn-x+)
-                                         :y (+ +beam-y-offset+ +fighter-spawn-y+))
-               :bbox (raylib:make-rectangle :x (+ +beam-x-offset+ +fighter-spawn-x+)
-                                            :y (+ +beam-y-offset+ +fighter-spawn-y+)
+               :pos (raylib:make-vector2 :x x :y y)
+               :bbox (raylib:make-rectangle :x x
+                                            :y y
                                             :width (raylib:rectangle-width rect)
                                             :height (raylib:rectangle-height rect))
+               :x-offset x-offset
                :shot-dur (shot-duration (animated-sprite animated)))))
 
 ;; --- Status --- ;;
