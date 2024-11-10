@@ -48,8 +48,6 @@ programmatic based on each beam's width.")
   "The X position of the beam relative to a tank.")
 (defparameter +tank-beam-y-offset+ 14
   "The Y position of the beam relative to a tank.")
-(defparameter +blob-points+ 100)
-(defparameter +tank-points+ 200)
 
 ;; --- Keys --- ;;
 
@@ -145,7 +143,7 @@ programmatic based on each beam's width.")
 (defun random-position ()
   "A random position within the visible area of the world. Useful for spawning
 powerups."
-  (raylib:make-vector2 :x (float (min 0 (- (random +world-pixels-x+) +world-max-x+ 8)))
+  (raylib:make-vector2 :x (float (max +world-min-x+ (- (random +world-pixels-x+) +world-max-x+ 8)))
                        :y (float (- (random +world-pixels-y+) +world-max-y+))))
 
 #+nil

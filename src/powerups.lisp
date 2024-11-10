@@ -34,16 +34,11 @@
                                             :height (raylib:rectangle-height rect)))))
 
 (defun maybe-spawn-wide! (game)
-  "Spawn a `wide' laser powerup depending on the current frame."
-  (let ((fc (game-frame game)))
-    ;; BUG: 2024-11-08 Make more robust. Use randomness, etc. Currently there's
-    ;; a bug here if a bomb and wide laser would spawn on the same framee.
-    ;;
-    ;; 2024-11-10 Actually JP says this is supposed to be based on points, but I
-    ;; need more clarification.
-    (when (and (zerop (mod fc (* 30 +frame-rate+))))
-      (let ((wide (wide (sprites-wide (game-sprites game)))))
-        (setf (gethash fc (game-powerups game)) wide)))))
+  "Spawn a `wide' laser powerup depending on the current score."
+  (when (>= (game-score game) (game-widener-threshold game))
+    (let ((wide (wide (sprites-wide (game-sprites game)))))
+      (incf (game-widener-threshold game) 1000)
+      (setf (gethash (game-frame game) (game-powerups game)) wide))))
 
 (defmethod pos ((wide wide))
   (wide-pos wide))

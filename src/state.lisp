@@ -29,6 +29,8 @@
   ;; For use in determining the next width of beam when a beam powerup has been
   ;; collected.
   (beams   nil :type hash-table)
+  ;; The point after which the next Beam Widener powerup should spawn.
+  (widener-threshold 1000 :type fixnum)
   ;; The key is the frame number upon which the blob was spawned.
   (blobs   (make-hash-table :size 16) :type hash-table)
   (tanks   (make-hash-table :size 16) :type hash-table)
@@ -58,6 +60,7 @@
   (setf (game-powerups game) (make-hash-table :size 16))
   (setf (game-score game) 0)
   (setf (game-mode game) 'playing)
+  (setf (game-widener-threshold game) 1000)
   (let ((fighter (game-fighter game)))
     (setf (fighter-bombs fighter) 3)))
 

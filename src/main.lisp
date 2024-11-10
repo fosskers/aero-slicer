@@ -43,8 +43,8 @@
          (beam    (fighter-beam fighter))
          (fc      (game-frame game)))
     (when (beam-shooting? beam)
-      (damage-from-shot! game beam (game-blobs game) +blob-points+)
-      (damage-from-shot! game beam (game-tanks game) +tank-points+))
+      (damage-from-shot! game beam (game-blobs game))
+      (damage-from-shot! game beam (game-tanks game)))
     (let ((pu (colliding-powerup fighter (game-powerups game))))
       (typecase (cdr pu)
         (ammo (when (< (fighter-bombs fighter) +bomb-max-capacity+)
@@ -60,7 +60,12 @@
     (tick! (game-powerups game) fc)
     (tick! (game-tanks game) fc)
     (despawn-powerups! (game-powerups game) fc))
-  (bumb-score-by-frame! game))
+  (bump-score-by-frame! game))
+
+(defun bump-score-by-frame! (game)
+  "Gradually increase the score over time."
+  (when (zerop (mod (game-frame game) +frame-rate+))
+    (incf (game-score game))))
 
 (defun handle-fighter-collisions! (game)
   "If the fighter got hit by something, kill and (maybe) respawn him."
@@ -82,12 +87,7 @@
       (when (<= (game-lives game) 0)
         (setf (game-mode game) 'dead)))))
 
-(defun bumb-score-by-frame! (game)
-  "Gradually increase the score over time."
-  (when (zerop (mod (game-frame game) +frame-rate+))
-    (incf (game-score game))))
-
-(defun damage-from-shot! (game beam enemies reward)
+(defun damage-from-shot! (game beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."
   (let ((hits (enemies-hit-by-beam beam enemies)))
     (t:transduce (t:comp (t:map (lambda (enemy)
@@ -98,7 +98,7 @@
                          (t:filter (lambda (enemy) (<= (health (cdr enemy)) 0)))
                          (t:map (lambda (enemy)
                                   (remhash (car enemy) enemies)
-                                  (incf (game-score game) reward))))
+                                  (incf (game-score game) 100))))
                  #'t:for-each hits)))
 
 (defun handle-player-input! (game)

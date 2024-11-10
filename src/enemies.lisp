@@ -11,7 +11,7 @@
                    +world-max-x+
                    8)))
     (raylib:make-vector2 :y (float (- +world-min-y+ 16))
-                         :x (float (min 0 rand-x)))))
+                         :x (float (max 0 rand-x)))))
 
 (defun offscreen-vert? (guy)
   "Is the dude off the bottom end of the screen?"
