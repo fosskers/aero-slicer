@@ -67,9 +67,8 @@ programmatic based on each beam's width.")
 (raylib:is-gamepad-available 0)
 #+nil
 (raylib:get-gamepad-name 0)
-#+nil
-(raylib:get-gamepad-button-pressed)
 
+;; NOTE: See also `debugging-gamepad' in `main.lisp'.
 (defparameter +gamepad+ 0)
 (defparameter +gamepad-a+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-right))
 (defparameter +gamepad-b+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-down))
@@ -146,7 +145,7 @@ programmatic based on each beam's width.")
 (defun random-position ()
   "A random position within the visible area of the world. Useful for spawning
 powerups."
-  (raylib:make-vector2 :x (float (- (random +world-pixels-x+) +world-max-x+))
+  (raylib:make-vector2 :x (float (min 0 (- (random +world-pixels-x+) +world-max-x+ 8)))
                        :y (float (- (random +world-pixels-y+) +world-max-y+))))
 
 #+nil

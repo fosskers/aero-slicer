@@ -5,6 +5,14 @@
 
 ;; --- General --- ;;
 
+(defun random-spawn-position ()
+  "A useful spawn position for enemies."
+  (let ((rand-x (- (random +world-pixels-x+)
+                   +world-max-x+
+                   8)))
+    (raylib:make-vector2 :y (float (- +world-min-y+ 16))
+                         :x (float (min 0 rand-x)))))
+
 (defun offscreen-vert? (guy)
   "Is the dude off the bottom end of the screen?"
   (let ((y (raylib:vector2-y (pos guy))))
@@ -40,9 +48,7 @@ despawn them."
 
 (defun tank (tank-sprite beam-sprite fc)
   "Spawn a `tank' with an associated `beam'."
-  (let* ((pos (raylib:make-vector2 :y (float (- +world-min-y+ 16))
-                                   :x (float (- (random +world-pixels-x+)
-                                                +world-max-x+))))
+  (let* ((pos (random-spawn-position))
          (t-animated (make-animated :sprite tank-sprite))
          (t-rect     (bounding-box t-animated))
          (b-animated (make-animated :sprite beam-sprite :default 'shooting :active 'shooting))
@@ -53,8 +59,6 @@ despawn them."
                                             :y (raylib:vector2-y pos)
                                             :width (raylib:rectangle-width t-rect)
                                             :height (raylib:rectangle-height t-rect))
-               ;; Doubling the duration has the effect of running the charge
-               ;; animation twice before actually firing.
                :charge-dur (charge-duration tank-sprite)
                :beam (make-beam :animated b-animated
                                 :pos (raylib:make-vector2 :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
@@ -154,9 +158,7 @@ despawn them."
 
 (defun blob (sprite)
   "Spawn a `blob' somewhere off the top of the screen."
-  (let* ((pos (raylib:make-vector2 :y (float (- +world-min-y+ 16))
-                                   :x (float (- (random +world-pixels-x+)
-                                                +world-max-x+))))
+  (let* ((pos (random-spawn-position))
          (animated (make-animated :sprite sprite))
          (rect (bounding-box animated)))
     (make-blob :animated animated
@@ -209,9 +211,7 @@ despawn them."
 
 (defun building (sprite)
   "Spawn a `building' somewhere off the top of the screen."
-  (let* ((pos (raylib:make-vector2 :y (float (- +world-min-y+ 16))
-                                   :x (float (- (random +world-pixels-x+)
-                                                +world-max-x+))))
+  (let* ((pos (random-spawn-position))
          (animated (make-animated :sprite sprite))
          (rect (bounding-box animated)))
     (make-building :animated animated
