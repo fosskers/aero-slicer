@@ -67,6 +67,8 @@ programmatic based on each beam's width.")
 (raylib:is-gamepad-available 0)
 #+nil
 (raylib:get-gamepad-name 0)
+#+nil
+(raylib:get-gamepad-button-pressed)
 
 (defparameter +gamepad+ 0)
 (defparameter +gamepad-a+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-right))
@@ -75,6 +77,7 @@ programmatic based on each beam's width.")
 (defparameter +gamepad-down+  #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-down))
 (defparameter +gamepad-left+  #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-left))
 (defparameter +gamepad-right+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-right))
+(defparameter +gamepad-start+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :middle-right))
 
 ;; --- Macros --- ;;
 

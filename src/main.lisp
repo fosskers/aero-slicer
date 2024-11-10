@@ -15,12 +15,14 @@
 
 (defun update-waiting! (game)
   "We're waiting for the player to start the game."
-  (when (raylib:is-key-down +key-space+)
+  (when (or (raylib:is-key-down +key-space+)
+            (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+))
     (setf (game-mode game) 'playing)))
 
 (defun update-dead! (game)
   "The player is dead, and they might restart the game."
-  (when (raylib:is-key-down +key-space+)
+  (when (or (raylib:is-key-down +key-space+)
+            (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+))
     (reset-game! game)))
 
 (defun update-playing! (game)
