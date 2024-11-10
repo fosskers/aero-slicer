@@ -114,9 +114,9 @@
     (when (and (not (beam-shooting? beam))
                ;; Can't shoot while respawning.
                (not (eq 'hit (fighter-status fighter)))
-               (or (raylib:is-key-down +key-space+)
+               (or (raylib:is-key-pressed +key-space+)
                    ;; Doesn't crash if the gamepad isn't plugged in.
-                   (raylib:is-gamepad-button-down +gamepad+ +gamepad-a+)))
+                   (raylib:is-gamepad-button-pressed +gamepad+ +gamepad-a+)))
       (shoot-beam! beam fc))
     (when (and (can-bomb? fighter fc)
                (eq 'ok (fighter-status fighter))
