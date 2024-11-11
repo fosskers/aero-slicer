@@ -19,6 +19,7 @@
   (beam-8   (sprite #p"assets/beam-8.json"))
   (beam-10  (sprite #p"assets/beam-10.json"))
   (beam-12  (sprite #p"assets/beam-12.json"))
+  (beam-14  (sprite #p"assets/beam-14.json"))
   (blob     (sprite #p"assets/blob.json"))
   (tank     (sprite #p"assets/tank.json"))
   (building (sprite #p"assets/building.json"))
@@ -56,6 +57,7 @@
     (setf (gethash (sprites-beam-6 sprites) beams) (sprites-beam-8 sprites))
     (setf (gethash (sprites-beam-8 sprites) beams) (sprites-beam-10 sprites))
     (setf (gethash (sprites-beam-10 sprites) beams) (sprites-beam-12 sprites))
+    (setf (gethash (sprites-beam-12 sprites) beams) (sprites-beam-14 sprites))
     (make-game :sprites sprites
                :beams beams
                :fighter (fighter (sprites-fighter sprites)
@@ -97,6 +99,7 @@
     (raylib:unload-texture (sprite-texture (sprites-beam-8 sprites)))
     (raylib:unload-texture (sprite-texture (sprites-beam-10 sprites)))
     (raylib:unload-texture (sprite-texture (sprites-beam-12 sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-beam-14 sprites)))
     (raylib:unload-texture (sprite-texture (sprites-blob sprites)))
     (raylib:unload-texture (sprite-texture (sprites-tank sprites)))
     (raylib:unload-texture (sprite-texture (sprites-building sprites)))
