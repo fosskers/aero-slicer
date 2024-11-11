@@ -36,6 +36,13 @@ underlying `sprite' definition."
   (frame   0     :type fixnum)
   (started 0     :type fixnum))
 
+(defun set-animation! (animated active)
+  "Alter the current animation in a safe way. In general, if you forget to reset
+the current `frame' when altering `active', you'll notice animations starting
+and stopping at unexpected frames."
+  (setf (animated-active animated) active)
+  (setf (animated-frame animated) 0))
+
 (defun json->frame (json)
   "Read a `frame' out of some JSON."
   (let ((dim    (gethash "frame" json))

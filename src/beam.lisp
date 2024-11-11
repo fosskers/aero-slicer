@@ -55,6 +55,7 @@
   (cond ((and (beam-shooting? beam)
               (> (- fc (beam-shot-fc beam))
                  (beam-shot-dur beam)))
+         (setf (animated-frame (beam-animated beam)) 0)
          (setf (beam-shooting? beam) nil))))
 
 (defmethod draw ((beam beam) fc)

@@ -59,7 +59,7 @@
   "Reset the fighter's position and animation."
   (setf (fighter-status fighter) 'hit)
   (setf (fighter-status-fc fighter) fc)
-  (setf (animated-active (fighter-animated fighter)) 'damaged)
+  (set-animation! (fighter-animated fighter) 'damaged)
   ;; Move him back to the initial spawn position.
   (setf (raylib:vector2-x (fighter-pos fighter)) +fighter-spawn-x+)
   (setf (raylib:vector2-y (fighter-pos fighter)) +fighter-spawn-y+)
@@ -80,7 +80,7 @@
               (> (- fc (fighter-status-fc fighter)) +frame-rate+))
          (setf (fighter-status fighter) 'ok)
          (setf (fighter-status-fc fighter) fc)
-         (setf (animated-active (fighter-animated fighter)) 'idle))))
+         (set-animation! (fighter-animated fighter) 'idle))))
 
 (defmethod draw ((fighter fighter) fc)
   (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc))
