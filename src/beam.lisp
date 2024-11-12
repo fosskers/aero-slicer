@@ -17,14 +17,6 @@
   ;; The total duration, in frames, that the shot should be active for.
   (shot-dur  0   :type fixnum :read-only t))
 
-(defun shot-duration (sprite)
-  "How long is the duration of the shot?"
-  (t:transduce (t:comp (t:map #'cdr)
-                       (t:map #'animation-frames)
-                       #'t:concatenate
-                       (t:map #'frame-duration-fs))
-               #'+ (sprite-animations sprite)))
-
 (defun beam (sprite fighter-pos)
   "Construct the narrowest beam."
   (let* ((animated (make-animated :sprite sprite :default 'shooting :active 'shooting))
@@ -39,7 +31,7 @@
                                             :width (raylib:rectangle-width rect)
                                             :height (raylib:rectangle-height rect))
                :x-offset x-offset
-               :shot-dur (shot-duration (animated-sprite animated)))))
+               :shot-dur (sprite-duration (animated-sprite animated)))))
 
 ;; --- Status --- ;;
 

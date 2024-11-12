@@ -10,6 +10,8 @@
 #+nil
 (launch)
 
+;; --- Types --- ;;
+
 (defstruct frame
   "A single animation frame."
   (rect        nil :type raylib:rectangle :read-only t)
@@ -26,6 +28,18 @@ around multiple instances of an `animated'."
   (texture    nil :type raylib:texture :read-only t)
   (animations nil :type hash-table :read-only t))
 
+(defun sprite (path)
+  "Read animated sprite data from the given JSON file. Must be called after a GL
+context has been initialised via `raylib:init-window'."
+  (let* ((json   (jzon:parse path))
+         (meta   (gethash "meta" json))
+         (texture (raylib:load-texture (p:to-string (p:with-name path (gethash "image" meta)))))
+         (frames (gethash "frames" json))
+         (tags   (gethash "frameTags" meta))
+         (anims  (t:transduce (t:map (lambda (tag) (json->animation frames tag))) #'t:hash-table tags)))
+    (make-sprite :texture texture
+                 :animations anims)))
+
 (defstruct animated
   "An actual animated sprite that tracks its own state. Should be one per living
 entity in the game, but all instances of the same entity type should share an
@@ -36,12 +50,7 @@ underlying `sprite' definition."
   (frame   0     :type fixnum)
   (started 0     :type fixnum))
 
-(defun set-animation! (animated active)
-  "Alter the current animation in a safe way. In general, if you forget to reset
-the current `frame' when altering `active', you'll notice animations starting
-and stopping at unexpected frames."
-  (setf (animated-active animated) active)
-  (setf (animated-frame animated) 0))
+;; --- Reading Asesprite Data --- ;;
 
 (defun json->frame (json)
   "Read a `frame' out of some JSON."
@@ -66,17 +75,23 @@ and stopping at unexpected frames."
     (cons (intern (string-upcase (gethash "name" json)))
           (make-animation :frames frs))))
 
-(defun sprite (path)
-  "Read animated sprite data from the given JSON file. Must be called after a GL
-context has been initialised via `raylib:init-window'."
-  (let* ((json   (jzon:parse path))
-         (meta   (gethash "meta" json))
-         (texture (raylib:load-texture (p:to-string (p:with-name path (gethash "image" meta)))))
-         (frames (gethash "frames" json))
-         (tags   (gethash "frameTags" meta))
-         (anims  (t:transduce (t:map (lambda (tag) (json->animation frames tag))) #'t:hash-table tags)))
-    (make-sprite :texture texture
-                 :animations anims)))
+;; --- Helpers --- ;;
+
+(defun set-animation! (animated active)
+  "Alter the current animation in a safe way. In general, if you forget to reset
+the current `frame' when altering `active', you'll notice animations starting
+and stopping at unexpected frames."
+  (setf (animated-active animated) active)
+  (setf (animated-frame animated) 0))
+
+(defun sprite-duration (sprite)
+  "The duration of the sprite animation in terms of frame-count. Works best for
+single-tag sprites."
+  (t:transduce (t:comp (t:map #'cdr)
+                       (t:map #'animation-frames)
+                       #'t:concatenate
+                       (t:map #'frame-duration-fs))
+               #'+ (sprite-animations sprite)))
 
 (defun bounding-box (animated)
   "Yield the `raylib:rectangle' of the first frame of the default animation. This

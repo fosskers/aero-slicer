@@ -31,6 +31,22 @@ despawn them."
                    (recurse)))))
       (recurse))))
 
+;; --- Explosions --- ;;
+
+(defstruct explosion
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2)
+  (start-fc 0   :type fixnum)
+  (duration 0   :type fixnum))
+
+(defun explosion (sprite parent-pos fc)
+  "Construct an `explosion' that knows when it should despawn."
+  (make-explosion :animated (make-animated :sprite sprite :default 'exploding :active :exploding)
+                  :pos (raylib:make-vector2 :x (raylib:vector2-x parent-pos)
+                                            :y (raylib:vector2-y parent-pos))
+                  :start-fc fc
+                  :duration (sprite-duration sprite)))
+
 ;; --- Tanks --- ;;
 
 (defstruct tank
@@ -71,7 +87,7 @@ despawn them."
                                                              :height (raylib:rectangle-height b-rect))
                                 ;; TODO: 2024-11-05 Optimization: Precalculate
                                 ;; this duration and share it among all tanks.
-                                :shot-dur (shot-duration (animated-sprite b-animated))
+                                :shot-dur (sprite-duration (animated-sprite b-animated))
                                 ;; Ensures that a newly spawned, offscreen tank
                                 ;; can't start shooting. Increase this if necessary.
                                 :shot-fc fc))))

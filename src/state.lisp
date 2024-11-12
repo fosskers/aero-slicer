@@ -26,7 +26,8 @@
   (tank     (sprite #p"assets/tank.json"))
   (building (sprite #p"assets/building.json"))
   (bomb     (sprite #p"assets/bomb.json"))
-  (wide     (sprite #p"assets/wide-laser.json")))
+  (wide     (sprite #p"assets/wide-laser.json"))
+  (explosion (sprite #p"assets/explosion.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 (defstruct game
@@ -44,11 +45,13 @@
   (tanks   (make-hash-table :size 16) :type hash-table)
   (buildings (make-hash-table :size 16) :type hash-table)
   (powerups (make-hash-table :size 16) :type hash-table)
+  (explosions (make-hash-table :size 16) :type hash-table)
   (frame   0 :type fixnum)
   (lives   3 :type fixnum)
   (score   0 :type fixnum)
   ;; Waiting / Playing / Dead
-  (mode    'playing :type symbol))
+  (mode    'playing :type symbol)
+  (level   1 :type fixnum))
 
 (defun game ()
   "Initialise the various game resources."
@@ -67,13 +70,20 @@
                :fighter (fighter (sprites-fighter sprites)
                                  (sprites-beam-2 sprites)))))
 
+;; TODO: 2024-11-12 Should I just reconstruct the `game' entirely instead of
+;; doing all this manual resetting?
+;;
+;; Disdvantage: it would reread all the sprite data, reset the camera, and reset
+;; the current frame number.
 (defun reset-game! (game)
   "Reset the `game' to an initial, reusable state."
   (setf (game-lives game) 3)
   (clear-all-enemies! game)
   (setf (game-buildings game) (make-hash-table :size 16))
   (setf (game-powerups game) (make-hash-table :size 16))
+  (setf (game-explosions game) (make-hash-table :size 16))
   (setf (game-score game) 0)
+  (setf (game-level game) 1)
   (setf (game-mode game) 'playing)
   (setf (game-widener-threshold game) 1000)
   (let ((fighter (game-fighter game)))
@@ -110,4 +120,5 @@
     (raylib:unload-texture (sprite-texture (sprites-tank sprites)))
     (raylib:unload-texture (sprite-texture (sprites-building sprites)))
     (raylib:unload-texture (sprite-texture (sprites-bomb sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-wide sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-wide sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-explosion sprites)))))
