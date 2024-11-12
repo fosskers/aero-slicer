@@ -89,9 +89,11 @@
 
 (defun damage-from-shot! (game beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."
-  (let ((hits (enemies-hit-by-beam beam enemies)))
-    (t:transduce (t:comp (t:map (lambda (enemy)
-                                  (damage! (cdr enemy))
+  (let ((hits (enemies-hit-by-beam beam enemies))
+        (fc   (game-frame game)))
+    (t:transduce (t:comp (t:filter (lambda (enemy) (vulnerable? (cdr enemy) fc)))
+                         (t:map (lambda (enemy)
+                                  (damage! (cdr enemy) fc)
                                   enemy))
                          ;; Despawn the enemy if it's dead, and reward the
                          ;; player with some points.

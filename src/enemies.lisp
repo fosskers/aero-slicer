@@ -38,12 +38,14 @@ despawn them."
   (animated   nil :type animated)
   (pos        nil :type raylib:vector2)
   (bbox       nil :type raylib:rectangle)
-  (health     1   :type fixnum)
+  (health     3   :type fixnum)
   (beam       nil :type beam)
   (reversing? nil :type symbol)
   ;; Ok / Charging
   (status     'ok :type symbol)
   (status-fc  0   :type fixnum)
+  ;; The frame upon being last hit by the fighter.
+  (hit-fc     0   :type fixnum)
   (charge-dur 0   :type fixnum))
 
 (defun tank (tank-sprite beam-sprite fc)
@@ -129,7 +131,12 @@ despawn them."
 (defmethod health ((tank tank))
   (tank-health tank))
 
-(defmethod damage! ((tank tank))
+(defmethod vulnerable? ((tank tank) fc)
+  (> (- fc (tank-hit-fc tank))
+     +frame-rate+))
+
+(defmethod damage! ((tank tank) fc)
+  (setf (tank-hit-fc tank) fc)
   (decf (tank-health tank)))
 
 (defmethod tick! ((tank tank) fc)
@@ -154,7 +161,8 @@ despawn them."
   (orig-x   nil :type single-float)
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle)
-  (health   1   :type fixnum))
+  (health   1   :type fixnum)
+  (hit-fc   0   :type fixnum))
 
 (defun blob (sprite)
   "Spawn a `blob' somewhere off the top of the screen."
@@ -198,7 +206,12 @@ despawn them."
 (defmethod health ((blob blob))
   (blob-health blob))
 
-(defmethod damage! ((blob blob))
+(defmethod vulnerable? ((blob blob) fc)
+  (> (- fc (blob-hit-fc blob))
+     +frame-rate+))
+
+(defmethod damage! ((blob blob) fc)
+  (setf (blob-hit-fc blob) fc)
   (decf (blob-health blob)))
 
 ;; --- Buildings --- ;;

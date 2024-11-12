@@ -123,8 +123,11 @@ programmatic based on each beam's width.")
 (defgeneric health (entity)
   (:documentation "The amount of health the unit has."))
 
-(defgeneric damage! (entity)
+(defgeneric damage! (entity fc)
   (:documentation "Mutably apply damage to some entity."))
+
+(defgeneric vulnerable? (entity fc)
+  (:documentation "Can a given entity accept damage right now?"))
 
 (defgeneric expired? (powerup fc)
   (:documentation "Has too much timed passed since the powerup spawned?"))
