@@ -89,7 +89,7 @@ despawn them."
 
 (defmethod move! ((tank tank))
   "Steady movement down the screen with occasional reversals."
-  (let ((movement (if (tank-reversing? tank) -0.25 0.75)))
+  (let ((movement (if (tank-reversing? tank) -0.15 0.5)))
     (incf (raylib:vector2-y   (tank-pos tank)) movement)
     (incf (raylib:rectangle-y (tank-bbox tank)) movement)
     (incf (raylib:vector2-y   (beam-pos (tank-beam tank))) movement)
@@ -242,8 +242,8 @@ despawn them."
 
 (defmethod move! ((building building))
   "Straight movement down the screen."
-  (incf (raylib:vector2-y   (building-pos building)) 0.5)
-  (incf (raylib:rectangle-y (building-bbox building)) 0.5))
+  (incf (raylib:vector2-y   (building-pos building)) 0.25)
+  (incf (raylib:rectangle-y (building-bbox building)) 0.25))
 
 (defun maybe-spawn-building! (game)
   "Spawn a building depending on the current frame."
