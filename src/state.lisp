@@ -53,7 +53,9 @@
   (score   0 :type fixnum)
   ;; Waiting / Playing / Dead
   (mode    'playing :type symbol)
-  (level   1 :type fixnum))
+  (level   1 :type fixnum)
+  ;; The point after which the level should increase.
+  (level-thresh +level-progression-interval+ :type fixnum))
 
 (defun game ()
   "Initialise the various game resources."

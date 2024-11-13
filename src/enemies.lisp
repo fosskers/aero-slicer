@@ -62,7 +62,7 @@ despawn them."
   (animated   nil :type animated)
   (pos        nil :type raylib:vector2)
   (bbox       nil :type raylib:rectangle)
-  (health     3   :type fixnum)
+  (health     0   :type fixnum)
   (beam       nil :type beam)
   (reversing? nil :type symbol)
   ;; Ok / Charging
@@ -72,7 +72,7 @@ despawn them."
   (hit-fc     0   :type fixnum)
   (charge-dur 0   :type fixnum))
 
-(defun tank (tank-sprite beam-sprite fc)
+(defun tank (tank-sprite beam-sprite level fc)
   "Spawn a `tank' with an associated `beam'."
   (let* ((pos (random-spawn-position))
          (t-animated (make-animated :sprite tank-sprite))
@@ -85,6 +85,7 @@ despawn them."
                                             :y (raylib:vector2-y pos)
                                             :width (raylib:rectangle-width t-rect)
                                             :height (raylib:rectangle-height t-rect))
+               :health (+ +tank-base-hp+ level)
                :charge-dur (charge-duration tank-sprite)
                :beam (make-beam :animated b-animated
                                 :pos (raylib:make-vector2 :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
@@ -131,6 +132,7 @@ despawn them."
       (let* ((sprites (game-sprites game))
              (tank (tank (sprites-tank sprites)
                          (sprites-beam-4 sprites)
+                         (game-level game)
                          fc)))
         (setf (gethash fc (game-tanks game)) tank)))))
 
@@ -185,15 +187,16 @@ despawn them."
   (orig-x   nil :type single-float)
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle)
-  (health   1   :type fixnum)
+  (health   0   :type fixnum)
   (hit-fc   0   :type fixnum))
 
-(defun blob (sprite)
+(defun blob (sprite level)
   "Spawn a `blob' somewhere off the top of the screen."
   (let* ((pos (random-spawn-position))
          (animated (make-animated :sprite sprite))
          (rect (bounding-box animated)))
     (make-blob :animated animated
+               :health (+ +blob-base-hp+ level)
                :orig-x (raylib:vector2-x pos)
                :pos pos
                :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
@@ -219,7 +222,8 @@ despawn them."
 (defun maybe-spawn-blob! (game)
   "Spawn a blob depending on the current frame."
   (when (= 0 (mod (game-frame game) (* 2 +frame-rate+)))
-    (let ((blob (blob (sprites-blob (game-sprites game)))))
+    (let ((blob (blob (sprites-blob (game-sprites game))
+                      (game-level game))))
       (setf (gethash (game-frame game) (game-blobs game)) blob))))
 
 (defmethod draw ((blob blob) fc)

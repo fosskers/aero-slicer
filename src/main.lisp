@@ -61,12 +61,20 @@
     (tick! (game-tanks game) fc)
     (despawn! (game-powerups game) fc)
     (despawn! (game-explosions game) fc))
-  (bump-score-by-frame! game))
+  (bump-score-by-frame! game)
+  (bump-level! game))
 
 (defun bump-score-by-frame! (game)
   "Gradually increase the score over time."
   (when (zerop (mod (game-frame game) +frame-rate+))
     (incf (game-score game))))
+
+(defun bump-level! (game)
+  "If the player's score is good enough, bump the level and make the game harder."
+  (when (>= (game-score game)
+            (game-level-thresh game))
+    (incf (game-level-thresh game) +level-progression-interval+)
+    (incf (game-level game))))
 
 (defun handle-fighter-collisions! (game)
   "If the fighter got hit by something, kill and (maybe) respawn him."
@@ -206,6 +214,10 @@
   (raylib:draw-text (format nil "SCORE: ~a" (game-score game))
                     (+ +world-min-x+ 5)
                     (+ +world-min-y+ 25)
+                    10 raylib:+gray+)
+  (raylib:draw-text (format nil "LEVEL: ~a" (game-level game))
+                    (+ +world-min-x+ 5)
+                    (+ +world-min-y+ 35)
                     10 raylib:+gray+))
 
 (defun debugging-dots ()
