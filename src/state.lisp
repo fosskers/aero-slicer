@@ -45,6 +45,8 @@
   (tanks   (make-hash-table :size 16) :type hash-table)
   (buildings (make-hash-table :size 16) :type hash-table)
   (powerups (make-hash-table :size 16) :type hash-table)
+  ;; TODO: 2024-11-14 Consider generalising this to any other on-screen
+  ;; animations.
   (explosions (make-hash-table :size 16) :type hash-table)
   (frame   0 :type fixnum)
   (lives   3 :type fixnum)

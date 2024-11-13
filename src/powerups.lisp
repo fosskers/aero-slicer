@@ -5,14 +5,6 @@
 #+nil
 (launch)
 
-;; --- General --- ;;
-
-(defun despawn-powerups! (powerups fc)
-  "Despawn old powerups if enough time has passed."
-  (t:transduce (t:comp (t:filter (lambda (pu) (expired? (cdr pu) fc)))
-                       (t:map (lambda (pu) (remhash (car pu) powerups))))
-               #'t:for-each powerups))
-
 ;; --- Wide Laser --- ;;
 
 (defstruct wide

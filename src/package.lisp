@@ -129,8 +129,8 @@ programmatic based on each beam's width.")
 (defgeneric vulnerable? (entity fc)
   (:documentation "Can a given entity accept damage right now?"))
 
-(defgeneric expired? (powerup fc)
-  (:documentation "Has too much timed passed since the powerup spawned?"))
+(defgeneric expired? (entity fc)
+  (:documentation "Has too much timed passed since an entity spawned?"))
 
 (defgeneric min-x (sprite)
   (:documentation "The lowest (closest to 0) X value occupied by this sprite."))
@@ -142,6 +142,12 @@ programmatic based on each beam's width.")
   (:documentation "The highest (furthest to 0) Y value occupied by this sprite."))
 
 ;; --- Utilities --- ;;
+
+(defun despawn! (entities fc)
+  "Despawn old entities/animations if enough time has passed."
+  (t:transduce (t:comp (t:filter (lambda (pu) (expired? (cdr pu) fc)))
+                       (t:map (lambda (pu) (remhash (car pu) entities))))
+               #'t:for-each entities))
 
 (defun random-position ()
   "A random position within the visible area of the world. Useful for spawning

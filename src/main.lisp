@@ -59,7 +59,8 @@
     (tick! (fighter-beam fighter) fc)
     (tick! (game-powerups game) fc)
     (tick! (game-tanks game) fc)
-    (despawn-powerups! (game-powerups game) fc))
+    (despawn! (game-powerups game) fc)
+    (despawn! (game-explosions game) fc))
   (bump-score-by-frame! game))
 
 (defun bump-score-by-frame! (game)
@@ -97,6 +98,20 @@
     (t:transduce (t:comp (t:filter (lambda (enemy) (vulnerable? (cdr enemy) fc)))
                          (t:map (lambda (enemy)
                                   (damage! (cdr enemy) fc)
+                                  (let ((explosion (explosion (sprites-explosion (game-sprites game))
+                                                              (pos (cdr enemy))
+                                                              fc)))
+                                    ;; NOTE: If we just set the key to the
+                                    ;; current fc, then when multiple enemies
+                                    ;; were hit, only one explosion would
+                                    ;; actually spawn since they Hash Table keys
+                                    ;; would collide. We need some
+                                    ;; disambiguating factor, which is precisely
+                                    ;; the addition of the key of the enemy we
+                                    ;; hit.
+                                    (setf (gethash (+ (car enemy) fc)
+                                                   (game-explosions game))
+                                          explosion))
                                   enemy))
                          ;; Despawn the enemy if it's dead, and reward the
                          ;; player with some points.
@@ -165,6 +180,7 @@
     (draw (game-blobs game) fc)
     (draw (game-tanks game) fc)
     (draw (game-powerups game) fc)
+    (draw (game-explosions game) fc)
     (when (beam-shooting? beam)
       (draw beam fc))
     (draw fighter fc))

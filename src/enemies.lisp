@@ -41,11 +41,19 @@ despawn them."
 
 (defun explosion (sprite parent-pos fc)
   "Construct an `explosion' that knows when it should despawn."
-  (make-explosion :animated (make-animated :sprite sprite :default 'exploding :active :exploding)
-                  :pos (raylib:make-vector2 :x (raylib:vector2-x parent-pos)
-                                            :y (raylib:vector2-y parent-pos))
+  (make-explosion :animated (make-animated :sprite sprite :default 'exploding :active 'exploding)
+                  :pos parent-pos
                   :start-fc fc
                   :duration (sprite-duration sprite)))
+
+(defmethod expired? ((explosion explosion) fc)
+  (> (- fc (explosion-start-fc explosion))
+     (explosion-duration explosion)))
+
+(defmethod draw ((explosion explosion) fc)
+  (draw-animated (explosion-animated explosion)
+                 (explosion-pos explosion)
+                 fc))
 
 ;; --- Tanks --- ;;
 
