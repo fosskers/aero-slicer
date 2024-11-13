@@ -141,8 +141,12 @@ despawn them."
   "Make the tank fire if conditions are met."
   (cond ((and (eq 'ok (tank-status tank))
               (not (beam-shooting? (tank-beam tank)))
+              ;; NOTE: So that the tank will never try to shoot while its off
+              ;; the top of the screen.
+              (> (raylib:vector2-y (tank-pos tank))
+                 +world-min-y+)
               (zerop (mod fc (* +frame-rate+)))
-              (< (random 10) 3))
+              (< (random 10) 4))
          (setf (tank-status tank) 'charging)
          (setf (tank-status-fc tank) fc)
          (set-animation! (tank-animated tank) 'charging))
