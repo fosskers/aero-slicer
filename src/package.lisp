@@ -48,10 +48,10 @@ programmatic based on each beam's width.")
   "The X position of the beam relative to a tank.")
 (defparameter +tank-beam-y-offset+ 14
   "The Y position of the beam relative to a tank.")
-(defparameter +tank-base-hp+ 2
-  "The amount of max HP of the tank at Level 1.")
-(defparameter +blob-base-hp+ 1
-  "The amount of max HP of the blob at Level 1.")
+(defparameter +tank-base-hp+ 1
+  "The amount of max HP of the tank to which the Level is added.")
+(defparameter +blob-base-hp+ 0
+  "The amount of max HP of the blob to which the Level is added.")
 (defparameter +level-progression-interval+ 5000)
 
 ;; --- Keys --- ;;

@@ -55,6 +55,24 @@ despawn them."
                  (explosion-pos explosion)
                  fc))
 
+(defun explode! (game enemy enemy-key)
+  "Spawn an explosion on top of a given enemy."
+  (let* ((fc (game-frame game))
+         (explosion (explosion (sprites-explosion (game-sprites game))
+                               (pos enemy)
+                               fc)))
+    ;; NOTE: If we just set the key to the
+    ;; current fc, then when multiple enemies
+    ;; were hit, only one explosion would
+    ;; actually spawn since they Hash Table keys
+    ;; would collide. We need some
+    ;; disambiguating factor, which is precisely
+    ;; the addition of the key of the enemy we
+    ;; hit.
+    (setf (gethash (+ enemy-key fc)
+                   (game-explosions game))
+          explosion)))
+
 ;; --- Tanks --- ;;
 
 (defstruct tank

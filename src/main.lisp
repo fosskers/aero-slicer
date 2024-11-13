@@ -106,20 +106,7 @@
     (t:transduce (t:comp (t:filter (lambda (enemy) (vulnerable? (cdr enemy) fc)))
                          (t:map (lambda (enemy)
                                   (damage! (cdr enemy) fc)
-                                  (let ((explosion (explosion (sprites-explosion (game-sprites game))
-                                                              (pos (cdr enemy))
-                                                              fc)))
-                                    ;; NOTE: If we just set the key to the
-                                    ;; current fc, then when multiple enemies
-                                    ;; were hit, only one explosion would
-                                    ;; actually spawn since they Hash Table keys
-                                    ;; would collide. We need some
-                                    ;; disambiguating factor, which is precisely
-                                    ;; the addition of the key of the enemy we
-                                    ;; hit.
-                                    (setf (gethash (+ (car enemy) fc)
-                                                   (game-explosions game))
-                                          explosion))
+                                  (explode! game (cdr enemy) (car enemy))
                                   enemy))
                          ;; Despawn the enemy if it's dead, and reward the
                          ;; player with some points.
@@ -152,6 +139,10 @@
                    (raylib:is-gamepad-button-down +gamepad+ +gamepad-b+)))
       (decf (fighter-bombs fighter))
       (setf (fighter-bomb-fc fighter) fc)
+      (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
+                   #'t:for-each (game-tanks game))
+      (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
+                   #'t:for-each (game-blobs game))
       (clear-all-enemies! game))))
 ;; (debugging-gamepad))
 

@@ -78,7 +78,7 @@
         (fc (game-frame game)))
     ;; TODO: 2024-11-08 Make more robust. Use randomness, etc.
     (when (and (< (fighter-bombs fighter) +bomb-max-capacity+)
-               (zerop (mod fc (* 20 +frame-rate+))))
+               (zerop (mod fc (* 30 +frame-rate+))))
       (let ((ammo (ammo (sprites-bomb (game-sprites game)) fc)))
         (setf (gethash fc (game-powerups game)) ammo)))))
 
