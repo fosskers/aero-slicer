@@ -121,8 +121,9 @@
   (let* ((fighter (game-fighter game))
          (beam    (fighter-beam fighter))
          (fc      (game-frame game)))
-    (when (and (raylib:is-key-down +key-tab+)
-               (can-warp? fighter fc))
+    (when (and (warp-button-down?)
+               (can-warp? fighter fc)
+               (movement-button-down?))
       (setf (fighter-warp-next? fighter) t)
       (setf (fighter-warp-fc fighter) fc))
     (move! fighter)
@@ -143,8 +144,26 @@
                    #'t:for-each (game-tanks game))
       (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
                    #'t:for-each (game-blobs game))
-      (clear-all-enemies! game))))
-;; (debugging-gamepad))
+      (clear-all-enemies! game)))
+  #+nil
+  (debugging-gamepad))
+
+(defun warp-button-down? ()
+  "Is the warp trigger being held down?"
+  (or (raylib:is-key-down +key-tab+)
+      (raylib:is-gamepad-button-down +gamepad+ +gamepad-left-shoulder+)
+      (raylib:is-gamepad-button-down +gamepad+ +gamepad-right-shoulder+)))
+
+(defun movement-button-down? ()
+  "Is a direction on the arrows or DPAD currently held down?"
+  (or (raylib:is-key-down +key-up+)
+      (raylib:is-key-down +key-down+)
+      (raylib:is-key-down +key-left+)
+      (raylib:is-key-down +key-right+)
+      (raylib:is-gamepad-button-down +gamepad+ +gamepad-up+)
+      (raylib:is-gamepad-button-down +gamepad+ +gamepad-down+)
+      (raylib:is-gamepad-button-down +gamepad+ +gamepad-left+)
+      (raylib:is-gamepad-button-down +gamepad+ +gamepad-right+)))
 
 (defun debugging-gamepad ()
   (let ((last-pressed (raylib:get-gamepad-button-pressed)))

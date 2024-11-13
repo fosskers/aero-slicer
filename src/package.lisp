@@ -30,7 +30,7 @@ collision check.")
   "The Y coordinate of the fighter's spawn point.")
 (defparameter +warp-cooldown+ (* 2 +frame-rate+)
   "How soon the player can warp the fighter again.")
-(defparameter +warp-distance+ 32
+(defparameter +warp-distance+ 48
   "The pixel distance moved by the fighter during a warp.")
 (defparameter +bomb-cooldown+ (* 2 +frame-rate+)
   "How soon the player can use another bomb.")
@@ -80,6 +80,8 @@ programmatic based on each beam's width.")
 (defparameter +gamepad-left+  #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-left))
 (defparameter +gamepad-right+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-right))
 (defparameter +gamepad-start+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :middle-right))
+(defparameter +gamepad-left-shoulder+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-trigger-1))
+(defparameter +gamepad-right-shoulder+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-trigger-1))
 
 ;; --- Macros --- ;;
 
