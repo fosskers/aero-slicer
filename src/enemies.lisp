@@ -75,6 +75,106 @@ despawn them."
                    (game-explosions game))
           explosion)))
 
+;; --- Evil Ships --- ;;
+
+(defstruct evil-ship
+  "An evil version of the fighter who flies around and shoots back!"
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2)
+  (bbox     nil :type raylib:rectangle)
+  (health   0   :type fixnum)
+  (beam     nil :type beam)
+  ;; The frame upon being last hit by the fighter.
+  (hit-fc   0   :type fixnum)
+  ;; Tracking the fighter pos so that we can follow him.
+  (fighter-pos nil :type raylib:vector2))
+
+(defun evil-ship (evil-ship-sprite beam-sprite fighter-pos level fc)
+  "A smart-constructor for an `evil-ship'."
+  (let* ((pos        (random-spawn-position))
+         (s-animated (make-animated :sprite evil-ship-sprite))
+         (s-rect     (bounding-box s-animated))
+         (b-animated (make-animated :sprite beam-sprite :default 'shooting :active 'shooting))
+         (b-rect     (bounding-box b-animated)))
+    (make-evil-ship :animated s-animated
+                    :pos pos
+                    :fighter-pos fighter-pos
+                    :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
+                                                 :y (raylib:vector2-y pos)
+                                                 :width (raylib:rectangle-width s-rect)
+                                                 :height (raylib:rectangle-height s-rect))
+                    :health (+ +evil-ship-base-hp+ level)
+                    :beam (make-beam :animated b-animated
+                                     ;; FIXME: 2024-11-15 Don't use tank offsets.
+                                     :pos (raylib:make-vector2 :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
+                                                               :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos)))
+                                     :bbox (raylib:make-rectangle :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
+                                                                  :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos))
+                                                                  :width (raylib:rectangle-width b-rect)
+                                                                  :height (raylib:rectangle-height b-rect))
+                                     :shot-dur (sprite-duration (animated-sprite b-animated))
+                                     ;; Ensures that a newly spawned, offscreen tank
+                                     ;; can't start shooting. Increase this if necessary.
+                                     :shot-fc fc))))
+
+(defmethod pos ((evil-ship evil-ship))
+  (evil-ship-pos evil-ship))
+
+(defmethod bbox ((evil-ship evil-ship))
+  (evil-ship-bbox evil-ship))
+
+(defmethod draw ((evil-ship evil-ship) fc)
+  (let ((beam (evil-ship-beam evil-ship)))
+    (when (beam-shooting? beam)
+      (draw beam fc)))
+  (draw-animated (evil-ship-animated evil-ship)
+                 (evil-ship-pos evil-ship)
+                 fc))
+
+;; TODO: 2024-11-15 Move the beam too.
+(defmethod move! ((evil-ship evil-ship))
+  "Move the evil fighter depending on the position of the good fighter."
+  (let* ((f-pos  (evil-ship-fighter-pos evil-ship))
+         (e-pos  (evil-ship-pos evil-ship))
+         (x-diff (- (raylib:vector2-x f-pos)
+                    (raylib:vector2-x e-pos)))
+         (y-diff (- (raylib:vector2-y f-pos)
+                    (raylib:vector2-y e-pos)))
+         ;; Normalisation.
+         (mag    (sqrt (+ (expt x-diff 2) (expt y-diff 2))))
+         (nor-x  (/ x-diff (max mag 0.1)))
+         (nor-y  (/ y-diff (max mag 0.1))))
+    ;; FIXME: 2024-11-15 Without normalisation this is probably going to be way
+    ;; too fast! I'm pretty sure I was doing this in Save the Farm for the
+    ;; "seeker" bug, so reference that code.
+    (incf (raylib:vector2-x e-pos) nor-x)
+    (incf (raylib:vector2-y e-pos) nor-y)
+    (incf (raylib:rectangle-x (evil-ship-bbox evil-ship)) nor-x)
+    (incf (raylib:rectangle-y (evil-ship-bbox evil-ship)) nor-y)))
+
+(defun maybe-spawn-ship! (game)
+  "Spawn an evil ship depending on the current frame."
+  (let ((fc (game-frame game)))
+    (when (= 0 (mod fc (* 6 +frame-rate+)))
+      (let* ((sprites (game-sprites game))
+             (evil-ship (evil-ship (sprites-evil-ship sprites)
+                                   (sprites-beam-4 sprites)
+                                   (fighter-pos (game-fighter game))
+                                   (game-level game)
+                                   fc)))
+        (setf (gethash fc (game-evil-ships game)) evil-ship)))))
+
+(defmethod vulnerable? ((evil-ship evil-ship) fc)
+  (> (- fc (evil-ship-hit-fc evil-ship))
+     +frame-rate+))
+
+(defmethod damage! ((evil-ship evil-ship) fc)
+  (setf (evil-ship-hit-fc evil-ship) fc)
+  (decf (evil-ship-health evil-ship)))
+
+(defmethod health ((evil-ship evil-ship))
+  (evil-ship-health evil-ship))
+
 ;; --- Tanks --- ;;
 
 (defstruct tank

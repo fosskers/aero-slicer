@@ -25,6 +25,7 @@
   (blob     (sprite #p"assets/blob.json"))
   (tank     (sprite #p"assets/tank.json"))
   (building (sprite #p"assets/building.json"))
+  (evil-ship (sprite #p"assets/evil-fighter.json"))
   (bomb     (sprite #p"assets/bomb.json"))
   (wide     (sprite #p"assets/wide-laser.json"))
   (explosion (sprite #p"assets/explosion.json")))
@@ -43,6 +44,7 @@
   ;; The key is the frame number upon which the blob was spawned.
   (blobs   (make-hash-table :size 16) :type hash-table)
   (tanks   (make-hash-table :size 16) :type hash-table)
+  (evil-ships (make-hash-table :size 16) :type hash-table)
   (buildings (make-hash-table :size 16) :type hash-table)
   (powerups (make-hash-table :size 16) :type hash-table)
   ;; TODO: 2024-11-14 Consider generalising this to any other on-screen
@@ -96,7 +98,8 @@
 (defun clear-all-enemies! (game)
   "From a bomb or otherwise, clear all the damageable enemies."
   (setf (game-blobs game) (make-hash-table :size 16))
-  (setf (game-tanks game) (make-hash-table :size 16)))
+  (setf (game-tanks game) (make-hash-table :size 16))
+  (setf (game-evil-ships game) (make-hash-table :size 16)))
 
 (defun camera ()
   "Initialise a 2D Camera."
@@ -105,7 +108,7 @@
          (offset   (raylib:make-vector2 :x center-x :y center-y))
          (target   (raylib:make-vector2 :x 0.0 :y 0.0)))
     ;; TODO: Restore to Zoom 3 once testing is done.
-    (raylib:make-camera-2d :offset offset :target target :rotation 0.0 :zoom 3.0)))
+    (raylib:make-camera-2d :offset offset :target target :rotation 0.0 :zoom 2.0)))
 
 (defun ungame (game)
   "Release various resources."
@@ -123,6 +126,7 @@
     (raylib:unload-texture (sprite-texture (sprites-blob sprites)))
     (raylib:unload-texture (sprite-texture (sprites-tank sprites)))
     (raylib:unload-texture (sprite-texture (sprites-building sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-evil-ship sprites)))
     (raylib:unload-texture (sprite-texture (sprites-bomb sprites)))
     (raylib:unload-texture (sprite-texture (sprites-wide sprites)))
     (raylib:unload-texture (sprite-texture (sprites-explosion sprites)))))
