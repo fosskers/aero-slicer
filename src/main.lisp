@@ -138,15 +138,21 @@
                (eq 'ok (fighter-status fighter))
                (or (raylib:is-key-down +key-enter+)
                    (raylib:is-gamepad-button-down +gamepad+ +gamepad-b+)))
-      (decf (fighter-bombs fighter))
-      (setf (fighter-bomb-fc fighter) fc)
-      (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
-                   #'t:for-each (game-tanks game))
-      (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
-                   #'t:for-each (game-blobs game))
-      (clear-all-enemies! game)))
+      (launch-bomb! game)))
   #+nil
   (debugging-gamepad))
+
+(defun launch-bomb! (game)
+  "Kill all the enemies."
+  (let ((fighter (game-fighter game))
+        (fc (game-frame game)))
+    (decf (fighter-bombs fighter))
+    (setf (fighter-bomb-fc fighter) fc)
+    (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
+                 #'t:for-each (game-tanks game))
+    (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
+                 #'t:for-each (game-blobs game))
+    (clear-all-enemies! game)))
 
 (defun warp-button-down? ()
   "Is the warp trigger being held down?"

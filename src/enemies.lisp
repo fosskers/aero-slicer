@@ -69,7 +69,9 @@ despawn them."
     ;; disambiguating factor, which is precisely
     ;; the addition of the key of the enemy we
     ;; hit.
-    (setf (gethash (+ enemy-key fc)
+    (setf (gethash (+ enemy-key
+                      (floor (raylib:vector2-y (pos enemy)))
+                      fc)
                    (game-explosions game))
           explosion)))
 
