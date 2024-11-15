@@ -161,7 +161,11 @@
 (defun launch-bomb! (game)
   "Kill all the enemies."
   (let ((fighter (game-fighter game))
-        (fc (game-frame game)))
+        (fc      (game-frame game))
+        (points  (* 100 (+ (hash-table-count (game-blobs game))
+                           (hash-table-count (game-tanks game))
+                           (hash-table-count (game-evil-ships game))))))
+    (incf (game-score game) points)
     (decf (fighter-bombs fighter))
     (setf (fighter-bomb-fc fighter) fc)
     (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
