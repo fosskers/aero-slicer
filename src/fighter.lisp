@@ -32,15 +32,16 @@
   "A smart-constructor for `fighter'."
   (let* ((animated (make-animated :sprite fighter-sprite))
          (rect     (bounding-box animated))
+         (width    (raylib:rectangle-width rect))
          (pos      (raylib:make-vector2 :x +fighter-spawn-x+
                                         :y +fighter-spawn-y+)))
     (make-fighter :animated animated
                   :pos pos
                   :bbox (raylib:make-rectangle :x +fighter-spawn-x+
                                                :y +fighter-spawn-y+
-                                               :width (raylib:rectangle-width rect)
+                                               :width width
                                                :height (raylib:rectangle-height rect))
-                  :beam (beam beam-sprite pos +beam-y-offset+))))
+                  :beam (beam beam-sprite pos width +beam-y-offset+))))
 
 ;; --- Status --- ;;
 
@@ -70,7 +71,11 @@
 
 (defun reset-beam! (fighter beam-sprite)
   "Shrink the beam back to its original size because the fighter was destroyed, etc."
-  (setf (fighter-beam fighter) (beam beam-sprite (fighter-pos fighter) +beam-y-offset+)))
+  (setf (fighter-beam fighter)
+        (beam beam-sprite
+              (fighter-pos fighter)
+              (raylib:rectangle-width (fighter-bbox fighter))
+              +beam-y-offset+)))
 
 ;; --- Generics --- ;;
 

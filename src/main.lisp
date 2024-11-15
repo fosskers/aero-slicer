@@ -57,7 +57,10 @@
                 (incf (fighter-bombs fighter))))
         (wide (when-let* ((next (gethash (animated-sprite (beam-animated beam))
                                          (game-beams game)))
-                          (beam (beam next (fighter-pos fighter) +beam-y-offset+)))
+                          (beam (beam next
+                                      (fighter-pos fighter)
+                                      (raylib:rectangle-width (fighter-bbox fighter))
+                                      +beam-y-offset+)))
                 (setf (fighter-beam fighter) beam)
                 (remhash (car pu) (game-powerups game))))))
     (tick! fighter fc)

@@ -94,16 +94,17 @@ despawn them."
   "A smart-constructor for an `evil-ship'."
   (let* ((pos      (random-spawn-position))
          (animated (make-animated :sprite evil-ship-sprite))
-         (rect     (bounding-box animated)))
+         (rect     (bounding-box animated))
+         (width    (raylib:rectangle-width rect)))
     (make-evil-ship :animated animated
                     :pos pos
                     :fighter-pos fighter-pos
                     :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
                                                  :y (raylib:vector2-y pos)
-                                                 :width (raylib:rectangle-width rect)
+                                                 :width width
                                                  :height (raylib:rectangle-height rect))
                     :health (+ +evil-ship-base-hp+ level)
-                    :beam (beam beam-sprite pos +evil-ship-beam-y-offset+))))
+                    :beam (beam beam-sprite pos width +evil-ship-beam-y-offset+))))
 
 (defmethod pos ((evil-ship evil-ship))
   (evil-ship-pos evil-ship))
@@ -211,32 +212,21 @@ despawn them."
 
 (defun tank (tank-sprite beam-sprite level fc)
   "Spawn a `tank' with an associated `beam'."
-  (let* ((pos (random-spawn-position))
-         (t-animated (make-animated :sprite tank-sprite))
-         (t-rect     (bounding-box t-animated))
-         (b-animated (make-animated :sprite beam-sprite :default 'shooting :active 'shooting))
-         (b-rect     (bounding-box b-animated)))
-    (make-tank :animated t-animated
+  (let* ((pos      (random-spawn-position))
+         (animated (make-animated :sprite tank-sprite))
+         (rect     (bounding-box animated))
+         (width    (raylib:rectangle-width rect))
+         (beam     (beam beam-sprite pos width +tank-beam-y-offset+)))
+    (setf (beam-shot-fc beam) fc)
+    (make-tank :animated animated
                :pos pos
                :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
                                             :y (raylib:vector2-y pos)
-                                            :width (raylib:rectangle-width t-rect)
-                                            :height (raylib:rectangle-height t-rect))
+                                            :width width
+                                            :height (raylib:rectangle-height rect))
                :health (+ +tank-base-hp+ level)
                :charge-dur (charge-duration tank-sprite)
-               :beam (make-beam :animated b-animated
-                                :pos (raylib:make-vector2 :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
-                                                          :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos)))
-                                :bbox (raylib:make-rectangle :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
-                                                             :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos))
-                                                             :width (raylib:rectangle-width b-rect)
-                                                             :height (raylib:rectangle-height b-rect))
-                                ;; TODO: 2024-11-05 Optimization: Precalculate
-                                ;; this duration and share it among all tanks.
-                                :shot-dur (sprite-duration (animated-sprite b-animated))
-                                ;; Ensures that a newly spawned, offscreen tank
-                                ;; can't start shooting. Increase this if necessary.
-                                :shot-fc fc))))
+               :beam beam)))
 
 (defun charge-duration (sprite)
   "How long does the charging animation last in frames?"
