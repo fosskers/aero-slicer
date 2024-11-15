@@ -77,7 +77,7 @@
 (defmethod tick! ((fighter fighter) fc)
   "Resetting of the fighter's flashing respawn status, etc."
   (cond ((and (eq 'hit (fighter-status fighter))
-              (> (- fc (fighter-status-fc fighter)) +frame-rate+))
+              (> (- fc (fighter-status-fc fighter)) (* 1.5 +frame-rate+)))
          (setf (fighter-status fighter) 'ok)
          (setf (fighter-status-fc fighter) fc)
          (set-animation! (fighter-animated fighter) 'idle))))
