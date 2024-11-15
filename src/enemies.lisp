@@ -154,15 +154,16 @@ despawn them."
 
 (defun maybe-spawn-ship! (game)
   "Spawn an evil ship depending on the current frame."
-  (let ((fc (game-frame game)))
+  (let ((fc    (game-frame game))
+        (level (game-level game)))
     ;; Only spawn one evil ship at a time.
     (when (and (zerop (hash-table-count (game-evil-ships game)))
                (= 0 (mod fc (* 6 +frame-rate+))))
       (let* ((sprites (game-sprites game))
              (evil-ship (evil-ship (sprites-evil-ship sprites)
-                                   (sprites-beam-4 sprites)
+                                   (beam-by-level game)
                                    (fighter-pos (game-fighter game))
-                                   (game-level game))))
+                                   level)))
         (setf (gethash fc (game-evil-ships game)) evil-ship)))))
 
 (defun maybe-ship-shoot! (evil-ship fc)
@@ -267,7 +268,7 @@ despawn them."
     (when (= 0 (mod fc (* 4 +frame-rate+)))
       (let* ((sprites (game-sprites game))
              (tank (tank (sprites-tank sprites)
-                         (sprites-beam-4 sprites)
+                         (beam-by-level game)
                          (game-level game)
                          fc)))
         (setf (gethash fc (game-tanks game)) tank)))))

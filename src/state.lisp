@@ -101,6 +101,20 @@
   (setf (game-tanks game) (make-hash-table :size 16))
   (setf (game-evil-ships game) (make-hash-table :size 16)))
 
+(defun beam-by-level (game)
+  "Yield a beam sprite for enemies according to the current level."
+  (let ((sprites (game-sprites game)))
+    (case (game-level game)
+      (1 (sprites-beam-2 sprites))
+      (2 (sprites-beam-4 sprites))
+      (3 (sprites-beam-6 sprites))
+      (4 (sprites-beam-8 sprites))
+      (5 (sprites-beam-10 sprites))
+      (6 (sprites-beam-12 sprites))
+      (7 (sprites-beam-14 sprites))
+      (8 (sprites-beam-16 sprites))
+      (t (sprites-beam-18 sprites)))))
+
 (defun camera ()
   "Initialise a 2D Camera."
   (let* ((center-x (/ +screen-width+ 2.0))
