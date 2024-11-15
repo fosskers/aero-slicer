@@ -39,6 +39,8 @@
   (move-enemies! (game-evil-ships game))
   (t:transduce (t:map (lambda (tank) (maybe-tank-shoot! (cdr tank) (game-frame game))))
                #'t:for-each (game-tanks game))
+  (t:transduce (t:map (lambda (ship) (maybe-ship-shoot! (cdr ship) (game-frame game))))
+               #'t:for-each (game-evil-ships game))
   (handle-player-input! game)
   (handle-fighter-collisions! game)
   (let* ((fighter (game-fighter game))
@@ -62,6 +64,7 @@
     (tick! (fighter-beam fighter) fc)
     (tick! (game-powerups game) fc)
     (tick! (game-tanks game) fc)
+    (tick! (game-evil-ships game) fc)
     (despawn! (game-powerups game) fc)
     (despawn! (game-explosions game) fc))
   (bump-score-by-frame! game)
@@ -86,6 +89,7 @@
     (when (and (eq 'ok (fighter-status fighter))
                (or (enemy-collision? fighter (game-blobs game))
                    (enemy-collision? fighter (game-buildings game))
+                   (enemy-collision? fighter (game-evil-ships game))
                    ;; Collision with tanks shouldn't occur because the fighter
                    ;; is in the air on they're on the ground?
                    ;;
@@ -95,7 +99,13 @@
                                           (let* ((beam (tank-beam (cdr pair))))
                                             (and (beam-shooting? beam)
                                                  (colliding? fighter beam)))))
-                                (game-tanks game))))
+                                (game-tanks game))
+                   (t:transduce #'t:pass
+                                (t:anyp (lambda (pair)
+                                          (let ((beam (evil-ship-beam (cdr pair))))
+                                            (and (beam-shooting? beam)
+                                                 (colliding? fighter beam)))))
+                                (game-evil-ships game))))
       (kill-fighter! fighter (sprites-beam-2 (game-sprites game)) fc)
       (decf (game-lives game))
       #+nil

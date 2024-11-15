@@ -84,6 +84,7 @@ despawn them."
   (bbox     nil :type raylib:rectangle)
   (health   0   :type fixnum)
   (beam     nil :type beam)
+  #+nil (charge-dur 0 :type fixnum)
   ;; The frame upon being last hit by the fighter.
   (hit-fc   0   :type fixnum)
   ;; Tracking the fighter pos so that we can follow him.
@@ -131,31 +132,45 @@ despawn them."
                  (evil-ship-pos evil-ship)
                  fc))
 
-;; TODO: 2024-11-15 Move the beam too.
+;; - Move closer to the fighter.
+;; - Stay within a certain Y distance, such that the Evil stays within the bounds of the screen.
+;; - Thus, it will back up if the fighter approaches.
+;; - Try to X-align such that a shot will hit.
+
 (defmethod move! ((evil-ship evil-ship))
   "Move the evil fighter depending on the position of the good fighter."
   (let* ((f-pos  (evil-ship-fighter-pos evil-ship))
          (e-pos  (evil-ship-pos evil-ship))
+         (bbox   (evil-ship-bbox evil-ship))
+         (beam   (evil-ship-beam evil-ship))
          (x-diff (- (raylib:vector2-x f-pos)
                     (raylib:vector2-x e-pos)))
          (y-diff (- (raylib:vector2-y f-pos)
                     (raylib:vector2-y e-pos)))
-         ;; Normalisation.
-         (mag    (sqrt (+ (expt x-diff 2) (expt y-diff 2))))
-         (nor-x  (/ x-diff (max mag 0.1)))
-         (nor-y  (/ y-diff (max mag 0.1))))
-    ;; FIXME: 2024-11-15 Without normalisation this is probably going to be way
-    ;; too fast! I'm pretty sure I was doing this in Save the Farm for the
-    ;; "seeker" bug, so reference that code.
+         ;; Euclidean distance.
+         (dist   (sqrt (+ (expt x-diff 2) (expt y-diff 2))))
+         ;; Normalisation with div-by-zero protection.
+         (nor-x  (/ x-diff (max dist 0.1)))
+         #+nil (nor-y  (/ y-diff (max dist 0.1))))
+    ;; Current stunted form: always approach a certain Y value.
+    (when (< (raylib:vector2-y e-pos)
+             (+ +world-min-y+ 50))
+      (incf (raylib:vector2-y e-pos) 0.5)
+      (incf (raylib:rectangle-y bbox) 0.5)
+      (incf (raylib:vector2-y (beam-pos beam)) 0.5)
+      (incf (raylib:rectangle-y (beam-bbox beam)) 0.5))
+    ;; Move X always toward the fighter.
     (incf (raylib:vector2-x e-pos) nor-x)
-    (incf (raylib:vector2-y e-pos) nor-y)
-    (incf (raylib:rectangle-x (evil-ship-bbox evil-ship)) nor-x)
-    (incf (raylib:rectangle-y (evil-ship-bbox evil-ship)) nor-y)))
+    (incf (raylib:rectangle-x bbox) nor-x)
+    (incf (raylib:vector2-x (beam-pos beam)) nor-x)
+    (incf (raylib:rectangle-x (beam-bbox beam)) nor-x)))
 
 (defun maybe-spawn-ship! (game)
   "Spawn an evil ship depending on the current frame."
   (let ((fc (game-frame game)))
-    (when (= 0 (mod fc (* 6 +frame-rate+)))
+    ;; Only spawn one evil ship at a time.
+    (when (and (zerop (hash-table-count (game-evil-ships game)))
+               (= 0 (mod fc (* 6 +frame-rate+))))
       (let* ((sprites (game-sprites game))
              (evil-ship (evil-ship (sprites-evil-ship sprites)
                                    (sprites-beam-4 sprites)
@@ -163,6 +178,17 @@ despawn them."
                                    (game-level game)
                                    fc)))
         (setf (gethash fc (game-evil-ships game)) evil-ship)))))
+
+(defun maybe-ship-shoot! (evil-ship fc)
+  "Make the evil ship shoot if conditions are met."
+  (when (and (not (beam-shooting? (evil-ship-beam evil-ship)))
+             ;; NOTE: So that the ship will never try to shoot while off the
+             ;; top of the screen.
+             (> (raylib:vector2-y (evil-ship-pos evil-ship))
+                +world-min-y+)
+             (zerop (mod fc (* 2 +frame-rate+)))
+             (< (random 10) 3))
+    (shoot-beam! (evil-ship-beam evil-ship) fc)))
 
 (defmethod vulnerable? ((evil-ship evil-ship) fc)
   (> (- fc (evil-ship-hit-fc evil-ship))
@@ -174,6 +200,10 @@ despawn them."
 
 (defmethod health ((evil-ship evil-ship))
   (evil-ship-health evil-ship))
+
+(defmethod tick! ((evil-ship evil-ship) fc)
+  "Turn off the beam, etc."
+  (tick! (evil-ship-beam evil-ship) fc))
 
 ;; --- Tanks --- ;;
 

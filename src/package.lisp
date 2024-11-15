@@ -71,10 +71,10 @@ programmatic based on each beam's width.")
 #+nil
 (raylib:is-gamepad-available 0)
 #+nil
-(raylib:get-gamepad-name 0)
+(raylib:get-gamepad-name 2)
 
 ;; NOTE: See also `debugging-gamepad' in `main.lisp'.
-(defparameter +gamepad+ 0)
+(defparameter +gamepad+ 2)
 (defparameter +gamepad-a+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-right))
 (defparameter +gamepad-b+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-down))
 (defparameter +gamepad-up+    #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-up))
