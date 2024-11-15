@@ -44,9 +44,7 @@ collision check.")
   "The Y position of the beam relative to the fighter. Note that the Y offset is
 fixed for all beam types as they are all the same height, but the X offset is
 programmatic based on each beam's width.")
-(defparameter +tank-beam-x-offset+ 5
-  "The X position of the beam relative to a tank.")
-(defparameter +tank-beam-y-offset+ 14
+(defparameter +tank-beam-y-offset+ 13
   "The Y position of the beam relative to a tank.")
 (defparameter +tank-base-hp+ 1
   "The amount of max HP of the tank to which the Level is added.")
@@ -54,7 +52,7 @@ programmatic based on each beam's width.")
   "The amount of max HP of the blob to which the Level is added.")
 (defparameter +evil-ship-base-hp+ 2
   "The amount of max HP of the evil fighter to which the Level is added.")
-(defparameter +evil-ship-beam-y-offset+ 15
+(defparameter +evil-ship-beam-y-offset+ 13
   "The Y position of the beam relative to a evil ship.")
 (defparameter +level-progression-interval+ 5000)
 
