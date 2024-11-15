@@ -164,7 +164,8 @@ programmatic based on each beam's width.")
   "A random position within the visible area of the world. Useful for spawning
 powerups."
   (raylib:make-vector2 :x (float (max +world-min-x+ (- (random +world-pixels-x+) +world-max-x+ 8)))
-                       :y (float (- (random +world-pixels-y+) +world-max-y+))))
+                       :y (float (- (random (- +world-pixels-y+ 16))
+                                    +world-max-y+))))
 
 #+nil
 (random-position)
