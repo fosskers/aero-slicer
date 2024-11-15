@@ -17,13 +17,13 @@
   ;; The total duration, in frames, that the shot should be active for.
   (shot-dur  0   :type fixnum :read-only t))
 
-(defun beam (sprite fighter-pos)
-  "Construct the narrowest beam."
+(defun beam (sprite parent-pos y-offset)
+  "Construct a beam."
   (let* ((animated (make-animated :sprite sprite :default 'shooting :active 'shooting))
          (rect     (bounding-box animated))
          (x-offset (- 8 (/ (raylib:rectangle-width rect) 2)))
-         (x        (+ x-offset (raylib:vector2-x fighter-pos)))
-         (y        (+ +beam-y-offset+ (raylib:vector2-y fighter-pos))))
+         (x        (+ x-offset (raylib:vector2-x parent-pos)))
+         (y        (+ y-offset (raylib:vector2-y parent-pos))))
     (make-beam :animated animated
                :pos (raylib:make-vector2 :x x :y y)
                :bbox (raylib:make-rectangle :x x

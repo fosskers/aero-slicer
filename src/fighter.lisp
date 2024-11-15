@@ -40,7 +40,7 @@
                                                :y +fighter-spawn-y+
                                                :width (raylib:rectangle-width rect)
                                                :height (raylib:rectangle-height rect))
-                  :beam (beam beam-sprite pos))))
+                  :beam (beam beam-sprite pos +beam-y-offset+))))
 
 ;; --- Status --- ;;
 
@@ -70,7 +70,7 @@
 
 (defun reset-beam! (fighter beam-sprite)
   "Shrink the beam back to its original size because the fighter was destroyed, etc."
-  (setf (fighter-beam fighter) (beam beam-sprite (fighter-pos fighter))))
+  (setf (fighter-beam fighter) (beam beam-sprite (fighter-pos fighter) +beam-y-offset+)))
 
 ;; --- Generics --- ;;
 

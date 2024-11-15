@@ -54,6 +54,8 @@ programmatic based on each beam's width.")
   "The amount of max HP of the blob to which the Level is added.")
 (defparameter +evil-ship-base-hp+ 2
   "The amount of max HP of the evil fighter to which the Level is added.")
+(defparameter +evil-ship-beam-y-offset+ 15
+  "The Y position of the beam relative to a evil ship.")
 (defparameter +level-progression-interval+ 5000)
 
 ;; --- Keys --- ;;

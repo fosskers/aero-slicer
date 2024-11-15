@@ -90,33 +90,20 @@ despawn them."
   ;; Tracking the fighter pos so that we can follow him.
   (fighter-pos nil :type raylib:vector2))
 
-(defun evil-ship (evil-ship-sprite beam-sprite fighter-pos level fc)
+(defun evil-ship (evil-ship-sprite beam-sprite fighter-pos level)
   "A smart-constructor for an `evil-ship'."
-  (let* ((pos        (random-spawn-position))
-         (s-animated (make-animated :sprite evil-ship-sprite))
-         (s-rect     (bounding-box s-animated))
-         (b-animated (make-animated :sprite beam-sprite :default 'shooting :active 'shooting))
-         (b-rect     (bounding-box b-animated)))
-    (make-evil-ship :animated s-animated
+  (let* ((pos      (random-spawn-position))
+         (animated (make-animated :sprite evil-ship-sprite))
+         (rect     (bounding-box animated)))
+    (make-evil-ship :animated animated
                     :pos pos
                     :fighter-pos fighter-pos
                     :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
                                                  :y (raylib:vector2-y pos)
-                                                 :width (raylib:rectangle-width s-rect)
-                                                 :height (raylib:rectangle-height s-rect))
+                                                 :width (raylib:rectangle-width rect)
+                                                 :height (raylib:rectangle-height rect))
                     :health (+ +evil-ship-base-hp+ level)
-                    :beam (make-beam :animated b-animated
-                                     ;; FIXME: 2024-11-15 Don't use tank offsets.
-                                     :pos (raylib:make-vector2 :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
-                                                               :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos)))
-                                     :bbox (raylib:make-rectangle :x (+ +tank-beam-x-offset+ (raylib:vector2-x pos))
-                                                                  :y (+ +tank-beam-y-offset+ (raylib:vector2-y pos))
-                                                                  :width (raylib:rectangle-width b-rect)
-                                                                  :height (raylib:rectangle-height b-rect))
-                                     :shot-dur (sprite-duration (animated-sprite b-animated))
-                                     ;; Ensures that a newly spawned, offscreen tank
-                                     ;; can't start shooting. Increase this if necessary.
-                                     :shot-fc fc))))
+                    :beam (beam beam-sprite pos +evil-ship-beam-y-offset+))))
 
 (defmethod pos ((evil-ship evil-ship))
   (evil-ship-pos evil-ship))
@@ -175,8 +162,7 @@ despawn them."
              (evil-ship (evil-ship (sprites-evil-ship sprites)
                                    (sprites-beam-4 sprites)
                                    (fighter-pos (game-fighter game))
-                                   (game-level game)
-                                   fc)))
+                                   (game-level game))))
         (setf (gethash fc (game-evil-ships game)) evil-ship)))))
 
 (defun maybe-ship-shoot! (evil-ship fc)
@@ -187,7 +173,7 @@ despawn them."
              (> (raylib:vector2-y (evil-ship-pos evil-ship))
                 +world-min-y+)
              (zerop (mod fc (* 2 +frame-rate+)))
-             (< (random 10) 3))
+             (< (random 10) 4))
     (shoot-beam! (evil-ship-beam evil-ship) fc)))
 
 (defmethod vulnerable? ((evil-ship evil-ship) fc)
