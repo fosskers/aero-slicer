@@ -95,9 +95,22 @@
 
 (defmethod tick! ((ammo ammo) fc)
   "Start to despawn the `ammo' if too much time has passed."
-  (when (> (- fc (ammo-spawn-fc ammo))
-           +powerup-newness-timeout+)
-    (set-animation! (ammo-animated ammo) 'flashing fc)))
+  (let ((animated (ammo-animated ammo)))
+    ;; FIXME: 2024-11-17 Is it a hack to use the animation's state to model the
+    ;; state of the parent object?
+    ;;
+    ;; Yes:
+    ;; - Seems brittle to define _program_ states in an external file (the sprite).
+    ;; - What if you need an entity state that associated with no animation?
+    ;;
+    ;; No:
+    ;; - It means the number of states of the entity and sprite stay synced.
+    ;; - It means the active state of the entity can't drift from the animation.
+    ;; - Reduces a bit of boilerplate..
+    (when (and (eq 'idle (animated-active animated))
+               (> (- fc (ammo-spawn-fc ammo))
+                  +powerup-newness-timeout+))
+      (set-animation! animated 'flashing fc))))
 
 (defmethod expired? ((ammo ammo) fc)
   (> (- fc (ammo-spawn-fc ammo))
