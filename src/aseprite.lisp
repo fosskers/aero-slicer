@@ -77,12 +77,13 @@ underlying `sprite' definition."
 
 ;; --- Helpers --- ;;
 
-(defun set-animation! (animated active)
+(defun set-animation! (animated active fc)
   "Alter the current animation in a safe way. In general, if you forget to reset
 the current `frame' when altering `active', you'll notice animations starting
 and stopping at unexpected frames."
   (setf (animated-active animated) active)
-  (setf (animated-frame animated) 0))
+  (setf (animated-frame animated) 0)
+  (setf (animated-started animated) fc))
 
 (defun sprite-duration (sprite)
   "The duration of the sprite animation in terms of frame-count. Works best for
@@ -119,7 +120,8 @@ which is used to calculate the time difference."
                                     (frame-rect (aref frames 0))
                                     pos
                                     raylib:+white+))
-          ;; Enough frames have passed in this particular animation frame, so we must advance.
+          ;; Enough frames have passed in this particular animation frame, so we
+          ;; must advance.
           ((> (- fc (animated-started animated))
               (frame-duration-fs (aref frames (animated-frame animated))))
            (setf (animated-started animated) fc)

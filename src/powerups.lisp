@@ -97,7 +97,7 @@
   "Start to despawn the `ammo' if too much time has passed."
   (when (> (- fc (ammo-spawn-fc ammo))
            +powerup-newness-timeout+)
-    (set-animation! (ammo-animated ammo) 'flashing)))
+    (set-animation! (ammo-animated ammo) 'flashing fc)))
 
 (defmethod expired? ((ammo ammo) fc)
   (> (- fc (ammo-spawn-fc ammo))

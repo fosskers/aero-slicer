@@ -79,16 +79,20 @@ despawn them."
 
 (defstruct evil-ship
   "An evil version of the fighter who flies around and shoots back!"
-  (animated nil :type animated)
-  (pos      nil :type raylib:vector2)
-  (bbox     nil :type raylib:rectangle)
-  (health   0   :type fixnum)
-  (beam     nil :type beam)
-  #+nil (charge-dur 0 :type fixnum)
+  (animated  nil :type animated)
+  (pos       nil :type raylib:vector2)
+  (bbox      nil :type raylib:rectangle)
+  (health    0   :type fixnum)
+  (beam      nil :type beam)
+  ;; Ok / Charging
+  (status    'ok :type symbol)
+  (status-fc 0   :type fixnum)
   ;; The frame upon being last hit by the fighter.
-  (hit-fc   0   :type fixnum)
+  (hit-fc    0   :type fixnum)
   ;; Tracking the fighter pos so that we can follow him.
-  (fighter-pos nil :type raylib:vector2))
+  (fighter-pos nil :type raylib:vector2)
+  ;; How long the beam charge should last.
+  (charge-dur 0  :type fixnum))
 
 (defun evil-ship (evil-ship-sprite beam-sprite fighter-pos level)
   "A smart-constructor for an `evil-ship'."
@@ -104,7 +108,8 @@ despawn them."
                                                  :width width
                                                  :height (raylib:rectangle-height rect))
                     :health (+ +evil-ship-base-hp+ level)
-                    :beam (beam beam-sprite pos width +evil-ship-beam-y-offset+))))
+                    :beam (beam beam-sprite pos width +evil-ship-beam-y-offset+)
+                    :charge-dur (charge-duration evil-ship-sprite))))
 
 (defmethod pos ((evil-ship evil-ship))
   (evil-ship-pos evil-ship))
@@ -167,16 +172,32 @@ despawn them."
                                    level)))
         (setf (gethash fc (game-evil-ships game)) evil-ship)))))
 
+(defmethod tick! ((evil-ship evil-ship) fc)
+  "Shooting and turning off the beam."
+  (let ((beam (evil-ship-beam evil-ship)))
+    (maybe-ship-shoot! evil-ship fc)
+    (tick! beam fc)))
+
 (defun maybe-ship-shoot! (evil-ship fc)
   "Make the evil ship shoot if conditions are met."
-  (when (and (not (beam-shooting? (evil-ship-beam evil-ship)))
-             ;; NOTE: So that the ship will never try to shoot while off the
-             ;; top of the screen.
-             (> (raylib:vector2-y (evil-ship-pos evil-ship))
-                +world-min-y+)
-             (zerop (mod fc (* 2 +frame-rate+)))
-             (< (random 10) 4))
-    (shoot-beam! (evil-ship-beam evil-ship) fc)))
+  (cond ((and (eq 'ok (evil-ship-status evil-ship))
+              (not (beam-shooting? (evil-ship-beam evil-ship)))
+              ;; NOTE: So that the ship will never try to shoot while off the
+              ;; top of the screen.
+              (> (raylib:vector2-y (evil-ship-pos evil-ship))
+                 +world-min-y+)
+              (zerop (mod fc (* 2 +frame-rate+)))
+              (< (random 10) 4))
+         (setf (evil-ship-status evil-ship) 'charging)
+         (setf (evil-ship-status-fc evil-ship) fc)
+         (set-animation! (evil-ship-animated evil-ship) 'charging fc))
+        ((and (eq 'charging (evil-ship-status evil-ship))
+              (> (- fc (evil-ship-status-fc evil-ship))
+                 (evil-ship-charge-dur evil-ship)))
+         (setf (evil-ship-status evil-ship) 'ok)
+         (setf (evil-ship-status-fc evil-ship) fc)
+         (set-animation! (evil-ship-animated evil-ship) 'idle fc)
+         (shoot-beam! (evil-ship-beam evil-ship) fc))))
 
 (defmethod vulnerable? ((evil-ship evil-ship) fc)
   (> (- fc (evil-ship-hit-fc evil-ship))
@@ -188,10 +209,6 @@ despawn them."
 
 (defmethod health ((evil-ship evil-ship))
   (evil-ship-health evil-ship))
-
-(defmethod tick! ((evil-ship evil-ship) fc)
-  "Turn off the beam, etc."
-  (tick! (evil-ship-beam evil-ship) fc))
 
 ;; --- Tanks --- ;;
 
@@ -276,13 +293,13 @@ despawn them."
               (< (random 10) 4))
          (setf (tank-status tank) 'charging)
          (setf (tank-status-fc tank) fc)
-         (set-animation! (tank-animated tank) 'charging))
+         (set-animation! (tank-animated tank) 'charging fc))
         ((and (eq 'charging (tank-status tank))
               (> (- fc (tank-status-fc tank))
                  (tank-charge-dur tank)))
          (setf (tank-status tank) 'ok)
          (setf (tank-status-fc tank) fc)
-         (set-animation! (tank-animated tank) 'idle)
+         (set-animation! (tank-animated tank) 'idle fc)
          (shoot-beam! (tank-beam tank) fc))))
 
 (defmethod health ((tank tank))
@@ -298,6 +315,7 @@ despawn them."
 
 (defmethod tick! ((tank tank) fc)
   "Turn off the beam, etc."
+  (maybe-tank-shoot! tank fc)
   (tick! (tank-beam tank) fc)
   (cond ((and (not (tank-reversing? tank))
               (zerop (mod fc (* 3 +frame-rate+)))
