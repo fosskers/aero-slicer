@@ -61,7 +61,7 @@
   (let ((sprites (sprites)))
     (make-game :sprites sprites
                :fighter (fighter (sprites-fighter sprites)
-                                 (sprites-beam-4 sprites)))))
+                                 (sprites-beam-2 sprites)))))
 
 ;; TODO: 2024-11-12 Should I just reconstruct the `game' entirely instead of
 ;; doing all this manual resetting?

@@ -57,6 +57,10 @@ underlying `sprite' definition."
   (let ((dim    (gethash "frame" json))
         (millis (gethash "duration" json)))
     (make-frame :duration-ms millis
+                ;; So long as the millis count of the single animation frame is
+                ;; no less than 16ms, the `round` here will ensure that the
+                ;; result is 1 at minimum. A 0 here would likely mean that the
+                ;; frame never renders within `draw-animated'.
                 :duration-fs (round (/ millis +millis-per-frame+))
                 :rect (raylib:make-rectangle
                        :x (float (gethash "x" dim))
@@ -125,6 +129,7 @@ which is used to calculate the time difference."
           ((> (- fc (animated-started animated))
               (frame-duration-fs (aref frames (animated-frame animated))))
            (setf (animated-started animated) fc)
+           ;; Animation looping.
            (if (= (animated-frame animated) (1- (length frames)))
                (setf (animated-frame animated) 0)
                (incf (animated-frame animated)))

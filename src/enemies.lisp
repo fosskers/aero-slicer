@@ -201,7 +201,7 @@ despawn them."
 
 (defmethod vulnerable? ((evil-ship evil-ship) fc)
   (> (- fc (evil-ship-hit-fc evil-ship))
-     +frame-rate+))
+     +enemy-invincibility-frames+))
 
 (defmethod damage! ((evil-ship evil-ship) fc)
   (setf (evil-ship-hit-fc evil-ship) fc)
@@ -307,7 +307,7 @@ despawn them."
 
 (defmethod vulnerable? ((tank tank) fc)
   (> (- fc (tank-hit-fc tank))
-     +frame-rate+))
+     +enemy-invincibility-frames+))
 
 (defmethod damage! ((tank tank) fc)
   (setf (tank-hit-fc tank) fc)
@@ -385,7 +385,7 @@ despawn them."
 
 (defmethod vulnerable? ((blob blob) fc)
   (> (- fc (blob-hit-fc blob))
-     +frame-rate+))
+     +enemy-invincibility-frames+))
 
 (defmethod damage! ((blob blob) fc)
   (setf (blob-hit-fc blob) fc)

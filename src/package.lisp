@@ -54,6 +54,9 @@ programmatic based on each beam's width.")
   "The amount of max HP of the evil fighter to which the Level is added.")
 (defparameter +evil-ship-beam-y-offset+ 13
   "The Y position of the beam relative to a evil ship.")
+(defparameter +enemy-invincibility-frames+ (/ +frame-rate+ 2)
+  "The same length as the duration of the fighter's beam. This ensures that a
+single beam shot will never damage the same enemy twice.")
 (defparameter +level-progression-interval+ 5000)
 
 ;; --- Keys --- ;;

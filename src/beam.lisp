@@ -1,3 +1,12 @@
+;;; Beams. Used by the fighter, tanks, and the evil fighter.
+;;;
+;;; A single beam animation should last 400ms. At minimum a single animation
+;;; frame can last 1 screen frame (16ms). Thus, 25 screen frames are available
+;;; for each animation.
+;;;
+;;; Roughly: 8 frames (128ms) for the expansion, 9 frames (144ms) at peak, 8
+;;; frames to wind down.
+
 (in-package :aero-fighter)
 
 #+nil
