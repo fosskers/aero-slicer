@@ -66,11 +66,11 @@
   (setf (raylib:vector2-y (fighter-pos fighter)) +fighter-spawn-y+)
   (setf (raylib:rectangle-x (fighter-bbox fighter)) +fighter-spawn-x+)
   (setf (raylib:rectangle-y (fighter-bbox fighter)) +fighter-spawn-y+)
-  ;; One of the punishments for dying is the loss of your awesome beam width.
+  ;; One of the punishments for dying is the downgrading of your awesome beam width.
   (reset-beam! fighter beam-sprite))
 
 (defun reset-beam! (fighter beam-sprite)
-  "Shrink the beam back to its original size because the fighter was destroyed, etc."
+  "Shrink the beam back to a narrower size because the fighter was destroyed, etc."
   (setf (fighter-beam fighter)
         (beam beam-sprite
               (fighter-pos fighter)

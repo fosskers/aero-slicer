@@ -36,9 +36,6 @@
   (camera  (camera) :type raylib:camera-2d)
   (sprites nil :type sprites)
   (fighter nil :type fighter)
-  ;; For use in determining the next width of beam when a beam powerup has been
-  ;; collected.
-  (beams   nil :type hash-table)
   ;; The point after which the next Beam Widener powerup should spawn.
   (widener-threshold 1000 :type fixnum)
   ;; The key is the frame number upon which the blob was spawned.
@@ -61,20 +58,10 @@
 
 (defun game ()
   "Initialise the various game resources."
-  (let ((sprites (sprites))
-        (beams   (make-hash-table)))
-    (setf (gethash (sprites-beam-2 sprites) beams) (sprites-beam-4 sprites))
-    (setf (gethash (sprites-beam-4 sprites) beams) (sprites-beam-6 sprites))
-    (setf (gethash (sprites-beam-6 sprites) beams) (sprites-beam-8 sprites))
-    (setf (gethash (sprites-beam-8 sprites) beams) (sprites-beam-10 sprites))
-    (setf (gethash (sprites-beam-10 sprites) beams) (sprites-beam-12 sprites))
-    (setf (gethash (sprites-beam-12 sprites) beams) (sprites-beam-14 sprites))
-    (setf (gethash (sprites-beam-14 sprites) beams) (sprites-beam-16 sprites))
-    (setf (gethash (sprites-beam-16 sprites) beams) (sprites-beam-18 sprites))
+  (let ((sprites (sprites)))
     (make-game :sprites sprites
-               :beams beams
                :fighter (fighter (sprites-fighter sprites)
-                                 (sprites-beam-2 sprites)))))
+                                 (sprites-beam-4 sprites)))))
 
 ;; TODO: 2024-11-12 Should I just reconstruct the `game' entirely instead of
 ;; doing all this manual resetting?
@@ -114,6 +101,32 @@
       (7 (sprites-beam-14 sprites))
       (8 (sprites-beam-16 sprites))
       (t (sprites-beam-18 sprites)))))
+
+(defun upgrade-beam (sprites beam)
+  "Yield the sprite of the beam one level higher than the current one."
+  (cond ((eq beam (sprites-beam-2 sprites))  (sprites-beam-4 sprites))
+        ((eq beam (sprites-beam-4 sprites))  (sprites-beam-6 sprites))
+        ((eq beam (sprites-beam-6 sprites))  (sprites-beam-8 sprites))
+        ((eq beam (sprites-beam-8 sprites))  (sprites-beam-10 sprites))
+        ((eq beam (sprites-beam-10 sprites)) (sprites-beam-12 sprites))
+        ((eq beam (sprites-beam-12 sprites)) (sprites-beam-14 sprites))
+        ((eq beam (sprites-beam-14 sprites)) (sprites-beam-16 sprites))
+        ((eq beam (sprites-beam-16 sprites)) (sprites-beam-18 sprites))
+        ((eq beam (sprites-beam-18 sprites)) (sprites-beam-18 sprites))
+        (t (error "Unknown sprite! Is it really a beam?"))))
+
+(defun downgrade-beam (sprites beam)
+  "Yield the sprite of the beam one level lower than the current one."
+  (cond ((eq beam (sprites-beam-2 sprites))  (sprites-beam-2 sprites))
+        ((eq beam (sprites-beam-4 sprites))  (sprites-beam-2 sprites))
+        ((eq beam (sprites-beam-6 sprites))  (sprites-beam-4 sprites))
+        ((eq beam (sprites-beam-8 sprites))  (sprites-beam-6 sprites))
+        ((eq beam (sprites-beam-10 sprites)) (sprites-beam-8 sprites))
+        ((eq beam (sprites-beam-12 sprites)) (sprites-beam-10 sprites))
+        ((eq beam (sprites-beam-14 sprites)) (sprites-beam-12 sprites))
+        ((eq beam (sprites-beam-16 sprites)) (sprites-beam-14 sprites))
+        ((eq beam (sprites-beam-18 sprites)) (sprites-beam-16 sprites))
+        (t (error "Unknown sprite! Is it really a beam?"))))
 
 (defun camera ()
   "Initialise a 2D Camera."

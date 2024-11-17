@@ -53,12 +53,10 @@
         (ammo (when (< (fighter-bombs fighter) +bomb-max-capacity+)
                 (remhash (car pu) (game-powerups game))
                 (incf (fighter-bombs fighter))))
-        (wide (when-let* ((next (gethash (animated-sprite (beam-animated beam))
-                                         (game-beams game)))
-                          (beam (beam next
-                                      (fighter-pos fighter)
-                                      (raylib:rectangle-width (fighter-bbox fighter))
-                                      +beam-y-offset+)))
+        (wide (let ((beam (beam (upgrade-beam (game-sprites game) (animated-sprite (beam-animated beam)))
+                                (fighter-pos fighter)
+                                (raylib:rectangle-width (fighter-bbox fighter))
+                                +beam-y-offset+)))
                 (setf (fighter-beam fighter) beam)
                 (remhash (car pu) (game-powerups game))))))
     (tick! fighter fc)
@@ -104,7 +102,9 @@
                                             (and (beam-shooting? beam)
                                                  (colliding? fighter beam)))))
                                 (game-evil-ships game))))
-      (kill-fighter! fighter (sprites-beam-2 (game-sprites game)) fc)
+      (kill-fighter! fighter
+                     (downgrade-beam (game-sprites game) (animated-sprite (beam-animated (fighter-beam fighter))))
+                     fc)
       (decf (game-lives game))
       #+nil
       (when (<= (game-lives game) 0)
