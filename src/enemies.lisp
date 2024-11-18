@@ -47,8 +47,8 @@ despawn them."
                   :duration (sprite-duration sprite)))
 
 (defmethod expired? ((explosion explosion) fc)
-  (> (- fc (explosion-start-fc explosion))
-     (explosion-duration explosion)))
+  (>= (- fc (explosion-start-fc explosion))
+      (explosion-duration explosion)))
 
 (defmethod draw ((explosion explosion) fc)
   (draw-animated (explosion-animated explosion)
@@ -192,16 +192,16 @@ despawn them."
          (setf (evil-ship-status-fc evil-ship) fc)
          (set-animation! (evil-ship-animated evil-ship) 'charging fc))
         ((and (eq 'charging (evil-ship-status evil-ship))
-              (> (- fc (evil-ship-status-fc evil-ship))
-                 (evil-ship-charge-dur evil-ship)))
+              (>= (- fc (evil-ship-status-fc evil-ship))
+                  (evil-ship-charge-dur evil-ship)))
          (setf (evil-ship-status evil-ship) 'ok)
          (setf (evil-ship-status-fc evil-ship) fc)
          (set-animation! (evil-ship-animated evil-ship) 'idle fc)
          (shoot-beam! (evil-ship-beam evil-ship) fc))))
 
 (defmethod vulnerable? ((evil-ship evil-ship) fc)
-  (> (- fc (evil-ship-hit-fc evil-ship))
-     +enemy-invincibility-frames+))
+  (>= (- fc (evil-ship-hit-fc evil-ship))
+      +enemy-invincibility-frames+))
 
 (defmethod damage! ((evil-ship evil-ship) fc)
   (setf (evil-ship-hit-fc evil-ship) fc)
@@ -295,8 +295,8 @@ despawn them."
          (setf (tank-status-fc tank) fc)
          (set-animation! (tank-animated tank) 'charging fc))
         ((and (eq 'charging (tank-status tank))
-              (> (- fc (tank-status-fc tank))
-                 (tank-charge-dur tank)))
+              (>= (- fc (tank-status-fc tank))
+                  (tank-charge-dur tank)))
          (setf (tank-status tank) 'ok)
          (setf (tank-status-fc tank) fc)
          (set-animation! (tank-animated tank) 'idle fc)
@@ -306,8 +306,8 @@ despawn them."
   (tank-health tank))
 
 (defmethod vulnerable? ((tank tank) fc)
-  (> (- fc (tank-hit-fc tank))
-     +enemy-invincibility-frames+))
+  (>= (- fc (tank-hit-fc tank))
+      +enemy-invincibility-frames+))
 
 (defmethod damage! ((tank tank) fc)
   (setf (tank-hit-fc tank) fc)
@@ -384,8 +384,8 @@ despawn them."
   (blob-health blob))
 
 (defmethod vulnerable? ((blob blob) fc)
-  (> (- fc (blob-hit-fc blob))
-     +enemy-invincibility-frames+))
+  (>= (- fc (blob-hit-fc blob))
+      +enemy-invincibility-frames+))
 
 (defmethod damage! ((blob blob) fc)
   (setf (blob-hit-fc blob) fc)

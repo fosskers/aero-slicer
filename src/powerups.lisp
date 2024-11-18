@@ -108,10 +108,10 @@
     ;; - It means the active state of the entity can't drift from the animation.
     ;; - Reduces a bit of boilerplate..
     (when (and (eq 'idle (animated-active animated))
-               (> (- fc (ammo-spawn-fc ammo))
-                  +powerup-newness-timeout+))
+               (>= (- fc (ammo-spawn-fc ammo))
+                   +powerup-newness-timeout+))
       (set-animation! animated 'flashing fc))))
 
 (defmethod expired? ((ammo ammo) fc)
-  (> (- fc (ammo-spawn-fc ammo))
-     +powerup-spawn-timeout+))
+  (>= (- fc (ammo-spawn-fc ammo))
+      +powerup-spawn-timeout+))

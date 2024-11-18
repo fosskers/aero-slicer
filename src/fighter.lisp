@@ -47,14 +47,14 @@
 
 (defun can-warp? (fighter fc)
   "Could the fighter warp on this frame?"
-  (> (- fc (fighter-warp-fc fighter))
-     +warp-cooldown+))
+  (>= (- fc (fighter-warp-fc fighter))
+      +warp-cooldown+))
 
 (defun can-bomb? (fighter fc)
   "Could the fighter launch a bomb on this frame?"
   (and (> (fighter-bombs fighter) 0)
-       (> (- fc (fighter-bomb-fc fighter))
-          +bomb-cooldown+)))
+       (>= (- fc (fighter-bomb-fc fighter))
+           +bomb-cooldown+)))
 
 (defun kill-fighter! (fighter beam-sprite fc)
   "Reset the fighter's position and animation."
@@ -82,7 +82,7 @@
 (defmethod tick! ((fighter fighter) fc)
   "Resetting of the fighter's flashing respawn status, etc."
   (cond ((and (eq 'hit (fighter-status fighter))
-              (> (- fc (fighter-status-fc fighter)) (* 1.5 +frame-rate+)))
+              (>= (- fc (fighter-status-fc fighter)) (* 1.5 +frame-rate+)))
          (setf (fighter-status fighter) 'ok)
          (setf (fighter-status-fc fighter) fc)
          (set-animation! (fighter-animated fighter) 'idle fc)))
