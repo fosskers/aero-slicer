@@ -48,6 +48,7 @@ underlying `sprite' definition."
   (default 'idle :type symbol)
   (active  'idle :type symbol)
   (frame   0     :type fixnum)
+  ;; The fc when _this frame_ began.
   (started 0     :type fixnum))
 
 ;; --- Reading Asesprite Data --- ;;
@@ -126,8 +127,8 @@ which is used to calculate the time difference."
                                     raylib:+white+))
           ;; Enough frames have passed in this particular animation frame, so we
           ;; must advance.
-          ((> (- fc (animated-started animated))
-              (frame-duration-fs (aref frames (animated-frame animated))))
+          ((>= (- fc (animated-started animated))
+               (frame-duration-fs (aref frames (animated-frame animated))))
            (setf (animated-started animated) fc)
            ;; Animation looping.
            (if (= (animated-frame animated) (1- (length frames)))

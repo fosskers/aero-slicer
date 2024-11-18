@@ -1,8 +1,8 @@
 ;;; Beams. Used by the fighter, tanks, and the evil fighter.
 ;;;
-;;; A single beam animation should last 400ms. At minimum a single animation
-;;; frame can last 1 screen frame (16ms). Thus, 25 screen frames are available
-;;; for each animation.
+;;; A single beam animation should last between 400ms and 464ms. At minimum a
+;;; single animation frame can last 1 screen frame (16ms). Thus, 25 to 29 screen
+;;; frames are available for each animation.
 ;;;
 ;;; Roughly: 8 frames (128ms) for the expansion, 9 frames (144ms) at peak, 8
 ;;; frames to wind down.
@@ -48,16 +48,19 @@
 (defun shoot-beam! (beam fc)
   "Fire away!"
   (setf (beam-shooting? beam) t)
-  (setf (beam-shot-fc beam) fc))
+  (setf (beam-shot-fc beam) fc)
+  ;; While it is redundant to tell the `animated' what the active animation is
+  ;; here (since there is only one), calling `set-animation!' handles setting
+  ;; the frame values in a consistent way. Previously it was more ad-hoc.
+  (set-animation! (beam-animated beam) 'shooting fc))
 
 ;; --- Generics --- ;;
 
 (defmethod tick! ((beam beam) fc)
   "Turn the beam off, etc., depending on how much time has passed."
   (cond ((and (beam-shooting? beam)
-              (> (- fc (beam-shot-fc beam))
-                 (beam-shot-dur beam)))
-         (setf (animated-frame (beam-animated beam)) 0)
+              (>= (- fc (beam-shot-fc beam))
+                  (beam-shot-dur beam)))
          (setf (beam-shooting? beam) nil))))
 
 (defmethod draw ((beam beam) fc)
