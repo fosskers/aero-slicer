@@ -187,7 +187,7 @@ despawn them."
               (> (raylib:vector2-y (evil-ship-pos evil-ship))
                  +world-min-y+)
               (zerop (mod fc (* 2 +frame-rate+)))
-              (< (random 10) 4))
+              (< (random 10) 5))
          (setf (evil-ship-status evil-ship) 'charging)
          (setf (evil-ship-status-fc evil-ship) fc)
          (set-animation! (evil-ship-animated evil-ship) 'charging fc))
