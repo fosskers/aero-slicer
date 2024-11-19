@@ -59,6 +59,10 @@ programmatic based on each beam's width.")
 single beam shot will never damage the same enemy twice.")
 (defparameter +level-progression-interval+ 5000)
 
+;; --- Colours --- ;;
+
+(defparameter +faded-white+ (raylib:color-alpha raylib:+white+ 0.85))
+
 ;; --- Keys --- ;;
 
 (defparameter +key-right+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :right))

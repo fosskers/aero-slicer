@@ -109,7 +109,7 @@ the width of the widest one."
                                                (sprite-animations (animated-sprite animated))))
                     0)))
 
-(defun draw-animated (animated pos fc)
+(defun draw-animated (animated pos fc &key (colour raylib:+white+))
   "Draw the given `animated' sprite at a certain position, using the current frame
 count to determine how much time has passed. Each frame has a known max duration
 which is used to calculate the time difference."
@@ -124,7 +124,7 @@ which is used to calculate the time difference."
            (raylib:draw-texture-rec (sprite-texture sprite)
                                     (frame-rect (aref frames 0))
                                     pos
-                                    raylib:+white+))
+                                    colour))
           ;; Enough frames have passed in this particular animation frame, so we
           ;; must advance.
           ((>= (- fc (animated-started animated))
@@ -137,9 +137,9 @@ which is used to calculate the time difference."
            (raylib:draw-texture-rec (sprite-texture sprite)
                                     (frame-rect (aref frames (animated-frame animated)))
                                     pos
-                                    raylib:+white+))
+                                    colour))
           ;; This frame is still not over, so we draw as normal.
           (t (raylib:draw-texture-rec (sprite-texture sprite)
                                       (frame-rect (aref frames (animated-frame animated)))
                                       pos
-                                      raylib:+white+)))))
+                                      colour)))))

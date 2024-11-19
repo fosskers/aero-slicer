@@ -64,7 +64,7 @@
          (setf (beam-shooting? beam) nil))))
 
 (defmethod draw ((beam beam) fc)
-  (draw-animated (beam-animated beam) (beam-pos beam) fc))
+  (draw-animated (beam-animated beam) (beam-pos beam) fc :colour +faded-white+))
 
 (defmethod pos ((beam beam))
   (beam-pos beam))
