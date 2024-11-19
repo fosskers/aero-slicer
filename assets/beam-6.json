@@ -6,7 +6,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 0, "w": 6, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 75
+    "duration": 32
    },
    {
     "filename": "beam-6 1.ase",
@@ -15,7 +15,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 0, "w": 6, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 75
+    "duration": 32
    },
    {
     "filename": "beam-6 2.ase",
@@ -24,7 +24,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 0, "w": 6, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 75
+    "duration": 32
    },
    {
     "filename": "beam-6 3.ase",
@@ -33,7 +33,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 0, "w": 6, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 75
+    "duration": 32
    },
    {
     "filename": "beam-6 4.ase",
@@ -42,7 +42,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 0, "w": 6, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 200
+    "duration": 144
    },
    {
     "filename": "beam-6 5.ase",
@@ -51,7 +51,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 0, "w": 6, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 75
+    "duration": 32
    },
    {
     "filename": "beam-6 6.ase",
@@ -60,7 +60,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 0, "w": 6, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 75
+    "duration": 32
    },
    {
     "filename": "beam-6 7.ase",
@@ -69,7 +69,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 0, "w": 6, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 75
+    "duration": 32
    },
    {
     "filename": "beam-6 8.ase",
@@ -78,7 +78,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 5, "y": 0, "w": 6, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 75
+    "duration": 32
    }
  ],
  "meta": {

@@ -6,7 +6,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 1.ase",
@@ -15,7 +15,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 2.ase",
@@ -24,7 +24,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 3.ase",
@@ -33,7 +33,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 4.ase",
@@ -42,7 +42,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 5.ase",
@@ -51,7 +51,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 6.ase",
@@ -60,7 +60,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 7.ase",
@@ -69,7 +69,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 8.ase",
@@ -78,7 +78,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 9.ase",
@@ -87,7 +87,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 206
+    "duration": 144
    },
    {
     "filename": "beam-16 10.ase",
@@ -96,7 +96,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 11.ase",
@@ -105,7 +105,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 12.ase",
@@ -114,7 +114,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 13.ase",
@@ -123,7 +123,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 14.ase",
@@ -132,7 +132,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 15.ase",
@@ -141,7 +141,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 16.ase",
@@ -150,7 +150,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 17.ase",
@@ -159,7 +159,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    },
    {
     "filename": "beam-16 18.ase",
@@ -168,7 +168,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 33
+    "duration": 16
    }
  ],
  "meta": {

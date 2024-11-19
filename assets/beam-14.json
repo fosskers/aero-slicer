@@ -6,7 +6,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 1.ase",
@@ -15,7 +15,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 2.ase",
@@ -24,7 +24,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 3.ase",
@@ -33,7 +33,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 4.ase",
@@ -42,7 +42,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 5.ase",
@@ -51,7 +51,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 6.ase",
@@ -60,7 +60,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 7.ase",
@@ -69,7 +69,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 8.ase",
@@ -78,7 +78,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 208
+    "duration": 144
    },
    {
     "filename": "beam-14 9.ase",
@@ -87,7 +87,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 10.ase",
@@ -96,7 +96,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 11.ase",
@@ -105,7 +105,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 12.ase",
@@ -114,7 +114,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 13.ase",
@@ -123,7 +123,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 14.ase",
@@ -132,7 +132,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 15.ase",
@@ -141,7 +141,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    },
    {
     "filename": "beam-14 16.ase",
@@ -150,7 +150,7 @@
     "trimmed": true,
     "spriteSourceSize": { "x": 1, "y": 0, "w": 14, "h": 240 },
     "sourceSize": { "w": 16, "h": 240 },
-    "duration": 37
+    "duration": 16
    }
  ],
  "meta": {
