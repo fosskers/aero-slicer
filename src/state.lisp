@@ -12,25 +12,32 @@
 ;; NOTE: When you add a new beam width, account for it in the hash table in `game'.
 (defstruct (sprites (:constructor sprites))
   "A bank of various sprites and their loaded textures."
-  (fighter  (sprite #p"assets/fighter.json"))
-  (beam-2   (sprite #p"assets/beam-2.json"))
-  (beam-4   (sprite #p"assets/beam-4.json"))
-  (beam-6   (sprite #p"assets/beam-6.json"))
-  (beam-8   (sprite #p"assets/beam-8.json"))
-  (beam-10  (sprite #p"assets/beam-10.json"))
-  (beam-12  (sprite #p"assets/beam-12.json"))
-  (beam-14  (sprite #p"assets/beam-14.json"))
-  (beam-16  (sprite #p"assets/beam-16.json"))
-  (beam-18  (sprite #p"assets/beam-18.json"))
-  (blob     (sprite #p"assets/blob.json"))
-  (tank     (sprite #p"assets/tank.json"))
-  (building (sprite #p"assets/building.json"))
+  (fighter   (sprite #p"assets/fighter.json"))
+  (beam-2    (sprite #p"assets/beam-2.json"))
+  (beam-4    (sprite #p"assets/beam-4.json"))
+  (beam-6    (sprite #p"assets/beam-6.json"))
+  (beam-8    (sprite #p"assets/beam-8.json"))
+  (beam-10   (sprite #p"assets/beam-10.json"))
+  (beam-12   (sprite #p"assets/beam-12.json"))
+  (beam-14   (sprite #p"assets/beam-14.json"))
+  (beam-16   (sprite #p"assets/beam-16.json"))
+  (beam-18   (sprite #p"assets/beam-18.json"))
+  (blob      (sprite #p"assets/blob.json"))
+  (tank      (sprite #p"assets/tank.json"))
+  (building  (sprite #p"assets/building.json"))
   (evil-ship (sprite #p"assets/evil-fighter.json"))
-  (bomb     (sprite #p"assets/bomb.json"))
-  (wide     (sprite #p"assets/wide-laser.json"))
-  (explosion (sprite #p"assets/explosion.json")))
+  (bomb      (sprite #p"assets/bomb.json"))
+  (wide      (sprite #p"assets/wide-laser.json"))
+  (explosion (sprite #p"assets/explosion.json"))
+  (hud       (sprite #p"assets/hud.json"))
+  (little-f  (sprite #p"assets/little-fighter.json"))
+  (little-b  (sprite #p"assets/little-bomb.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
+;;
+;; 2024-11-21 Probably yes, because it can still be useful to handle them
+;; separately, for instance for calling `tick!' on the tanks but not the blobs.
+;; Blobs don't have any internal time-based state.
 (defstruct game
   "The state of the running game."
   (camera  (camera) :type raylib:camera-2d)
@@ -155,4 +162,7 @@
     (raylib:unload-texture (sprite-texture (sprites-evil-ship sprites)))
     (raylib:unload-texture (sprite-texture (sprites-bomb sprites)))
     (raylib:unload-texture (sprite-texture (sprites-wide sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-explosion sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-explosion sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-hud sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-little-f sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-little-b sprites)))))

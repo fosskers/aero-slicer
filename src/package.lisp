@@ -59,6 +59,16 @@ programmatic based on each beam's width.")
 single beam shot will never damage the same enemy twice.")
 (defparameter +level-progression-interval+ 5000)
 
+;; --- Fixed Positions --- ;;
+
+(defparameter +icon-y+   (+ 2 +world-min-y+))
+(defparameter +life-1-x+ (+ 6 +world-min-x+))
+(defparameter +life-2-x+ (+ 18 +world-min-x+))
+(defparameter +life-3-x+ (+ 30 +world-min-x+))
+(defparameter +ammo-1-x+ (+ 218 +world-min-x+))
+(defparameter +ammo-2-x+ (+ 230 +world-min-x+))
+(defparameter +ammo-3-x+ (+ 242 +world-min-x+))
+
 ;; --- Colours --- ;;
 
 (defparameter +faded-white+ (raylib:color-alpha raylib:+white+ 0.85))

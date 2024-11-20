@@ -15,6 +15,7 @@
                              (:file "fighter")
                              (:file "enemies")
                              (:file "collision")
+                             (:file "hud")
                              (:file "main"))))
   :description "JP's shooter from the past.")
 

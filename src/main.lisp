@@ -241,6 +241,7 @@
   (raylib:draw-text (format nil "GAME OVER, DUDE")
                     (- 0 45) 0 10 raylib:+gray+))
 
+#++
 (defun draw-hud (game)
   "The various status conditions that the player needs to see."
   (raylib:draw-text (format nil "LIVES: ~a" (game-lives game))
