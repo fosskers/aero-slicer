@@ -62,12 +62,21 @@ single beam shot will never damage the same enemy twice.")
 ;; --- Fixed Positions --- ;;
 
 (defparameter +icon-y+   (+ 2 +world-min-y+))
+(defparameter +mini-icon-y+ (+ 6 +world-min-y+))
 (defparameter +life-1-x+ (+ 6 +world-min-x+))
 (defparameter +life-2-x+ (+ 18 +world-min-x+))
 (defparameter +life-3-x+ (+ 30 +world-min-x+))
 (defparameter +ammo-1-x+ (+ 218 +world-min-x+))
 (defparameter +ammo-2-x+ (+ 230 +world-min-x+))
 (defparameter +ammo-3-x+ (+ 242 +world-min-x+))
+(defparameter +beam-1-x+ (+ 98 +world-min-x+))
+(defparameter +beam-2-x+ (+ 106 +world-min-x+))
+(defparameter +beam-3-x+ (+ 114 +world-min-x+))
+(defparameter +beam-4-x+ (+ 122 +world-min-x+))
+(defparameter +beam-5-x+ (+ 130 +world-min-x+))
+(defparameter +beam-6-x+ (+ 138 +world-min-x+))
+(defparameter +beam-7-x+ (+ 146 +world-min-x+))
+(defparameter +beam-8-x+ (+ 154 +world-min-x+))
 
 ;; --- Colours --- ;;
 

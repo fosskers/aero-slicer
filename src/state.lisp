@@ -31,7 +31,8 @@
   (explosion (sprite #p"assets/explosion.json"))
   (hud       (sprite #p"assets/hud.json"))
   (little-f  (sprite #p"assets/little-fighter.json"))
-  (little-b  (sprite #p"assets/little-bomb.json")))
+  (little-b  (sprite #p"assets/little-bomb.json"))
+  (little-p  (sprite #p"assets/little-beam.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -109,6 +110,19 @@
       (8 (sprites-beam-16 sprites))
       (t (sprites-beam-18 sprites)))))
 
+(defun beam-upgrade-count (sprites beam)
+  "The rank, so to speak, of the current beam."
+  (cond ((eq beam (sprites-beam-2 sprites))  0)
+        ((eq beam (sprites-beam-4 sprites))  1)
+        ((eq beam (sprites-beam-6 sprites))  2)
+        ((eq beam (sprites-beam-8 sprites))  3)
+        ((eq beam (sprites-beam-10 sprites)) 4)
+        ((eq beam (sprites-beam-12 sprites)) 5)
+        ((eq beam (sprites-beam-14 sprites)) 6)
+        ((eq beam (sprites-beam-16 sprites)) 7)
+        ((eq beam (sprites-beam-18 sprites)) 8)
+        (t (error "Unknown sprite! Is it really a beam?"))))
+
 (defun upgrade-beam (sprites beam)
   "Yield the sprite of the beam one level higher than the current one."
   (cond ((eq beam (sprites-beam-2 sprites))  (sprites-beam-4 sprites))
@@ -165,4 +179,5 @@
     (raylib:unload-texture (sprite-texture (sprites-explosion sprites)))
     (raylib:unload-texture (sprite-texture (sprites-hud sprites)))
     (raylib:unload-texture (sprite-texture (sprites-little-f sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-little-b sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-little-b sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-little-p sprites)))))
