@@ -26,11 +26,14 @@
                                             :height (raylib:rectangle-height rect)))))
 
 (defun maybe-spawn-wide! (game)
-  "Spawn a `wide' laser powerup depending on the current score."
+  "Spawn a `wide' laser powerup depending on the current score. However, it
+shouldn't spawn if the fighter is already at max beam width."
   (when (>= (game-score game) (game-widener-threshold game))
-    (let ((wide (wide (sprites-wide (game-sprites game)))))
-      (incf (game-widener-threshold game) 1000)
-      (setf (gethash (game-frame game) (game-powerups game)) wide))))
+    (incf (game-widener-threshold game) 1000)
+    (when (not (eq (animated-sprite (beam-animated (fighter-beam (game-fighter game))))
+                   (sprites-beam-18 (game-sprites game))))
+      (let ((wide (wide (sprites-wide (game-sprites game)))))
+        (setf (gethash (game-frame game) (game-powerups game)) wide)))))
 
 (defmethod pos ((wide wide))
   (wide-pos wide))
