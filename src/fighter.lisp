@@ -138,7 +138,7 @@
     (when (or (raylib:is-key-down +key-up+)
               (raylib:is-gamepad-button-down +gamepad+ +gamepad-up+))
       (let* ((dist (distance-of-move! fighter))
-             (new  (max -120.0 (- (raylib:vector2-y pos) dist))))
+             (new  (max -106.0 (- (raylib:vector2-y pos) dist))))
         (setf (raylib:vector2-y pos) new)
         (setf (raylib:rectangle-y bbox) new)
         (setf (raylib:vector2-y b-pos) (+ new +beam-y-offset+))
