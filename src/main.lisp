@@ -21,27 +21,32 @@
 
 (defun update-dead! (game)
   "The player is dead, and they might restart the game."
+  (update-enemies! game)
   (when (or (raylib:is-key-down +key-space+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+))
     (reset-game! game)))
 
-(defun update-playing! (game)
-  "Logic specific to a started game."
-  (let* ((fighter (game-fighter game))
-         (beam    (fighter-beam fighter))
-         (fc      (game-frame game)))
+(defun update-enemies! (game)
+  "Spawn and move the enemies around."
+  (let ((fc (game-frame game)))
     (maybe-spawn-blob! game)
     (maybe-spawn-building! game)
     (maybe-spawn-tank! game)
     (maybe-spawn-ship! game)
-    (maybe-spawn-ammo! game)
-    (maybe-spawn-wide! game)
     (move-enemies! (game-blobs game))
     (move-enemies! (game-buildings game))
     (move-enemies! (game-tanks game))
     (move-enemies! (game-evil-ships game))
     (tick! (game-tanks game) fc)
-    (tick! (game-evil-ships game) fc)
+    (tick! (game-evil-ships game) fc)))
+
+(defun update-player! (game)
+  "Handle powerups, player input, and collisions."
+  (let* ((fighter (game-fighter game))
+         (beam    (fighter-beam fighter))
+         (fc      (game-frame game)))
+    (maybe-spawn-ammo! game)
+    (maybe-spawn-wide! game)
     (tick! (game-powerups game) fc)
     (tick! fighter fc)
     (despawn! (game-powerups game) fc)
@@ -53,9 +58,14 @@
       (damage-from-shot! game beam (game-tanks game))
       (damage-from-shot! game beam (game-evil-ships game)))
     (when-let* ((pu (colliding-powerup fighter (game-powerups game))))
-      (collect-powerup! game (car pu) (cdr pu)))
-    (bump-score-by-frame! game)
-    (bump-level! game)))
+      (collect-powerup! game (car pu) (cdr pu)))))
+
+(defun update-playing! (game)
+  "Logic specific to a started game."
+  (update-enemies! game)
+  (update-player! game)
+  (bump-score-by-frame! game)
+  (bump-level! game))
 
 (defun collect-powerup! (game key pu)
   "Alter the fighter according to a powerup he just grabbed."
@@ -114,7 +124,6 @@
                                      (->> fighter fighter-beam beam-animated animated-sprite))
                      fc)
       (decf (game-lives game))
-      #+nil
       (when (<= (game-lives game) 0)
         (setf (game-mode game) 'dead)))))
 
@@ -220,26 +229,28 @@
   (raylib:draw-text (format nil "PRESS SPACE TO PLAY")
                     (- 0 55) 0 10 raylib:+gray+))
 
-(defun render-playing (game)
-  "Render a running game."
-  (let* ((fighter (game-fighter game))
-         (beam    (fighter-beam fighter))
-         (fc      (game-frame game)))
+(defun render-enemies (game)
+  "All all enemies."
+  (let ((fc (game-frame game)))
     (draw (game-buildings game) fc)
     (draw (game-blobs game) fc)
     (draw (game-tanks game) fc)
     (draw (game-evil-ships game) fc)
+    (draw (game-explosions game) fc)))
+
+(defun render-playing (game)
+  "Render a running game."
+  (let ((fc (game-frame game)))
+    (render-enemies game)
     (draw (game-powerups game) fc)
-    (draw (game-explosions game) fc)
-    (when (beam-shooting? beam)
-      (draw beam fc))
-    (draw fighter fc))
-  (draw-hud game))
-;; (debugging-nearness (game-fighter game) (game-blobs game)))
+    (draw (game-fighter game) fc)
+    (draw-hud game)
+    #++ (debugging-nearness (game-fighter game) (game-blobs game))))
 
 (defun render-dead (game)
   "Render the Game Over screen."
-  (declare (ignore game))
+  (render-enemies game)
+  (draw-hud game)
   (raylib:draw-text (format nil "GAME OVER, DUDE")
                     (- 0 45) 0 10 raylib:+gray+))
 

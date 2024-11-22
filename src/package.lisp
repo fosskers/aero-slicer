@@ -188,6 +188,7 @@ single beam shot will never damage the same enemy twice.")
 (defun random-position ()
   "A random position within the visible area of the world. Useful for spawning
 powerups."
+  ;; BUG: 2024-11-23 powerups can still spawn under the HUD.
   (raylib:make-vector2 :x (float (max +world-min-x+ (- (random +world-pixels-x+) +world-max-x+ 16)))
                        :y (float (- (random (- +world-pixels-y+ 16))
                                     +world-max-y+))))

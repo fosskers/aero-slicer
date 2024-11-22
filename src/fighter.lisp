@@ -89,7 +89,10 @@
   (tick! (fighter-beam fighter) fc))
 
 (defmethod draw ((fighter fighter) fc)
-  (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc))
+  (let ((beam (fighter-beam fighter)))
+    (when (beam-shooting? beam)
+      (draw beam fc))
+    (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc)))
 
 (defmethod pos ((fighter fighter))
   (fighter-pos fighter))
