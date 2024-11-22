@@ -22,11 +22,11 @@
   ;; The next movement should be a warp.
   (warp-next? nil :type symbol)
   ;; The last time that the player did "warp movement".
-  (warp-fc   0   :type fixnum)
+  (warp-fc   (- +warp-cooldown+) :type fixnum)
   (beam      nil :type beam)
   (bombs     3   :type fixnum)
   ;; The last time a bomb was used.
-  (bomb-fc   0   :type fixnum))
+  (bomb-fc   (- +bomb-cooldown+) :type fixnum))
 
 (defun fighter (fighter-sprite beam-sprite)
   "A smart-constructor for `fighter'."
