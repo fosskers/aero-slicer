@@ -112,6 +112,12 @@ the width of the widest one."
     (aref <> 0)
     (frame-rect)))
 
+(defun draw-at-frame (texture animation pos frame &key (colour raylib:+white+))
+  "Draw a specific frame from a specific texture."
+  (let* ((frames (animation-frames animation))
+         (rect   (frame-rect (aref frames frame))))
+    (raylib:draw-texture-rec texture rect pos colour)))
+
 (defun draw-animated (animated pos fc &key (colour raylib:+white+))
   "Draw the given `animated' sprite at a certain position, using the current frame
 count to determine how much time has passed. Each frame has a known max duration
@@ -119,15 +125,13 @@ which is used to calculate the time difference."
   (let* ((sprite    (animated-sprite animated))
          (active    (animated-active animated))
          (animation (gethash active (sprite-animations sprite)))
-         (frames    (animation-frames animation)))
+         (frames    (animation-frames animation))
+         (texture   (sprite-texture sprite)))
     ;; Optimisation: When we know there is only one frame to the current
     ;; animation, we don't need to bother with time differences and frame
     ;; transitions. We just draw the one frame as-is.
     (cond ((= 1 (length frames))
-           (raylib:draw-texture-rec (sprite-texture sprite)
-                                    (frame-rect (aref frames 0))
-                                    pos
-                                    colour))
+           (draw-at-frame texture animation pos 0 :colour colour))
           ;; Enough frames have passed in this particular animation frame, so we
           ;; must advance.
           ((>= (- fc (animated-started animated))
@@ -137,12 +141,6 @@ which is used to calculate the time difference."
            (if (= (animated-frame animated) (1- (length frames)))
                (setf (animated-frame animated) 0)
                (incf (animated-frame animated)))
-           (raylib:draw-texture-rec (sprite-texture sprite)
-                                    (frame-rect (aref frames (animated-frame animated)))
-                                    pos
-                                    colour))
+           (draw-at-frame texture animation pos (animated-frame animated) :colour colour))
           ;; This frame is still not over, so we draw as normal.
-          (t (raylib:draw-texture-rec (sprite-texture sprite)
-                                      (frame-rect (aref frames (animated-frame animated)))
-                                      pos
-                                      colour)))))
+          (t (draw-at-frame texture animation pos (animated-frame animated) :colour colour)))))
