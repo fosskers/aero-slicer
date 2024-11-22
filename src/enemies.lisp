@@ -248,7 +248,7 @@ despawn them."
 (defun charge-duration (sprite)
   "How long does the charging animation last in frames?"
   (t:transduce (t:map #'frame-duration-fs)
-               #'+ (animation-frames (gethash 'charging (sprite-animations sprite)))))
+               #'+ (->> sprite sprite-animations (gethash 'charging) animation-frames)))
 
 (defmethod pos ((tank tank))
   (tank-pos tank))
@@ -376,7 +376,7 @@ despawn them."
       (setf (gethash (game-frame game) (game-blobs game)) blob))))
 
 (defmethod draw ((blob blob) fc)
-  (raylib:draw-texture-v (sprite-texture (animated-sprite (blob-animated blob)))
+  (raylib:draw-texture-v (->> blob blob-animated animated-sprite sprite-texture)
                          (blob-pos blob)
                          raylib:+white+))
 
@@ -425,7 +425,7 @@ despawn them."
 (defun maybe-spawn-building! (game)
   "Spawn a building depending on the current frame."
   (when (= 0 (mod (game-frame game) (* 3 +frame-rate+)))
-    (let ((building (building (sprites-building (game-sprites game)))))
+    (let ((building (->> game game-sprites sprites-building building)))
       (setf (gethash (game-frame game) (game-buildings game)) building))))
 
 ;; TODO: 2024-11-01 Consider consolidating into something generic if this
@@ -438,8 +438,6 @@ despawn them."
 ;;
 ;; 2024-11-04 I've made these a `defmethod' to reduce some overall duplication.
 (defmethod draw ((building building) fc)
-  (raylib:draw-texture-v (sprite-texture (animated-sprite (building-animated building)))
+  (raylib:draw-texture-v (->> building building-animated animated-sprite sprite-texture)
                          (building-pos building)
                          raylib:+white+))
-
-;; --- Shadow Fighters --- ;;

@@ -2,7 +2,8 @@
   :version "0.0.1"
   :author "Colin Woodbury <colin@fosskers.ca>"
   :license "MPL-2.0"
-  :depends-on (:claw-raylib
+  :depends-on (:arrow-macros
+               :claw-raylib
                :com.inuoe.jzon
                :filepaths
                :transducers)

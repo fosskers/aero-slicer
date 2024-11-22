@@ -30,7 +30,7 @@
 shouldn't spawn if the fighter is already at max beam width."
   (when (>= (game-score game) (game-widener-threshold game))
     (incf (game-widener-threshold game) 1000)
-    (when (not (eq (animated-sprite (beam-animated (fighter-beam (game-fighter game))))
+    (when (not (eq (->> game game-fighter fighter-beam beam-animated animated-sprite)
                    (sprites-beam-18 (game-sprites game))))
       (let ((wide (wide (sprites-wide (game-sprites game)))))
         (setf (gethash (game-frame game) (game-powerups game)) wide)))))

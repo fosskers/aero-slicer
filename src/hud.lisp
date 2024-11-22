@@ -10,7 +10,7 @@
   (let* ((sprites (game-sprites game))
          (lives   (game-lives game))
          (bombs   (fighter-bombs (game-fighter game)))
-         (beams   (beam-upgrade-count sprites (animated-sprite (beam-animated (fighter-beam (game-fighter game))))))
+         (beams   (->> game game-fighter fighter-beam beam-animated animated-sprite (beam-upgrade-count sprites)))
          (f-icon  (sprites-little-f sprites))
          (b-icon  (sprites-little-b sprites))
          (p-icon  (sprites-little-p sprites)))

@@ -33,7 +33,7 @@ around multiple instances of an `animated'."
 context has been initialised via `raylib:init-window'."
   (let* ((json   (jzon:parse path))
          (meta   (gethash "meta" json))
-         (texture (raylib:load-texture (p:to-string (p:with-name path (gethash "image" meta)))))
+         (texture (->> meta (gethash "image") (p:with-name path) p:to-string raylib:load-texture))
          (frames (gethash "frames" json))
          (tags   (gethash "frameTags" meta))
          (anims  (t:transduce (t:map (lambda (tag) (json->animation frames tag))) #'t:hash-table tags)))
@@ -105,9 +105,12 @@ is assumed to be sufficient as a bounding box for collisions.
 
 Note that Aseprite does not over-trim individual frames - each frame is given
 the width of the widest one."
-  (frame-rect (aref (animation-frames (gethash (animated-default animated)
-                                               (sprite-animations (animated-sprite animated))))
-                    0)))
+  (-<>> (animated-sprite animated)
+    (sprite-animations)
+    (gethash (animated-default animated))
+    (animation-frames)
+    (aref <> 0)
+    (frame-rect)))
 
 (defun draw-animated (animated pos fc &key (colour raylib:+white+))
   "Draw the given `animated' sprite at a certain position, using the current frame

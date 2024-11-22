@@ -65,7 +65,8 @@
       (ammo (when (< (fighter-bombs fighter) +bomb-max-capacity+)
               (remhash key (game-powerups game))
               (incf (fighter-bombs fighter))))
-      (wide (let ((beam (beam (upgrade-beam (game-sprites game) (animated-sprite (beam-animated beam)))
+      (wide (let ((beam (beam (upgrade-beam (game-sprites game)
+                                            (->> beam beam-animated animated-sprite))
                               (fighter-pos fighter)
                               (raylib:rectangle-width (fighter-bbox fighter))
                               +beam-y-offset+)))
@@ -109,7 +110,8 @@
                                                  (colliding? fighter beam)))))
                                 (game-evil-ships game))))
       (kill-fighter! fighter
-                     (downgrade-beam (game-sprites game) (animated-sprite (beam-animated (fighter-beam fighter))))
+                     (downgrade-beam (game-sprites game)
+                                     (->> fighter fighter-beam beam-animated animated-sprite))
                      fc)
       (decf (game-lives game))
       #+nil

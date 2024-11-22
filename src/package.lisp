@@ -1,5 +1,5 @@
 (defpackage aero-fighter
-  (:use :cl)
+  (:use :cl :arrow-macros)
   (:local-nicknames (#:jzon #:com.inuoe.jzon)
                     (#:p #:filepaths)
                     (#:t #:transducers)))
