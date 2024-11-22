@@ -29,7 +29,7 @@
     (draw-icon sprite +life-1-x+ +icon-y+)))
 
 (defun draw-bombs (sprite bombs cool?)
-  (let ((colour (if cool? +faded-white+ raylib:+white+)))
+  (let ((colour (if cool? +very-faded-white+ raylib:+white+)))
     (when (> bombs 2)
       (draw-icon sprite +ammo-3-x+ +icon-y+ :colour colour))
     (when (> bombs 1)

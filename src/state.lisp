@@ -88,7 +88,11 @@
   (setf (game-mode game) 'playing)
   (setf (game-widener-threshold game) 1000)
   (let ((fighter (game-fighter game)))
-    (setf (fighter-bombs fighter) 3)))
+    (setf (fighter-bombs fighter) 3)
+    (setf (fighter-beam fighter) (beam (->> game game-sprites sprites-beam-2)
+                                       (fighter-pos fighter)
+                                       (raylib:rectangle-width (fighter-bbox fighter))
+                                       +beam-y-offset+))))
 
 (defun clear-all-enemies! (game)
   "From a bomb or otherwise, clear all the damageable enemies."
