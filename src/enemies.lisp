@@ -127,11 +127,19 @@ despawn them."
 (defun maybe-spawn-missile! (game)
   "Spawn a little missile, perhaps."
   ;; TODO 2024-11-23 Tune this spawn frequency. Perhaps base it on the level?
-  (when (and (zerop (mod (game-frame game) 30))
+  (when (and (zerop (mod (game-frame game) (level->spawn-rate (game-level game))))
              ;; Delays the spawning of missiles immediately after a bomb has been used.
              (bomb-cooling-down? (game-fighter game) (game-frame game)))
     (let ((missile (->> game game-sprites sprites-missile missile)))
       (setf (gethash (game-frame game) (game-missiles game)) missile))))
+
+(defun level->spawn-rate (level)
+  (case level
+    (1 60)
+    (2 30)
+    (3 20)
+    (4 10)
+    (t 5)))
 
 ;; --- Evil Ships --- ;;
 
@@ -491,7 +499,7 @@ despawn them."
 
 (defun maybe-spawn-building! (game)
   "Spawn a building depending on the current frame."
-  (when (= 0 (mod (game-frame game) (* 3 +frame-rate+)))
+  (when (= 0 (mod (game-frame game) (* 4 +frame-rate+)))
     (let ((building (->> game game-sprites sprites-building building)))
       (setf (gethash (game-frame game) (game-buildings game)) building))))
 
