@@ -38,7 +38,8 @@
     (move-enemies! (game-tanks game))
     (move-enemies! (game-evil-ships game))
     (tick! (game-tanks game) fc)
-    (tick! (game-evil-ships game) fc)))
+    (tick! (game-evil-ships game) fc)
+    (despawn! (game-explosions game) fc)))
 
 (defun update-player! (game)
   "Handle powerups, player input, and collisions."
@@ -50,7 +51,6 @@
     (tick! (game-powerups game) fc)
     (tick! fighter fc)
     (despawn! (game-powerups game) fc)
-    (despawn! (game-explosions game) fc)
     (handle-player-input! game)
     (handle-fighter-collisions! game)
     (when (beam-shooting? beam)
