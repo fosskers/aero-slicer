@@ -28,8 +28,6 @@ collision check.")
   "The X coordinate of the fighter's spawn point (after death, etc.).")
 (defparameter +fighter-spawn-y+ (float (- +world-max-y+ 24))
   "The Y coordinate of the fighter's spawn point.")
-(defparameter +warp-cooldown+ (* 2 +frame-rate+)
-  "How soon the player can warp the fighter again.")
 (defparameter +warp-distance+ 48
   "The pixel distance moved by the fighter during a warp.")
 (defparameter +bomb-cooldown+ (* 2 +frame-rate+)

@@ -163,18 +163,12 @@
   (let* ((fighter (game-fighter game))
          (beam    (fighter-beam fighter))
          (fc      (game-frame game)))
-    (when (and (warp-button-down?)
-               (can-warp? fighter fc)
-               (movement-button-down?))
-      (setf (fighter-warp-next? fighter) t)
-      (setf (fighter-warp-fc fighter) fc))
+    (maybe-set-warp-direction! fighter)
     (move! fighter)
     (when (and (not (beam-shooting? beam))
                ;; Can't shoot while respawning.
                (not (eq 'hit (fighter-status fighter)))
-               (or (raylib:is-key-pressed +key-space+)
-                   ;; Doesn't crash if the gamepad isn't plugged in.
-                   (raylib:is-gamepad-button-pressed +gamepad+ +gamepad-a+)))
+               (trying-to-shoot?))
       (shoot-beam! beam fc))
     (when (and (can-bomb? fighter fc)
                (eq 'ok (fighter-status fighter))
@@ -205,28 +199,6 @@
                         (incf (game-score game) (points (cdr enemy)))
                         (explode! game (cdr enemy) (car enemy))))
                #'t:for-each enemies))
-
-(defun warp-button-down? ()
-  "Is the warp trigger being held down?"
-  (or (raylib:is-key-down +key-tab+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-left-shoulder+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-right-shoulder+)))
-
-(defun movement-button-down? ()
-  "Is a direction on the arrows or DPAD currently held down?"
-  (or (raylib:is-key-down +key-up+)
-      (raylib:is-key-down +key-down+)
-      (raylib:is-key-down +key-left+)
-      (raylib:is-key-down +key-right+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-up+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-down+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-left+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-right+)))
-
-(defun debugging-gamepad ()
-  (let ((last-pressed (raylib:get-gamepad-button-pressed)))
-    (when (not (zerop last-pressed))
-      (break (format nil "Button: ~a" last-pressed)))))
 
 (defun render (game)
   "Following TEA, render the updated state of a game."
@@ -301,18 +273,6 @@
   (raylib:draw-pixel +world-min-x+ +world-max-y+ raylib:+red+)
   (raylib:draw-pixel +world-max-x+ +world-max-y+ raylib:+red+)
   (raylib:draw-pixel +world-max-x+ +world-min-y+ raylib:+red+))
-
-(defun debugging-keypress ()
-  "Print the key currently being pressed."
-  (let ((key (raylib:get-key-pressed)))
-    (when (and key (not (zerop key)))
-      (break (format nil "KEY: ~a" key))
-      #+nil
-      (raylib:draw-text (format nil "KEY: ~a" key)
-                        (- +screen-width+ 75)
-                        (- +screen-height+ 25)
-                        20
-                        raylib:+lightgray+))))
 
 (defun debugging-nearness (fighter blobs)
   "Testing whether nearness detection is sufficient."
