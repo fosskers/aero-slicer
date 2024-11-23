@@ -111,6 +111,9 @@ despawn them."
 (defmethod health ((missile missile))
   (missile-health missile))
 
+(defmethod points ((missile missile))
+  10)
+
 (defmethod draw ((missile missile) fc)
   (draw-animated (missile-animated missile)
                  (missile-pos missile)
@@ -122,7 +125,7 @@ despawn them."
 
 (defun maybe-spawn-missile! (game)
   "Spawn a little missile, perhaps."
-  ;; TODO 2024-11-23 Tune this spawn frequency.
+  ;; TODO 2024-11-23 Tune this spawn frequency. Perhaps base it on the level?
   (when (zerop (mod (game-frame game) 20))
     (let ((missile (->> game game-sprites sprites-missile missile)))
       (setf (gethash (game-frame game) (game-missiles game)) missile))))
@@ -262,6 +265,9 @@ despawn them."
 (defmethod health ((evil-ship evil-ship))
   (evil-ship-health evil-ship))
 
+(defmethod points ((evil-ship evil-ship))
+  100)
+
 ;; --- Tanks --- ;;
 
 (defstruct tank
@@ -377,6 +383,9 @@ despawn them."
               (zerop (mod fc (* 3 +frame-rate+))))
          (setf (tank-reversing? tank) nil))))
 
+(defmethod points ((tank tank))
+  100)
+
 ;; --- Blobs --- ;;
 
 (defstruct blob
@@ -442,6 +451,9 @@ despawn them."
 (defmethod damage! ((blob blob) fc)
   (setf (blob-hit-fc blob) fc)
   (decf (blob-health blob)))
+
+(defmethod points ((blob blob))
+  100)
 
 ;; --- Buildings --- ;;
 

@@ -145,7 +145,7 @@
                          (t:filter (lambda (enemy) (<= (health (cdr enemy)) 0)))
                          (t:map (lambda (enemy)
                                   (remhash (car enemy) enemies)
-                                  (incf (game-score game) 100))))
+                                  (incf (game-score game) (points (cdr enemy))))))
                  #'t:for-each hits)))
 
 (defun handle-player-input! (game)
@@ -177,23 +177,24 @@
 (defun launch-bomb! (game)
   "Kill all the enemies."
   (let ((fighter (game-fighter game))
-        (fc      (game-frame game))
-        (points  (+ (* 100 (+ (hash-table-count (game-blobs game))
-                              (hash-table-count (game-tanks game))
-                              (hash-table-count (game-evil-ships game))))
-                    (* 10 (hash-table-count (game-missiles game))))))
-    (incf (game-score game) points)
+        (fc      (game-frame game)))
     (decf (fighter-bombs fighter))
     (setf (fighter-bomb-fc fighter) fc)
-    (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
-                 #'t:for-each (game-tanks game))
-    (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
-                 #'t:for-each (game-blobs game))
-    (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
-                 #'t:for-each (game-evil-ships game))
-    (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
-                 #'t:for-each (game-missiles game))
+    (bump-score-and-explode! game (game-tanks game))
+    (bump-score-and-explode! game (game-evil-ships game))
+    (bump-score-and-explode! game (game-blobs game))
+    (bump-score-and-explode! game (game-missiles game))
     (clear-all-enemies! game)))
+
+(defun bump-score-and-explode! (game enemies)
+  (t:transduce (t:map (lambda (enemy)
+                        ;; FIXME: 2024-11-23 You could easily use a global in
+                        ;; `launch-bomb!' for each enemy type, and thereby
+                        ;; restore the closed-form point addition, instead of
+                        ;; doing it interatively here.
+                        (incf (game-score game) (points (cdr enemy)))
+                        (explode! game (cdr enemy) (car enemy))))
+               #'t:for-each enemies))
 
 (defun warp-button-down? ()
   "Is the warp trigger being held down?"

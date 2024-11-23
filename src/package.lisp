@@ -173,6 +173,9 @@ single beam shot will never damage the same enemy twice.")
 (defgeneric expired? (entity fc)
   (:documentation "Has too much timed passed since an entity spawned?"))
 
+(defgeneric points (entity)
+  (:documentation "The number of points yielded by an enemy upon death."))
+
 (defgeneric min-x (sprite)
   (:documentation "The lowest (closest to 0) X value occupied by this sprite."))
 (defgeneric max-x (sprite)
