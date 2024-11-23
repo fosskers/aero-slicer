@@ -9,7 +9,6 @@
 (launch)
 
 ;; NOTE: When you add a texture here, make sure to unload it in `ungame' below.
-;; NOTE: When you add a new beam width, account for it in the hash table in `game'.
 (defstruct (sprites (:constructor sprites))
   "A bank of various sprites and their loaded textures."
   (fighter   (sprite #p"assets/fighter.json"))
@@ -33,7 +32,8 @@
   (little-f  (sprite #p"assets/little-fighter.json"))
   (little-b  (sprite #p"assets/little-bomb.json"))
   (little-p  (sprite #p"assets/little-beam.json"))
-  (numbers   (sprite #p"assets/numbers.json")))
+  (numbers   (sprite #p"assets/numbers.json"))
+  (level     (sprite #p"assets/level-x.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -188,4 +188,5 @@
     (raylib:unload-texture (sprite-texture (sprites-little-f sprites)))
     (raylib:unload-texture (sprite-texture (sprites-little-b sprites)))
     (raylib:unload-texture (sprite-texture (sprites-little-p sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-numbers sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-numbers sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-level sprites)))))

@@ -14,12 +14,14 @@
          (f-icon  (sprites-little-f sprites))
          (b-icon  (sprites-little-b sprites))
          (p-icon  (sprites-little-p sprites))
+         (l-icon  (sprites-level sprites))
          (cool?   (not (can-bomb? (game-fighter game) (game-frame game)))))
     (draw-top-bar (sprites-hud sprites))
     (draw-lives f-icon lives)
     (draw-bombs b-icon bombs cool?)
     (draw-beams p-icon beams)
-    (draw-score game)))
+    (draw-score game)
+    (draw-levels l-icon (game-level game))))
 
 (defun draw-score (game)
   "Draw the score."
@@ -37,6 +39,14 @@
                                  next)))
                          (game-score game))
                  (t:ints 0))))
+
+(defun draw-levels (sprite level)
+  (t:transduce (t:comp (t:take level)
+                       (t:map (lambda (n)
+                                (draw-icon sprite
+                                           (+ (* 4 n) +level-x+)
+                                           +level-y+))))
+               #'t:for-each (t:ints 0)))
 
 (defun draw-lives (sprite lives)
   (when (> lives 2)
