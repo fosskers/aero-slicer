@@ -209,7 +209,7 @@ despawn them."
          ;; Euclidean distance.
          (dist   (sqrt (+ (expt x-diff 2) (expt y-diff 2))))
          ;; Normalisation with div-by-zero protection.
-         (nor-x  (/ x-diff (max dist 0.1)))
+         (nor-x  (* 2 (/ x-diff (max dist 0.1))))
          #+nil (nor-y  (/ y-diff (max dist 0.1))))
     ;; Current stunted form: always approach a certain Y value.
     (when (< (raylib:vector2-y e-pos)
