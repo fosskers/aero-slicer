@@ -117,17 +117,16 @@ The elements are sorted once before the median is extracted.
 Short-circuits the transduction as soon as the condition is met."
   (lambda (&optional (acc nil a-p) (input nil i-p))
     (cond ((and a-p i-p)
-           (let ((test (funcall pred input)))
-             (if test
-                 (make-reduced :val t)
-                 nil)))
+           (if (funcall pred input)
+               (reduced t)
+               nil))
           ((and a-p (not i-p)) acc)
           (t nil))))
 
 #+nil
-(transduce #'pass (any #'evenp) '(1 3 5 7 9))
+(transduce #'pass (anyp #'evenp) '(1 3 5 7 9))
 #+nil
-(transduce #'pass (any #'evenp) '(1 3 5 7 9 2))
+(transduce #'pass (anyp #'evenp) '(1 3 5 2 7 9))
 
 (defmacro all (pred)
   "Deprecated: Use `allp'."
@@ -143,7 +142,7 @@ Short-circuits with NIL if any element fails the test."
            (let ((test (funcall pred input)))
              (if (and acc test)
                  t
-                 (make-reduced :val nil))))
+                 (reduced nil))))
           ((and a-p (not i-p)) acc)
           (t t))))
 
@@ -160,7 +159,7 @@ is yielded, the entire transduction stops.
 
 - `empty-transduction': when no values made it through the transduction.
 "
-  (cond ((and a-p i-p) (make-reduced :val input))
+  (cond ((and a-p i-p) (reduced input))
         ((and a-p (not i-p))
          (if (eq 'transducers-none acc)
              (restart-case (error 'empty-transduction :msg "first: the transduction was empty.")
@@ -255,11 +254,11 @@ functions like this, `fold' is appropriate.
 (declaim (ftype (function ((function (t) *) &key (:default t)) *) find))
 (defun find (pred &key default)
   "Reducer: Find the first element in the transduction that satisfies a given PRED.
-Yields `nil' if no such element were found."
+Yields `nil' if no such element were found, unless a DEFAULT is provided."
   (lambda (&optional (acc nil a-p) (input nil i-p))
     (cond ((and a-p i-p)
            (if (funcall pred input)
-               (make-reduced :val input)
+               (reduced input)
                default))
           ((and a-p (not i-p)) acc)
           (t default))))
