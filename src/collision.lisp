@@ -47,8 +47,15 @@
   (t:transduce (t:filter (lambda (enemy) (colliding? beam (cdr enemy))))
                #'t:cons enemies-ht))
 
-(defun colliding-powerup (fighter powerups-ht)
-  "Find a powerup that the fighter is currently colliding with."
-  (t:transduce (t:filter (lambda (pu) (near? fighter (cdr pu))))
-               (t:find (lambda (pu) (colliding? fighter (cdr pu))))
-               powerups-ht))
+(defun colliding-entity (fighter entity-ht)
+  "Which entity, if any, is colliding with the fighter?"
+  (t:transduce (t:filter (lambda (entity) (near? fighter (cdr entity))))
+               (t:find (lambda (entity) (colliding? fighter (cdr entity))))
+               entity-ht))
+
+(defun direct-collision! (fighter enemies-ht)
+  "If there is a direct, physical collision, also kill the enemy. Yields the
+position of the killed enemy."
+  (when-let* ((enemy (colliding-entity fighter enemies-ht)))
+    (remhash (car enemy) enemies-ht)
+    (pos (cdr enemy))))

@@ -60,7 +60,7 @@
       (damage-from-shot! game beam (game-tanks game))
       (damage-from-shot! game beam (game-evil-ships game))
       (damage-from-shot! game beam (game-missiles game)))
-    (when-let* ((pu (colliding-powerup fighter (game-powerups game))))
+    (when-let* ((pu (colliding-entity fighter (game-powerups game))))
       (collect-powerup! game (car pu) (cdr pu)))))
 
 (defun update-playing! (game)
@@ -103,14 +103,11 @@
   (let* ((fighter (game-fighter game))
          (fc      (game-frame game)))
     (when (and (eq 'ok (fighter-status fighter))
-               (or (enemy-collision? fighter (game-blobs game))
+               (or (when-let* ((pos (or (direct-collision! fighter (game-blobs game))
+                                        (direct-collision! fighter (game-evil-ships game))
+                                        (direct-collision! fighter (game-missiles game)))))
+                     (explosion-at game pos))
                    (enemy-collision? fighter (game-buildings game))
-                   (enemy-collision? fighter (game-evil-ships game))
-                   (enemy-collision? fighter (game-missiles game))
-                   ;; Collision with tanks shouldn't occur because the fighter
-                   ;; is in the air on they're on the ground?
-                   ;;
-                   ;; (enemy-collision? fighter (game-tanks game))
                    (t:transduce #'t:pass
                                 (t:anyp (lambda (pair)
                                           (let* ((beam (tank-beam (cdr pair))))
@@ -123,13 +120,7 @@
                                             (and (beam-shooting? beam)
                                                  (colliding? fighter beam)))))
                                 (game-evil-ships game))))
-      ;; Spawn an explosion where the fighter just was.
-      (let* ((pos (fighter-pos fighter))
-             (explosion (explosion (sprites-explosion (game-sprites game))
-                                   (raylib:make-vector2 :x (raylib:vector2-x pos)
-                                                        :y (raylib:vector2-y pos))
-                                   fc)))
-        (setf (gethash fc (game-explosions game)) explosion))
+      (explosion-at game (fighter-pos fighter))
       ;; Kill the fighter.
       (-<>> fighter
         (fighter-beam)
@@ -140,6 +131,15 @@
       (decf (game-lives game))
       (when (<= (game-lives game) 0)
         (setf (game-mode game) 'dead)))))
+
+(defun explosion-at (game pos)
+  "Spawn an explosion at the given position."
+  (let ((fc (game-frame game)))
+    (setf (gethash (+ fc (raylib:vector2-x pos)) (game-explosions game))
+          (explosion (->> game game-sprites sprites-explosion)
+                     (raylib:make-vector2 :x (raylib:vector2-x pos)
+                                          :y (raylib:vector2-y pos))
+                     fc))))
 
 (defun damage-from-shot! (game beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."
