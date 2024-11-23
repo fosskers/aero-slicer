@@ -90,6 +90,7 @@
   (setf (game-level game) 1)
   (setf (game-mode game) 'playing)
   (setf (game-widener-threshold game) 1000)
+  (setf (game-level-thresh game) +level-progression-interval+)
   (let ((fighter (game-fighter game)))
     (setf (fighter-bombs fighter) 3)
     (setf (fighter-beam fighter) (beam (->> game game-sprites sprites-beam-2)
