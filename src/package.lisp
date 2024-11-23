@@ -62,7 +62,7 @@ single beam shot will never damage the same enemy twice.")
 ;; --- Fixed Positions --- ;;
 
 (defparameter +icon-y+   (+ 2 +world-min-y+))
-(defparameter +mini-icon-y+ (+ 6 +world-min-y+))
+(defparameter +mini-icon-y+ (+ 7 +world-min-y+))
 (defparameter +life-1-x+ (+ 6 +world-min-x+))
 (defparameter +life-2-x+ (+ 18 +world-min-x+))
 (defparameter +life-3-x+ (+ 30 +world-min-x+))
@@ -77,6 +77,9 @@ single beam shot will never damage the same enemy twice.")
 (defparameter +beam-6-x+ (+ 138 +world-min-x+))
 (defparameter +beam-7-x+ (+ 146 +world-min-x+))
 (defparameter +beam-8-x+ (+ 154 +world-min-x+))
+(defparameter +score-y+  (float (+ 2 +world-min-y+)))
+(defparameter +score-x+  (float (+ 153 +world-min-x+)))
+(defparameter *score-pos* (raylib:make-vector2 :x +score-x+ :y +score-y+))
 
 ;; --- Colours --- ;;
 

@@ -215,13 +215,14 @@
   (with-drawing
     (raylib:clear-background raylib:+raywhite+)
     (with-2d-camera (game-camera game)
-      (debugging-dots)
+      #++ (debugging-dots)
       (case (game-mode game)
         (playing (render-playing game))
         (waiting (render-waiting game))
         (dead    (render-dead game))))
     (raylib:draw-fps 10 (- +screen-height+ 50))
-    (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)))
+    (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)
+    #++ (raylib:draw-text (format nil "SCORE: ~a" (game-score game)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)))
 
 (defun render-waiting (game)
   "Render a splash screen."

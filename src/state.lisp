@@ -32,7 +32,8 @@
   (hud       (sprite #p"assets/hud.json"))
   (little-f  (sprite #p"assets/little-fighter.json"))
   (little-b  (sprite #p"assets/little-bomb.json"))
-  (little-p  (sprite #p"assets/little-beam.json")))
+  (little-p  (sprite #p"assets/little-beam.json"))
+  (numbers   (sprite #p"assets/numbers.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -76,6 +77,8 @@
 ;;
 ;; Disdvantage: it would reread all the sprite data, reset the camera, and reset
 ;; the current frame number.
+;;
+;; 2024-11-23 Yup I'm leaning towards a No.
 (defun reset-game! (game)
   "Reset the `game' to an initial, reusable state."
   (setf (game-lives game) 3)
@@ -184,4 +187,5 @@
     (raylib:unload-texture (sprite-texture (sprites-hud sprites)))
     (raylib:unload-texture (sprite-texture (sprites-little-f sprites)))
     (raylib:unload-texture (sprite-texture (sprites-little-b sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-little-p sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-little-p sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-numbers sprites)))))
