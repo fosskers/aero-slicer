@@ -53,8 +53,12 @@
 (defun can-bomb? (fighter fc)
   "Could the fighter launch a bomb on this frame?"
   (and (> (fighter-bombs fighter) 0)
-       (>= (- fc (fighter-bomb-fc fighter))
-           +bomb-cooldown+)))
+       (bomb-cooling-down? fighter fc)))
+
+(defun bomb-cooling-down? (fighter fc)
+  "Was a bomb very recently used?"
+  (>= (- fc (fighter-bomb-fc fighter))
+      +bomb-cooldown+))
 
 (defun kill-fighter! (fighter beam-sprite fc)
   "Reset the fighter's position and animation."

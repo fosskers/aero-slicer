@@ -126,9 +126,9 @@ despawn them."
 (defun maybe-spawn-missile! (game)
   "Spawn a little missile, perhaps."
   ;; TODO 2024-11-23 Tune this spawn frequency. Perhaps base it on the level?
-  (when (and (zerop (mod (game-frame game) 20))
+  (when (and (zerop (mod (game-frame game) 30))
              ;; Delays the spawning of missiles immediately after a bomb has been used.
-             (can-bomb? (game-fighter game) (game-frame game)))
+             (bomb-cooling-down? (game-fighter game) (game-frame game)))
     (let ((missile (->> game game-sprites sprites-missile missile)))
       (setf (gethash (game-frame game) (game-missiles game)) missile))))
 
