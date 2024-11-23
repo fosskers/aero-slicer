@@ -27,17 +27,6 @@
          'right)
         (t nil)))
 
-(defun movement-button-down? ()
-  "Is a direction on the arrows or DPAD currently held down?"
-  (or (raylib:is-key-down +key-up+)
-      (raylib:is-key-down +key-down+)
-      (raylib:is-key-down +key-left+)
-      (raylib:is-key-down +key-right+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-up+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-down+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-left+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-right+)))
-
 (defun trying-to-shoot? ()
   "Is the player trying to shoot?"
   (or (raylib:is-key-pressed +key-space+)

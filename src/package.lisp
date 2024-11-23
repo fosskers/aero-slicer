@@ -85,6 +85,7 @@ single beam shot will never damage the same enemy twice.")
 
 (defparameter +faded-white+ (raylib:color-alpha raylib:+white+ 0.85))
 (defparameter +very-faded-white+ (raylib:color-alpha raylib:+white+ 0.5))
+(defparameter +very-faded-blue+ (raylib:color-alpha raylib:+blue+ 0.35))
 
 ;; --- Keys --- ;;
 

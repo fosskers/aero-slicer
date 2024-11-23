@@ -46,6 +46,7 @@
   (camera  (camera) :type raylib:camera-2d)
   (sprites nil :type sprites)
   (fighter nil :type fighter)
+  (warp-ghost nil :type ghost)
   ;; The point after which the next Beam Widener powerup should spawn.
   (widener-threshold 1000 :type fixnum)
   ;; The key is the frame number upon which the blob was spawned.
@@ -71,6 +72,7 @@
   "Initialise the various game resources."
   (let ((sprites (sprites)))
     (make-game :sprites sprites
+               :warp-ghost (ghost (sprites-fighter sprites))
                :fighter (fighter (sprites-fighter sprites)
                                  (sprites-beam-2 sprites)))))
 
@@ -95,10 +97,11 @@
   (setf (game-level-thresh game) +level-progression-interval+)
   (let ((fighter (game-fighter game)))
     (setf (fighter-bombs fighter) 3)
-    (setf (fighter-beam fighter) (beam (->> game game-sprites sprites-beam-2)
-                                       (fighter-pos fighter)
-                                       (raylib:rectangle-width (fighter-bbox fighter))
-                                       +beam-y-offset+))))
+    (setf (fighter-beam fighter)
+          (beam (->> game game-sprites sprites-beam-2)
+                (fighter-pos fighter)
+                (raylib:rectangle-width (fighter-bbox fighter))
+                +beam-y-offset+))))
 
 (defun clear-all-enemies! (game)
   "From a bomb or otherwise, clear all the damageable enemies."

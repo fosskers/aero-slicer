@@ -40,6 +40,35 @@
                                                :height (raylib:rectangle-height rect))
                   :beam (beam beam-sprite pos width +beam-y-offset+))))
 
+(defstruct ghost
+  "A warp ghost."
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2))
+
+(defun ghost (sprite)
+  "Construct a warp `ghost'."
+  (make-ghost :animated (make-animated :sprite sprite)
+              :pos (raylib:make-vector2 :x 0.0 :y 0.0)))
+
+(defun draw-ghost (ghost dir f-pos fc)
+  "Draw a spoooky warp ghost."
+  (let ((x-diff (case dir
+                  (left  (- +warp-distance+))
+                  (right +warp-distance+)
+                  (t 0)))
+        (y-diff (case dir
+                  (up (- +warp-distance+))
+                  (down +warp-distance+)
+                  (t 0))))
+    (setf (raylib:vector2-x (ghost-pos ghost))
+          (+ x-diff (raylib:vector2-x f-pos)))
+    (setf (raylib:vector2-y (ghost-pos ghost))
+          (+ y-diff (raylib:vector2-y f-pos)))
+    (draw-animated (ghost-animated ghost)
+                   (ghost-pos ghost)
+                   fc
+                   :colour +very-faded-blue+)))
+
 ;; --- Status --- ;;
 
 (defun maybe-set-warp-direction! (fighter)

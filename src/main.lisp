@@ -237,6 +237,9 @@
     (draw (game-powerups game) fc)
     (draw (game-fighter game) fc)
     (draw-hud game)
+    (when-let* ((fighter (game-fighter game))
+                (dir     (fighter-warp-dir fighter)))
+      (draw-ghost (game-warp-ghost game) dir (fighter-pos fighter) (game-frame game)))
     #++ (debugging-nearness (game-fighter game) (game-blobs game))))
 
 (defun render-dead (game)
