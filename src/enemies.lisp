@@ -121,7 +121,8 @@ despawn them."
 
 (defmethod move! ((missile missile))
   "Missiles shoot straight ahead quickly."
-  (incf (raylib:vector2-y (missile-pos missile)) 2.0))
+  (incf (raylib:vector2-y (missile-pos missile)) 2.0)
+  (incf (raylib:rectangle-y (missile-bbox missile)) 2.0))
 
 (defun maybe-spawn-missile! (game)
   "Spawn a little missile, perhaps."
