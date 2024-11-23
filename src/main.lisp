@@ -123,10 +123,20 @@
                                             (and (beam-shooting? beam)
                                                  (colliding? fighter beam)))))
                                 (game-evil-ships game))))
-      (kill-fighter! fighter
-                     (downgrade-beam (game-sprites game)
-                                     (->> fighter fighter-beam beam-animated animated-sprite))
-                     fc)
+      ;; Spawn an explosion where the fighter just was.
+      (let* ((pos (fighter-pos fighter))
+             (explosion (explosion (sprites-explosion (game-sprites game))
+                                   (raylib:make-vector2 :x (raylib:vector2-x pos)
+                                                        :y (raylib:vector2-y pos))
+                                   fc)))
+        (setf (gethash fc (game-explosions game)) explosion))
+      ;; Kill the fighter.
+      (-<>> fighter
+        (fighter-beam)
+        (beam-animated)
+        (animated-sprite)
+        (downgrade-beam (game-sprites game))
+        (kill-fighter! fighter <> fc))
       (decf (game-lives game))
       (when (<= (game-lives game) 0)
         (setf (game-mode game) 'dead)))))
