@@ -33,10 +33,12 @@
     (maybe-spawn-building! game)
     (maybe-spawn-tank! game)
     (maybe-spawn-ship! game)
+    (maybe-spawn-missile! game)
     (move-enemies! (game-blobs game))
     (move-enemies! (game-buildings game))
     (move-enemies! (game-tanks game))
     (move-enemies! (game-evil-ships game))
+    (move-enemies! (game-missiles game))
     (tick! (game-tanks game) fc)
     (tick! (game-evil-ships game) fc)
     (despawn! (game-explosions game) fc)))
@@ -56,7 +58,8 @@
     (when (beam-shooting? beam)
       (damage-from-shot! game beam (game-blobs game))
       (damage-from-shot! game beam (game-tanks game))
-      (damage-from-shot! game beam (game-evil-ships game)))
+      (damage-from-shot! game beam (game-evil-ships game))
+      (damage-from-shot! game beam (game-missiles game)))
     (when-let* ((pu (colliding-powerup fighter (game-powerups game))))
       (collect-powerup! game (car pu) (cdr pu)))))
 
@@ -103,6 +106,7 @@
                (or (enemy-collision? fighter (game-blobs game))
                    (enemy-collision? fighter (game-buildings game))
                    (enemy-collision? fighter (game-evil-ships game))
+                   (enemy-collision? fighter (game-missiles game))
                    ;; Collision with tanks shouldn't occur because the fighter
                    ;; is in the air on they're on the ground?
                    ;;
@@ -174,9 +178,10 @@
   "Kill all the enemies."
   (let ((fighter (game-fighter game))
         (fc      (game-frame game))
-        (points  (* 100 (+ (hash-table-count (game-blobs game))
-                           (hash-table-count (game-tanks game))
-                           (hash-table-count (game-evil-ships game))))))
+        (points  (+ (* 100 (+ (hash-table-count (game-blobs game))
+                              (hash-table-count (game-tanks game))
+                              (hash-table-count (game-evil-ships game))))
+                    (* 10 (hash-table-count (game-missiles game))))))
     (incf (game-score game) points)
     (decf (fighter-bombs fighter))
     (setf (fighter-bomb-fc fighter) fc)
@@ -186,6 +191,8 @@
                  #'t:for-each (game-blobs game))
     (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
                  #'t:for-each (game-evil-ships game))
+    (t:transduce (t:map (lambda (enemy) (explode! game (cdr enemy) (car enemy))))
+                 #'t:for-each (game-missiles game))
     (clear-all-enemies! game)))
 
 (defun warp-button-down? ()
@@ -231,12 +238,13 @@
                     (- 0 55) 0 10 raylib:+gray+))
 
 (defun render-enemies (game)
-  "All all enemies."
+  "Render all enemies."
   (let ((fc (game-frame game)))
     (draw (game-buildings game) fc)
     (draw (game-blobs game) fc)
     (draw (game-tanks game) fc)
     (draw (game-evil-ships game) fc)
+    (draw (game-missiles game) fc)
     (draw (game-explosions game) fc)))
 
 (defun render-playing (game)

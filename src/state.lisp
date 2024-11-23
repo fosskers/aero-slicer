@@ -33,7 +33,8 @@
   (little-b  (sprite #p"assets/little-bomb.json"))
   (little-p  (sprite #p"assets/little-beam.json"))
   (numbers   (sprite #p"assets/numbers.json"))
-  (level     (sprite #p"assets/level-x.json")))
+  (level     (sprite #p"assets/level-x.json"))
+  (missile   (sprite #p"assets/missile.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -52,6 +53,7 @@
   (tanks   (make-hash-table :size 16) :type hash-table)
   (evil-ships (make-hash-table :size 16) :type hash-table)
   (buildings (make-hash-table :size 16) :type hash-table)
+  (missiles (make-hash-table :size 16) :type hash-table)
   (powerups (make-hash-table :size 16) :type hash-table)
   ;; TODO: 2024-11-14 Consider generalising this to any other on-screen
   ;; animations.
@@ -102,7 +104,8 @@
   "From a bomb or otherwise, clear all the damageable enemies."
   (setf (game-blobs game) (make-hash-table :size 16))
   (setf (game-tanks game) (make-hash-table :size 16))
-  (setf (game-evil-ships game) (make-hash-table :size 16)))
+  (setf (game-evil-ships game) (make-hash-table :size 16))
+  (setf (game-missiles game) (make-hash-table :size 16)))
 
 (defun beam-by-level (game)
   "Yield a beam sprite for enemies according to the current level."
@@ -190,4 +193,5 @@
     (raylib:unload-texture (sprite-texture (sprites-little-b sprites)))
     (raylib:unload-texture (sprite-texture (sprites-little-p sprites)))
     (raylib:unload-texture (sprite-texture (sprites-numbers sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-level sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-level sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-missile sprites)))))

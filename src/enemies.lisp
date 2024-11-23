@@ -75,6 +75,58 @@ despawn them."
                    (game-explosions game))
           explosion)))
 
+;; --- Missiles --- ;;
+
+(defstruct missile
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2)
+  (bbox     nil :type raylib:rectangle)
+  (health   1   :type fixnum))
+
+(defun missile (sprite)
+  "Construct a little missile."
+  (let* ((pos      (random-spawn-position))
+         (animated (make-animated :sprite sprite))
+         (rect     (bounding-box animated)))
+    (make-missile :animated animated
+                  :pos pos
+                  :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
+                                               :y (raylib:vector2-y pos)
+                                               :width (raylib:rectangle-width rect)
+                                               :height (raylib:rectangle-height rect)))))
+
+(defmethod pos ((missile missile))
+  (missile-pos missile))
+
+(defmethod bbox ((missile missile))
+  (missile-bbox missile))
+
+(defmethod vulnerable? ((missile missile) fc)
+  "Missiles can always be instantly shot down."
+  t)
+
+(defmethod damage! ((missile missile) fc)
+  (decf (missile-health missile)))
+
+(defmethod health ((missile missile))
+  (missile-health missile))
+
+(defmethod draw ((missile missile) fc)
+  (draw-animated (missile-animated missile)
+                 (missile-pos missile)
+                 fc))
+
+(defmethod move! ((missile missile))
+  "Missiles shoot straight ahead quickly."
+  (incf (raylib:vector2-y (missile-pos missile)) 2.0))
+
+(defun maybe-spawn-missile! (game)
+  "Spawn a little missile, perhaps."
+  ;; TODO 2024-11-23 Tune this spawn frequency.
+  (when (zerop (mod (game-frame game) 20))
+    (let ((missile (->> game game-sprites sprites-missile missile)))
+      (setf (gethash (game-frame game) (game-missiles game)) missile))))
+
 ;; --- Evil Ships --- ;;
 
 (defstruct evil-ship
