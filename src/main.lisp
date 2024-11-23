@@ -78,11 +78,11 @@
       (ammo (when (< (fighter-bombs fighter) +bomb-max-capacity+)
               (remhash key (game-powerups game))
               (incf (fighter-bombs fighter))))
-      (wide (let ((beam (beam (upgrade-beam (game-sprites game)
-                                            (->> beam beam-animated animated-sprite))
-                              (fighter-pos fighter)
-                              (raylib:rectangle-width (fighter-bbox fighter))
-                              +beam-y-offset+)))
+      (wide (let ((beam (@beam (upgrade-beam (game-sprites game)
+                                             (->> beam beam-animated animated-sprite))
+                               (fighter-pos fighter)
+                               (raylib:rectangle-width (fighter-bbox fighter))
+                               +beam-y-offset+)))
               (setf (fighter-beam fighter) beam)
               (remhash key (game-powerups game)))))))
 
@@ -106,7 +106,7 @@
                (or (when-let* ((pos (or (direct-collision! fighter (game-blobs game))
                                         (direct-collision! fighter (game-evil-ships game))
                                         (direct-collision! fighter (game-missiles game)))))
-                     (explosion-at game pos))
+                     (explode! game pos))
                    (enemy-collision? fighter (game-buildings game))
                    (t:transduce #'t:pass
                                 (t:anyp (lambda (pair)
@@ -120,7 +120,7 @@
                                             (and (beam-shooting? beam)
                                                  (colliding? fighter beam)))))
                                 (game-evil-ships game))))
-      (explosion-at game (fighter-pos fighter))
+      (explode! game (fighter-pos fighter))
       ;; Kill the fighter.
       (-<>> fighter
         (fighter-beam)
@@ -132,15 +132,6 @@
       (when (<= (game-lives game) 0)
         (setf (game-mode game) 'dead)))))
 
-(defun explosion-at (game pos)
-  "Spawn an explosion at the given position."
-  (let ((fc (game-frame game)))
-    (setf (gethash (+ fc (raylib:vector2-x pos)) (game-explosions game))
-          (explosion (->> game game-sprites sprites-explosion)
-                     (raylib:make-vector2 :x (raylib:vector2-x pos)
-                                          :y (raylib:vector2-y pos))
-                     fc))))
-
 (defun damage-from-shot! (game beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."
   (let ((hits (enemies-hit-by-beam beam enemies))
@@ -148,7 +139,7 @@
     (t:transduce (t:comp (t:filter (lambda (enemy) (vulnerable? (cdr enemy) fc)))
                          (t:map (lambda (enemy)
                                   (damage! (cdr enemy) fc)
-                                  (explode! game (cdr enemy) (car enemy))
+                                  (explode! game (pos (cdr enemy)))
                                   enemy))
                          ;; Despawn the enemy if it's dead, and reward the
                          ;; player with some points.
@@ -197,7 +188,7 @@
                         ;; restore the closed-form point addition, instead of
                         ;; doing it interatively here.
                         (incf (game-score game) (points (cdr enemy)))
-                        (explode! game (cdr enemy) (car enemy))))
+                        (explode! game (pos (cdr enemy)))))
                #'t:for-each enemies))
 
 (defun render (game)
@@ -224,8 +215,8 @@
   "Render all enemies."
   (let ((fc (game-frame game)))
     (draw (game-buildings game) fc)
-    (draw (game-blobs game) fc)
     (draw (game-tanks game) fc)
+    (draw (game-blobs game) fc)
     (draw (game-evil-ships game) fc)
     (draw (game-missiles game) fc)
     (draw (game-explosions game) fc)))
@@ -303,7 +294,7 @@
   "Launch the game."
   (raylib:init-window +screen-width+ +screen-height+ "raylib/CL Example")
   (raylib:set-target-fps +frame-rate+)
-  (let ((game (game)))
+  (let ((game (@game)))
     (event-loop game)
     (ungame game))
   (raylib:close-window))

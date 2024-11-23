@@ -25,7 +25,7 @@
   ;; The last time a bomb was used.
   (bomb-fc   (- +bomb-cooldown+) :type fixnum))
 
-(defun fighter (fighter-sprite beam-sprite)
+(defun @fighter (fighter-sprite beam-sprite)
   "A smart-constructor for `fighter'."
   (let* ((animated (make-animated :sprite fighter-sprite))
          (rect     (bounding-box animated))
@@ -38,14 +38,14 @@
                                                :y +fighter-spawn-y+
                                                :width width
                                                :height (raylib:rectangle-height rect))
-                  :beam (beam beam-sprite pos width +beam-y-offset+))))
+                  :beam (@beam beam-sprite pos width +beam-y-offset+))))
 
 (defstruct ghost
   "A warp ghost."
   (animated nil :type animated)
   (pos      nil :type raylib:vector2))
 
-(defun ghost (sprite)
+(defun @ghost (sprite)
   "Construct a warp `ghost'."
   (make-ghost :animated (make-animated :sprite sprite)
               :pos (raylib:make-vector2 :x 0.0 :y 0.0)))
@@ -103,10 +103,10 @@
 (defun reset-beam! (fighter beam-sprite)
   "Shrink the beam back to a narrower size because the fighter was destroyed, etc."
   (setf (fighter-beam fighter)
-        (beam beam-sprite
-              (fighter-pos fighter)
-              (raylib:rectangle-width (fighter-bbox fighter))
-              +beam-y-offset+)))
+        (@beam beam-sprite
+               (fighter-pos fighter)
+               (raylib:rectangle-width (fighter-bbox fighter))
+               +beam-y-offset+)))
 
 ;; --- Generics --- ;;
 

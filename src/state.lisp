@@ -9,7 +9,7 @@
 (launch)
 
 ;; NOTE: When you add a texture here, make sure to unload it in `ungame' below.
-(defstruct (sprites (:constructor sprites))
+(defstruct (sprites (:constructor @sprites))
   "A bank of various sprites and their loaded textures."
   (fighter   (sprite #p"assets/fighter.json"))
   (beam-2    (sprite #p"assets/beam-2.json"))
@@ -68,13 +68,13 @@
   ;; The point after which the level should increase.
   (level-thresh +level-progression-interval+ :type fixnum))
 
-(defun game ()
+(defun @game ()
   "Initialise the various game resources."
-  (let ((sprites (sprites)))
+  (let ((sprites (@sprites)))
     (make-game :sprites sprites
-               :warp-ghost (ghost (sprites-fighter sprites))
-               :fighter (fighter (sprites-fighter sprites)
-                                 (sprites-beam-2 sprites)))))
+               :warp-ghost (@ghost (sprites-fighter sprites))
+               :fighter (@fighter (sprites-fighter sprites)
+                                  (sprites-beam-2 sprites)))))
 
 ;; TODO: 2024-11-12 Should I just reconstruct the `game' entirely instead of
 ;; doing all this manual resetting?
@@ -98,10 +98,10 @@
   (let ((fighter (game-fighter game)))
     (setf (fighter-bombs fighter) 3)
     (setf (fighter-beam fighter)
-          (beam (->> game game-sprites sprites-beam-2)
-                (fighter-pos fighter)
-                (raylib:rectangle-width (fighter-bbox fighter))
-                +beam-y-offset+))))
+          (@beam (->> game game-sprites sprites-beam-2)
+                 (fighter-pos fighter)
+                 (raylib:rectangle-width (fighter-bbox fighter))
+                 +beam-y-offset+))))
 
 (defun clear-all-enemies! (game)
   "From a bomb or otherwise, clear all the damageable enemies."

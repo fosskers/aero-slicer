@@ -26,7 +26,7 @@
   ;; The total duration, in frames, that the shot should be active for.
   (shot-dur  0   :type fixnum :read-only t))
 
-(defun beam (sprite parent-pos parent-width y-offset)
+(defun @beam (sprite parent-pos parent-width y-offset)
   "Construct a beam."
   (let* ((animated (make-animated :sprite sprite :default 'shooting :active 'shooting))
          (rect     (bounding-box animated))

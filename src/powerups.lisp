@@ -13,7 +13,7 @@
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle))
 
-(defun wide (sprite)
+(defun @wide (sprite)
   "A smart-consturctor for `wide'."
   (let* ((pos      (random-position))
          (animated (make-animated :sprite sprite))
@@ -32,7 +32,7 @@ shouldn't spawn if the fighter is already at max beam width."
     (incf (game-widener-threshold game) 1000)
     (when (not (eq (->> game game-fighter fighter-beam beam-animated animated-sprite)
                    (sprites-beam-18 (game-sprites game))))
-      (let ((wide (wide (sprites-wide (game-sprites game)))))
+      (let ((wide (@wide (sprites-wide (game-sprites game)))))
         (setf (gethash (game-frame game) (game-powerups game)) wide)))))
 
 (defmethod pos ((wide wide))
@@ -62,7 +62,7 @@ shouldn't spawn if the fighter is already at max beam width."
   (bbox     nil :type raylib:rectangle)
   (spawn-fc 0   :type fixnum))
 
-(defun ammo (sprite fc)
+(defun @ammo (sprite fc)
   "A smart-consturctor for `ammo'."
   (let* ((pos      (random-position))
          (animated (make-animated :sprite sprite))
@@ -82,7 +82,7 @@ shouldn't spawn if the fighter is already at max beam width."
     ;; TODO: 2024-11-08 Make more robust. Use randomness, etc.
     (when (and (< (fighter-bombs fighter) +bomb-max-capacity+)
                (zerop (mod fc (* 30 +frame-rate+))))
-      (let ((ammo (ammo (sprites-bomb (game-sprites game)) fc)))
+      (let ((ammo (@ammo (sprites-bomb (game-sprites game)) fc)))
         (setf (gethash fc (game-powerups game)) ammo)))))
 
 (defmethod pos ((ammo ammo))

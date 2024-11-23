@@ -39,7 +39,7 @@ despawn them."
   (start-fc 0   :type fixnum)
   (duration 0   :type fixnum))
 
-(defun explosion (sprite parent-pos fc)
+(defun @explosion (sprite parent-pos fc)
   "Construct an `explosion' that knows when it should despawn."
   (make-explosion :animated (make-animated :sprite sprite :default 'exploding :active 'exploding)
                   :pos parent-pos
@@ -55,25 +55,14 @@ despawn them."
                  (explosion-pos explosion)
                  fc))
 
-(defun explode! (game enemy enemy-key)
-  "Spawn an explosion on top of a given enemy."
-  (let* ((fc (game-frame game))
-         (explosion (explosion (sprites-explosion (game-sprites game))
-                               (pos enemy)
-                               fc)))
-    ;; NOTE: If we just set the key to the
-    ;; current fc, then when multiple enemies
-    ;; were hit, only one explosion would
-    ;; actually spawn since they Hash Table keys
-    ;; would collide. We need some
-    ;; disambiguating factor, which is precisely
-    ;; the addition of the key of the enemy we
-    ;; hit.
-    (setf (gethash (+ enemy-key
-                      (floor (raylib:vector2-y (pos enemy)))
-                      fc)
-                   (game-explosions game))
-          explosion)))
+(defun explode! (game pos)
+  "Spawn an explosion at the given position."
+  (let ((fc (game-frame game)))
+    (setf (gethash (+ fc (raylib:vector2-x pos)) (game-explosions game))
+          (@explosion (->> game game-sprites sprites-explosion)
+                      (raylib:make-vector2 :x (raylib:vector2-x pos)
+                                           :y (raylib:vector2-y pos))
+                      fc))))
 
 ;; --- Missiles --- ;;
 
@@ -83,7 +72,7 @@ despawn them."
   (bbox     nil :type raylib:rectangle)
   (health   1   :type fixnum))
 
-(defun missile (sprite)
+(defun @missile (sprite)
   "Construct a little missile."
   (let* ((pos      (random-spawn-position))
          (animated (make-animated :sprite sprite))
@@ -130,7 +119,7 @@ despawn them."
   (when (and (zerop (mod (game-frame game) (level->spawn-rate (game-level game))))
              ;; Delays the spawning of missiles immediately after a bomb has been used.
              (bomb-cooling-down? (game-fighter game) (game-frame game)))
-    (let ((missile (->> game game-sprites sprites-missile missile)))
+    (let ((missile (->> game game-sprites sprites-missile @missile)))
       (setf (gethash (game-frame game) (game-missiles game)) missile))))
 
 (defun level->spawn-rate (level)
@@ -160,7 +149,7 @@ despawn them."
   ;; How long the beam charge should last.
   (charge-dur 0  :type fixnum))
 
-(defun evil-ship (evil-ship-sprite beam-sprite fighter-pos level)
+(defun @evil-ship (evil-ship-sprite beam-sprite fighter-pos level)
   "A smart-constructor for an `evil-ship'."
   (let* ((pos      (random-spawn-position))
          (animated (make-animated :sprite evil-ship-sprite))
@@ -174,7 +163,7 @@ despawn them."
                                                  :width width
                                                  :height (raylib:rectangle-height rect))
                     :health (+ +evil-ship-base-hp+ level)
-                    :beam (beam beam-sprite pos width +evil-ship-beam-y-offset+)
+                    :beam (@beam beam-sprite pos width +evil-ship-beam-y-offset+)
                     :charge-dur (charge-duration evil-ship-sprite))))
 
 (defmethod pos ((evil-ship evil-ship))
@@ -233,10 +222,10 @@ despawn them."
     (when (and (zerop (hash-table-count (game-evil-ships game)))
                (= 0 (mod fc (* 6 +frame-rate+))))
       (let* ((sprites (game-sprites game))
-             (evil-ship (evil-ship (sprites-evil-ship sprites)
-                                   (beam-by-level game)
-                                   (fighter-pos (game-fighter game))
-                                   level)))
+             (evil-ship (@evil-ship (sprites-evil-ship sprites)
+                                    (beam-by-level game)
+                                    (fighter-pos (game-fighter game))
+                                    level)))
         (setf (gethash fc (game-evil-ships game)) evil-ship)))))
 
 (defmethod tick! ((evil-ship evil-ship) fc)
@@ -297,13 +286,13 @@ despawn them."
   (hit-fc     0   :type fixnum)
   (charge-dur 0   :type fixnum))
 
-(defun tank (tank-sprite beam-sprite level fc)
+(defun @tank (tank-sprite beam-sprite level fc)
   "Spawn a `tank' with an associated `beam'."
   (let* ((pos      (random-spawn-position))
          (animated (make-animated :sprite tank-sprite))
          (rect     (bounding-box animated))
          (width    (raylib:rectangle-width rect))
-         (beam     (beam beam-sprite pos width +tank-beam-y-offset+)))
+         (beam     (@beam beam-sprite pos width +tank-beam-y-offset+)))
     (setf (beam-shot-fc beam) fc)
     (make-tank :animated animated
                :pos pos
@@ -344,10 +333,10 @@ despawn them."
   (let ((fc (game-frame game)))
     (when (= 0 (mod fc (* 4 +frame-rate+)))
       (let* ((sprites (game-sprites game))
-             (tank (tank (sprites-tank sprites)
-                         (beam-by-level game)
-                         (game-level game)
-                         fc)))
+             (tank (@tank (sprites-tank sprites)
+                          (beam-by-level game)
+                          (game-level game)
+                          fc)))
         (setf (gethash fc (game-tanks game)) tank)))))
 
 ;; TODO: 2024-11-09 Merge with `tick!'?
@@ -412,7 +401,7 @@ despawn them."
   (health   0   :type fixnum)
   (hit-fc   0   :type fixnum))
 
-(defun blob (sprite level)
+(defun @blob (sprite level)
   "Spawn a `blob' somewhere off the top of the screen."
   (let* ((pos (random-spawn-position))
          (animated (make-animated :sprite sprite))
@@ -444,8 +433,8 @@ despawn them."
 (defun maybe-spawn-blob! (game)
   "Spawn a blob depending on the current frame."
   (when (= 0 (mod (game-frame game) (* 2 +frame-rate+)))
-    (let ((blob (blob (sprites-blob (game-sprites game))
-                      (game-level game))))
+    (let ((blob (@blob (sprites-blob (game-sprites game))
+                       (game-level game))))
       (setf (gethash (game-frame game) (game-blobs game)) blob))))
 
 (defmethod draw ((blob blob) fc)
@@ -475,7 +464,7 @@ despawn them."
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle))
 
-(defun building (sprite)
+(defun @building (sprite)
   "Spawn a `building' somewhere off the top of the screen."
   (let* ((pos (random-spawn-position))
          (animated (make-animated :sprite sprite))
@@ -501,7 +490,7 @@ despawn them."
 (defun maybe-spawn-building! (game)
   "Spawn a building depending on the current frame."
   (when (= 0 (mod (game-frame game) (* 4 +frame-rate+)))
-    (let ((building (->> game game-sprites sprites-building building)))
+    (let ((building (->> game game-sprites sprites-building @building)))
       (setf (gethash (game-frame game) (game-buildings game)) building))))
 
 ;; TODO: 2024-11-01 Consider consolidating into something generic if this
