@@ -175,14 +175,8 @@ single beam shot will never damage the same enemy twice.")
 (defgeneric points (entity)
   (:documentation "The number of points yielded by an enemy upon death."))
 
-(defgeneric min-x (sprite)
-  (:documentation "The lowest (closest to 0) X value occupied by this sprite."))
-(defgeneric max-x (sprite)
-  (:documentation "The highest (furthest to 0) X value occupied by this sprite."))
-(defgeneric min-y (sprite)
-  (:documentation "The lowest (closest to 0) Y value occupied by this sprite."))
-(defgeneric max-y (sprite)
-  (:documentation "The highest (furthest to 0) Y value occupied by this sprite."))
+(defgeneric beam (entity)
+  (:documentation "The inner `beam' belonging to this entity."))
 
 ;; --- Utilities --- ;;
 

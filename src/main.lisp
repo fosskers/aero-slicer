@@ -106,20 +106,11 @@
                (or (when-let* ((pos (or (direct-collision! fighter (game-blobs game))
                                         (direct-collision! fighter (game-evil-ships game))
                                         (direct-collision! fighter (game-missiles game)))))
+                     ;; An explosion over top of the collided enemy.
                      (explode! game pos))
                    (enemy-collision? fighter (game-buildings game))
-                   (t:transduce #'t:pass
-                                (t:anyp (lambda (pair)
-                                          (let* ((beam (tank-beam (cdr pair))))
-                                            (and (beam-shooting? beam)
-                                                 (colliding? fighter beam)))))
-                                (game-tanks game))
-                   (t:transduce #'t:pass
-                                (t:anyp (lambda (pair)
-                                          (let ((beam (evil-ship-beam (cdr pair))))
-                                            (and (beam-shooting? beam)
-                                                 (colliding? fighter beam)))))
-                                (game-evil-ships game))))
+                   (got-shot? fighter (game-tanks game))
+                   (got-shot? fighter (game-evil-ships game))))
       (explode! game (fighter-pos fighter))
       ;; Kill the fighter.
       (-<>> fighter

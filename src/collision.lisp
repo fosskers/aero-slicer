@@ -59,3 +59,12 @@ position of the killed enemy."
   (when-let* ((enemy (colliding-entity fighter enemies-ht)))
     (remhash (car enemy) enemies-ht)
     (pos (cdr enemy))))
+
+(defun got-shot? (fighter enemies-ht)
+  "Was the fighter shot by an enemy?"
+  (t:transduce #'t:pass
+               (t:anyp (lambda (pair)
+                         (let ((beam (beam (cdr pair))))
+                           (and (beam-shooting? beam)
+                                (colliding? fighter beam)))))
+               enemies-ht))

@@ -135,9 +135,9 @@
   "Set a new x-axis value for the various subcomponents."
   (let* ((f-pos  (fighter-pos fighter))
          (f-bbox (fighter-bbox fighter))
-         (b-pos  (beam-pos  (fighter-beam fighter)))
-         (b-bbox (beam-bbox (fighter-beam fighter)))
-         (beam   (fighter-beam fighter)))
+         (beam   (fighter-beam fighter))
+         (b-pos  (beam-pos  beam))
+         (b-bbox (beam-bbox beam)))
     (setf (raylib:vector2-x f-pos) new)
     (setf (raylib:rectangle-x f-bbox) new)
     (setf (raylib:vector2-x b-pos) (+ new (beam-x-offset beam)))

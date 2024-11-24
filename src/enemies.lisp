@@ -172,6 +172,9 @@ despawn them."
 (defmethod bbox ((evil-ship evil-ship))
   (evil-ship-bbox evil-ship))
 
+(defmethod beam ((evil-ship evil-ship))
+  (evil-ship-beam evil-ship))
+
 (defmethod draw ((evil-ship evil-ship) fc)
   (let ((beam (evil-ship-beam evil-ship)))
     (when (beam-shooting? beam)
@@ -314,6 +317,9 @@ despawn them."
 
 (defmethod bbox ((tank tank))
   (tank-bbox tank))
+
+(defmethod beam ((tank tank))
+  (tank-beam tank))
 
 (defmethod move! ((tank tank))
   "Steady movement down the screen with occasional reversals."
