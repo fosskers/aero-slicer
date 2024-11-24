@@ -39,6 +39,7 @@
     (move-enemies! (game-tanks game))
     (move-enemies! (game-evil-ships game))
     (move-enemies! (game-missiles game))
+    (move-enemies! (game-cannons game))
     (tick! (game-tanks game) fc)
     (tick! (game-evil-ships game) fc)
     (despawn! (game-explosions game) fc)))

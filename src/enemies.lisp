@@ -49,16 +49,26 @@ despawn them."
   ;; FIXME: 2024-11-25 Poor X/Y locations.
   (make-cannon :left (make-bulb :animated (make-animated :sprite bulb-sprite)
                                 :pos (raylib:make-vector2 :x (float +world-min-x+)
-                                                          :y 0.0))
+                                                          :y (float +world-min-y+)))
                :right (make-bulb :animated (make-animated :sprite bulb-sprite)
                                  :pos (raylib:make-vector2 :x (float (- +world-max-x+ 8))
-                                                           :y 0.0))))
+                                                           :y (float +world-min-y+)))))
+
+(defmethod pos ((cannon cannon))
+  (->> cannon cannon-left bulb-pos))
 
 (defmethod draw ((cannon cannon) fc)
   (let ((left  (cannon-left cannon))
         (right (cannon-right cannon)))
     (draw-animated (bulb-animated left) (bulb-pos left) fc)
     (draw-animated (bulb-animated right) (bulb-pos right) fc :flip? t)))
+
+(defmethod move! ((cannon cannon))
+  (->> cannon cannon-left move!)
+  (->> cannon cannon-right move!))
+
+(defmethod move! ((bulb bulb))
+  (incf (raylib:vector2-y (bulb-pos bulb)) 2.0))
 
 ;; --- Explosions --- ;;
 
