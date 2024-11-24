@@ -148,12 +148,9 @@
     (maybe-set-warp-direction! fighter)
     (move! fighter)
     (when (and (not (beam-shooting? beam))
-               ;; Can't shoot while respawning.
-               (not (eq 'hit (fighter-status fighter)))
                (trying-to-shoot?))
       (shoot-beam! beam fc))
     (when (and (can-bomb? fighter fc)
-               (eq 'ok (fighter-status fighter))
                (or (raylib:is-key-down +key-enter+)
                    (raylib:is-gamepad-button-down +gamepad+ +gamepad-b+)))
       (launch-bomb! game)))

@@ -1,0 +1,13 @@
+#+title: Aero Fighter
+
+* Coding Conventions
+
+- Prefix: =@= denotes a smart constructor.
+- Postfix: =?= denotes a boolean result from a function.
+- Postfix: =!= implies that the function mutates its arguments.
+- Top-level =defparameter= values are placed in the =package.lisp=.
+
+Otherwise, we keep things simple: just structs and functions. No CLOS, other
+than light use of =defgeneric=.
+
+All dependencies are vendored.
