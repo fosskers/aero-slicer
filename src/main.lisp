@@ -204,6 +204,7 @@
   (let ((fc (game-frame game)))
     (draw (game-buildings game) fc)
     (draw (game-tanks game) fc)
+    (draw (game-cannons game) fc)
     (draw (game-blobs game) fc)
     (draw (game-evil-ships game) fc)
     (draw (game-missiles game) fc)
@@ -283,6 +284,9 @@
   (raylib:init-window +screen-width+ +screen-height+ "raylib/CL Example")
   (raylib:set-target-fps +frame-rate+)
   (let ((game (@game)))
+    ;; TODO: 2024-11-25 Remove.
+    (setf (gethash 0 (game-cannons game))
+          (->> game game-sprites sprites-cannon @cannon))
     (event-loop game)
     (ungame game))
   (raylib:close-window))

@@ -34,7 +34,8 @@
   (little-p  (sprite #p"assets/little-beam.json"))
   (numbers   (sprite #p"assets/numbers.json"))
   (level     (sprite #p"assets/level-x.json"))
-  (missile   (sprite #p"assets/missile.json")))
+  (missile   (sprite #p"assets/missile.json"))
+  (cannon    (sprite #p"assets/cannon-bulb.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -50,21 +51,22 @@
   ;; The point after which the next Beam Widener powerup should spawn.
   (widener-threshold 1000 :type fixnum)
   ;; The key is the frame number upon which the blob was spawned.
-  (blobs   (make-hash-table :size 16) :type hash-table)
-  (tanks   (make-hash-table :size 16) :type hash-table)
+  (blobs      (make-hash-table :size 16) :type hash-table)
+  (tanks      (make-hash-table :size 16) :type hash-table)
   (evil-ships (make-hash-table :size 16) :type hash-table)
-  (buildings (make-hash-table :size 16) :type hash-table)
-  (missiles (make-hash-table :size 16) :type hash-table)
-  (powerups (make-hash-table :size 16) :type hash-table)
+  (buildings  (make-hash-table :size 16) :type hash-table)
+  (cannons    (make-hash-table :size 16) :type hash-table)
+  (missiles   (make-hash-table :size 16) :type hash-table)
+  (powerups   (make-hash-table :size 16) :type hash-table)
   ;; TODO: 2024-11-14 Consider generalising this to any other on-screen
   ;; animations.
   (explosions (make-hash-table :size 16) :type hash-table)
-  (frame   0 :type fixnum)
-  (lives   3 :type fixnum)
-  (score   0 :type fixnum)
+  (frame 0 :type fixnum)
+  (lives 3 :type fixnum)
+  (score 0 :type fixnum)
   ;; Waiting / Playing / Dead
-  (mode    'playing :type symbol)
-  (level   1 :type fixnum)
+  (mode  'playing :type symbol)
+  (level 1 :type fixnum)
   ;; The point after which the level should increase.
   (level-thresh +level-progression-interval+ :type fixnum))
 
@@ -105,10 +107,11 @@
 
 (defun clear-all-enemies! (game)
   "From a bomb or otherwise, clear all the damageable enemies."
-  (setf (game-blobs game) (make-hash-table :size 16))
-  (setf (game-tanks game) (make-hash-table :size 16))
+  (setf (game-blobs game)      (make-hash-table :size 16))
+  (setf (game-tanks game)      (make-hash-table :size 16))
   (setf (game-evil-ships game) (make-hash-table :size 16))
-  (setf (game-missiles game) (make-hash-table :size 16)))
+  (setf (game-missiles game)   (make-hash-table :size 16))
+  (setf (game-cannons game)    (make-hash-table :size 16)))
 
 (defun beam-by-level (game)
   "Yield a beam sprite for enemies according to the current level."
@@ -197,4 +200,5 @@
     (raylib:unload-texture (sprite-texture (sprites-little-p sprites)))
     (raylib:unload-texture (sprite-texture (sprites-numbers sprites)))
     (raylib:unload-texture (sprite-texture (sprites-level sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-missile sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-missile sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-cannon sprites)))))

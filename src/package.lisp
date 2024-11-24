@@ -128,6 +128,49 @@ single beam shot will never damage the same enemy twice.")
           ,@body
           (raylib:end-mode-2d)))
 
+(defmacro with-flipped-sprite (rect &body body)
+  "Raylib Trivia: to flip a sprite, you must pass a `rectangle' with a negative
+width to functions like `draw-texture-rect'. Since my bounding rect's are stored
+within the individual sprite frames and should really not be mutated, this macro
+adds some safety."
+  `(let ((width (raylib:rectangle-width ,rect)))
+     (setf (raylib:rectangle-width ,rect) (* -1 width))
+     ,@body
+     (setf (raylib:rectangle-width ,rect) width)))
+
+;; NOTE: Borrowed from Alexandria, which is Public Domain.
+(defmacro when-let* (bindings &body body)
+  "Creates new variable bindings, and conditionally executes BODY.
+
+BINDINGS must be either single binding of the form:
+
+ (variable initial-form)
+
+or a list of bindings of the form:
+
+ ((variable-1 initial-form-1)
+  (variable-2 initial-form-2)
+  ...
+  (variable-n initial-form-n))
+
+Each INITIAL-FORM is executed in turn, and the variable bound to the
+corresponding value. INITIAL-FORM expressions can refer to variables
+previously bound by the WHEN-LET*.
+
+Execution of WHEN-LET* stops immediately if any INITIAL-FORM evaluates to NIL.
+If all INITIAL-FORMs evaluate to true, then BODY is executed as an implicit
+PROGN."
+  (let ((binding-list (if (and (consp bindings) (symbolp (car bindings)))
+                          (list bindings)
+                          bindings)))
+    (labels ((bind (bindings body)
+               (if bindings
+                   `(let (,(car bindings))
+                      (when ,(caar bindings)
+                        ,(bind (cdr bindings) body)))
+                   `(progn ,@body))))
+      (bind binding-list body))))
+
 ;; --- Generics --- ;;
 
 (defgeneric tick! (entity fc)
@@ -197,36 +240,3 @@ powerups."
 
 #+nil
 (random-position)
-
-;; NOTE: Borrowed from Alexandria, which is Public Domain.
-(defmacro when-let* (bindings &body body)
-  "Creates new variable bindings, and conditionally executes BODY.
-
-BINDINGS must be either single binding of the form:
-
- (variable initial-form)
-
-or a list of bindings of the form:
-
- ((variable-1 initial-form-1)
-  (variable-2 initial-form-2)
-  ...
-  (variable-n initial-form-n))
-
-Each INITIAL-FORM is executed in turn, and the variable bound to the
-corresponding value. INITIAL-FORM expressions can refer to variables
-previously bound by the WHEN-LET*.
-
-Execution of WHEN-LET* stops immediately if any INITIAL-FORM evaluates to NIL.
-If all INITIAL-FORMs evaluate to true, then BODY is executed as an implicit
-PROGN."
-  (let ((binding-list (if (and (consp bindings) (symbolp (car bindings)))
-                          (list bindings)
-                          bindings)))
-    (labels ((bind (bindings body)
-               (if bindings
-                   `(let (,(car bindings))
-                      (when ,(caar bindings)
-                        ,(bind (cdr bindings) body)))
-                   `(progn ,@body))))
-      (bind binding-list body))))

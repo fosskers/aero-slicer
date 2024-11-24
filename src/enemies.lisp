@@ -31,6 +31,35 @@ despawn them."
                    (recurse)))))
       (recurse))))
 
+;; --- Cannons --- ;;
+
+(defstruct cannon
+  "A screen-stretching laser that must be warped across."
+  (left  nil :type bulb)
+  (right nil :type bulb)
+  #++
+  (beam  nil :type animated))
+
+(defstruct bulb
+  "The left/right piece of the `cannon'."
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2))
+
+(defun @cannon (bulb-sprite)
+  ;; FIXME: 2024-11-25 Poor X/Y locations.
+  (make-cannon :left (make-bulb :animated (make-animated :sprite bulb-sprite)
+                                :pos (raylib:make-vector2 :x (float +world-min-x+)
+                                                          :y 0.0))
+               :right (make-bulb :animated (make-animated :sprite bulb-sprite)
+                                 :pos (raylib:make-vector2 :x (float (- +world-max-x+ 8))
+                                                           :y 0.0))))
+
+(defmethod draw ((cannon cannon) fc)
+  (let ((left  (cannon-left cannon))
+        (right (cannon-right cannon)))
+    (draw-animated (bulb-animated left) (bulb-pos left) fc)
+    (draw-animated (bulb-animated right) (bulb-pos right) fc :flip? t)))
+
 ;; --- Explosions --- ;;
 
 (defstruct explosion
