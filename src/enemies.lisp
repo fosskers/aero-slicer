@@ -55,13 +55,13 @@ despawn them."
   (let* ((animated-beam (make-animated :sprite beam-sprite))
          (rect (bounding-box animated-beam))
          (beam-pos (raylib:make-vector2 :x (float +world-min-x+)
-                                        :y 5.0)))
+                                        :y (+ 5.0 +world-min-y+))))
     (make-cannon :left (make-cannon-bulb :animated (make-animated :sprite bulb-sprite)
                                          :pos (raylib:make-vector2 :x (float +world-min-x+)
-                                                                   :y 0.0 #++ (float +world-min-y+)))
+                                                                   :y (float +world-min-y+)))
                  :right (make-cannon-bulb :animated (make-animated :sprite bulb-sprite)
                                           :pos (raylib:make-vector2 :x (float (- +world-max-x+ 12))
-                                                                    :y 0.0 #++ (float +world-min-y+)))
+                                                                    :y (float +world-min-y+)))
                  :beam (make-cannon-beam :animated animated-beam
                                          :pos beam-pos
                                          :bbox (raylib:make-rectangle :x (raylib:vector2-x beam-pos)
@@ -81,22 +81,19 @@ despawn them."
         (beam  (cannon-beam cannon)))
     (draw-animated (cannon-beam-animated beam) (cannon-beam-pos beam) fc)
     (draw-animated (cannon-bulb-animated left) (cannon-bulb-pos left) fc)
-    (draw-animated (cannon-bulb-animated right) (cannon-bulb-pos right) fc :flip? t)
-    ;; TODO: Testing
-    #++
-    (let ((rect (->> beam cannon-beam-bbox)))
-      (raylib:draw-pixel (floor (raylib:rectangle-x rect))
-                         (floor (raylib:rectangle-y rect))
-                         raylib:+red+))))
+    (draw-animated (cannon-bulb-animated right) (cannon-bulb-pos right) fc :flip? t)))
 
 (defmethod move! ((cannon cannon))
-  #++
   (->> cannon cannon-left move!)
-  #++
-  (->> cannon cannon-right move!))
+  (->> cannon cannon-right move!)
+  (->> cannon cannon-beam move!))
 
-(defmethod move! ((cannon-bulb cannon-bulb))
-  (incf (raylib:vector2-y (cannon-bulb-pos cannon-bulb)) 2.0))
+(defmethod move! ((bulb cannon-bulb))
+  (incf (raylib:vector2-y (cannon-bulb-pos bulb)) 2.0))
+
+(defmethod move! ((beam cannon-beam))
+  (incf (raylib:vector2-y (cannon-beam-pos beam)) 2.0)
+  (incf (raylib:rectangle-y (cannon-beam-bbox beam)) 2.0))
 
 ;; --- Explosions --- ;;
 

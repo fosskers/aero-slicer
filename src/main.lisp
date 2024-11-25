@@ -97,7 +97,11 @@
   (when (>= (game-score game)
             (game-level-thresh game))
     (incf (game-level-thresh game) +level-progression-interval+)
-    (incf (game-level game))))
+    (incf (game-level game))
+    (setf (gethash (game-frame game) (game-cannons game))
+          (let ((sprites (game-sprites game)))
+            (@cannon (sprites-cannon-bulb sprites)
+                     (sprites-cannon-beam sprites))))))
 
 (defun handle-fighter-collisions! (game)
   "If the fighter got hit by something, kill and (maybe) respawn him."
@@ -288,9 +292,6 @@
   (raylib:init-window +screen-width+ +screen-height+ "raylib/CL Example")
   (raylib:set-target-fps +frame-rate+)
   (let ((game (@game)))
-    ;; TODO: 2024-11-25 Remove.
-    (setf (gethash 0 (game-cannons game))
-          (->> game game-sprites sprites-cannon @cannon))
     (event-loop game)
     (ungame game))
   (raylib:close-window))
