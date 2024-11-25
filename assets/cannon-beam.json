@@ -1,0 +1,55 @@
+{ "frames": [
+   {
+    "filename": "cannon-beam 0.ase",
+    "frame": { "x": 0, "y": 0, "w": 256, "h": 6 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 6 },
+    "sourceSize": { "w": 256, "h": 6 },
+    "duration": 100
+   },
+   {
+    "filename": "cannon-beam 1.ase",
+    "frame": { "x": 256, "y": 0, "w": 256, "h": 6 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 6 },
+    "sourceSize": { "w": 256, "h": 6 },
+    "duration": 100
+   },
+   {
+    "filename": "cannon-beam 2.ase",
+    "frame": { "x": 512, "y": 0, "w": 256, "h": 6 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 6 },
+    "sourceSize": { "w": 256, "h": 6 },
+    "duration": 200
+   },
+   {
+    "filename": "cannon-beam 3.ase",
+    "frame": { "x": 768, "y": 0, "w": 256, "h": 6 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 6 },
+    "sourceSize": { "w": 256, "h": 6 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.3.8.1-dev",
+  "image": "cannon-beam.png",
+  "format": "I8",
+  "size": { "w": 1024, "h": 6 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "Idle", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
