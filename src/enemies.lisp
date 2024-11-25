@@ -35,40 +35,68 @@ despawn them."
 
 (defstruct cannon
   "A screen-stretching laser that must be warped across."
-  (left  nil :type bulb)
-  (right nil :type bulb)
-  #++
-  (beam  nil :type animated))
+  (left  nil :type cannon-bulb)
+  (right nil :type cannon-bulb)
+  (beam  nil :type cannon-beam))
 
-(defstruct bulb
+(defstruct cannon-bulb
   "The left/right piece of the `cannon'."
   (animated nil :type animated)
   (pos      nil :type raylib:vector2))
 
-(defun @cannon (bulb-sprite)
+(defstruct cannon-beam
+  "The beam portion of the `cannon'."
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2)
+  (bbox     nil :type raylib:rectangle))
+
+(defun @cannon (bulb-sprite beam-sprite)
   ;; FIXME: 2024-11-25 Poor X/Y locations.
-  (make-cannon :left (make-bulb :animated (make-animated :sprite bulb-sprite)
-                                :pos (raylib:make-vector2 :x (float +world-min-x+)
-                                                          :y (float +world-min-y+)))
-               :right (make-bulb :animated (make-animated :sprite bulb-sprite)
-                                 :pos (raylib:make-vector2 :x (float (- +world-max-x+ 8))
-                                                           :y (float +world-min-y+)))))
+  (let* ((animated-beam (make-animated :sprite beam-sprite))
+         (rect (bounding-box animated-beam))
+         (beam-pos (raylib:make-vector2 :x (float +world-min-x+)
+                                        :y 5.0)))
+    (make-cannon :left (make-cannon-bulb :animated (make-animated :sprite bulb-sprite)
+                                         :pos (raylib:make-vector2 :x (float +world-min-x+)
+                                                                   :y 0.0 #++ (float +world-min-y+)))
+                 :right (make-cannon-bulb :animated (make-animated :sprite bulb-sprite)
+                                          :pos (raylib:make-vector2 :x (float (- +world-max-x+ 12))
+                                                                    :y 0.0 #++ (float +world-min-y+)))
+                 :beam (make-cannon-beam :animated animated-beam
+                                         :pos beam-pos
+                                         :bbox (raylib:make-rectangle :x (raylib:vector2-x beam-pos)
+                                                                      :y (raylib:vector2-y beam-pos)
+                                                                      :width (raylib:rectangle-width rect)
+                                                                      :height (raylib:rectangle-height rect))))))
 
 (defmethod pos ((cannon cannon))
-  (->> cannon cannon-left bulb-pos))
+  (->> cannon cannon-left cannon-bulb-pos))
+
+(defmethod bbox ((cannon cannon))
+  (->> cannon cannon-beam cannon-beam-bbox))
 
 (defmethod draw ((cannon cannon) fc)
   (let ((left  (cannon-left cannon))
-        (right (cannon-right cannon)))
-    (draw-animated (bulb-animated left) (bulb-pos left) fc)
-    (draw-animated (bulb-animated right) (bulb-pos right) fc :flip? t)))
+        (right (cannon-right cannon))
+        (beam  (cannon-beam cannon)))
+    (draw-animated (cannon-beam-animated beam) (cannon-beam-pos beam) fc)
+    (draw-animated (cannon-bulb-animated left) (cannon-bulb-pos left) fc)
+    (draw-animated (cannon-bulb-animated right) (cannon-bulb-pos right) fc :flip? t)
+    ;; TODO: Testing
+    #++
+    (let ((rect (->> beam cannon-beam-bbox)))
+      (raylib:draw-pixel (floor (raylib:rectangle-x rect))
+                         (floor (raylib:rectangle-y rect))
+                         raylib:+red+))))
 
 (defmethod move! ((cannon cannon))
+  #++
   (->> cannon cannon-left move!)
+  #++
   (->> cannon cannon-right move!))
 
-(defmethod move! ((bulb bulb))
-  (incf (raylib:vector2-y (bulb-pos bulb)) 2.0))
+(defmethod move! ((cannon-bulb cannon-bulb))
+  (incf (raylib:vector2-y (cannon-bulb-pos cannon-bulb)) 2.0))
 
 ;; --- Explosions --- ;;
 

@@ -35,7 +35,8 @@
   (numbers   (sprite #p"assets/numbers.json"))
   (level     (sprite #p"assets/level-x.json"))
   (missile   (sprite #p"assets/missile.json"))
-  (cannon    (sprite #p"assets/cannon-bulb.json")))
+  (cannon-bulb (sprite #p"assets/cannon-bulb.json"))
+  (cannon-beam (sprite #p"assets/cannon-beam.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -90,6 +91,7 @@
   (setf (game-lives game) 3)
   (clear-all-enemies! game)
   (setf (game-buildings game) (make-hash-table :size 16))
+  (setf (game-cannons game) (make-hash-table :size 16))
   (setf (game-powerups game) (make-hash-table :size 16))
   (setf (game-explosions game) (make-hash-table :size 16))
   (setf (game-score game) 0)
@@ -110,8 +112,7 @@
   (setf (game-blobs game)      (make-hash-table :size 16))
   (setf (game-tanks game)      (make-hash-table :size 16))
   (setf (game-evil-ships game) (make-hash-table :size 16))
-  (setf (game-missiles game)   (make-hash-table :size 16))
-  (setf (game-cannons game)    (make-hash-table :size 16)))
+  (setf (game-missiles game)   (make-hash-table :size 16)))
 
 (defun beam-by-level (game)
   "Yield a beam sprite for enemies according to the current level."
@@ -201,4 +202,5 @@
     (raylib:unload-texture (sprite-texture (sprites-numbers sprites)))
     (raylib:unload-texture (sprite-texture (sprites-level sprites)))
     (raylib:unload-texture (sprite-texture (sprites-missile sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-cannon sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-cannon-bulb sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-cannon-beam sprites)))))

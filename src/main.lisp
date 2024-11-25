@@ -109,7 +109,10 @@
                                         (direct-collision! fighter (game-missiles game)))))
                      ;; An explosion over top of the collided enemy.
                      (explode! game pos))
+                   ;; Certain enemies/obstacles don't get destroyed upon collision.
                    (enemy-collision? fighter (game-buildings game))
+                   (enemy-collision? fighter (game-cannons game))
+                   ;; Or a tank/ship just shot you.
                    (got-shot? fighter (game-tanks game))
                    (got-shot? fighter (game-evil-ships game))))
       (explode! game (fighter-pos fighter))

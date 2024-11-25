@@ -25,8 +25,18 @@
       (b (raylib:make-vector2 :x 7.0 :y 3.0)))
   (euclidean-distance a b))
 
-(defun near? (a b)
-  "Are two sprites in the same general vicinity?"
+(defgeneric near? (a b)
+  (:documentation "Are two sprites in the same general vicinity?"))
+
+(defmethod near? ((fighter fighter) (cannon cannon))
+  "The cannon spans the whole screen width, so the generic nearness consideration
+doesn't work."
+  (let ((distance (abs (- (->> fighter fighter-pos raylib:vector2-y)
+                          (->> cannon cannon-beam cannon-beam-pos raylib:vector2-y)))))
+    (< distance 16)))
+
+(defmethod near? (a b)
+  "Generic case: Test by Euclidean Distance."
   (let ((distance (euclidean-distance (pos a) (pos b))))
     (< distance +nearness-radius+)))
 
