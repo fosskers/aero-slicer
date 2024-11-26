@@ -51,7 +51,6 @@ despawn them."
   (bbox     nil :type raylib:rectangle))
 
 (defun @cannon (bulb-sprite beam-sprite)
-  ;; FIXME: 2024-11-25 Poor X/Y locations.
   (let* ((animated-beam (make-animated :sprite beam-sprite))
          (rect (bounding-box animated-beam))
          (beam-pos (raylib:make-vector2 :x (float +world-min-x+)
