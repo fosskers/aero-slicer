@@ -80,12 +80,16 @@
 (defun can-bomb? (fighter fc)
   "Could the fighter launch a bomb on this frame?"
   (and (> (fighter-bombs fighter) 0)
-       (bomb-cooling-down? fighter fc)))
+       (not (bomb-cooling-down? fighter fc))))
 
 (defun bomb-cooling-down? (fighter fc)
   "Was a bomb very recently used?"
-  (>= (- fc (fighter-bomb-fc fighter))
-      +bomb-cooldown+))
+  (< (- fc (fighter-bomb-fc fighter))
+     +bomb-cooldown+))
+
+(defun has-bomb-capacity? (fighter)
+  "Has at least one bomb been used?"
+  (< (fighter-bombs fighter) +bomb-max-capacity+))
 
 (defun kill-fighter! (fighter beam-sprite fc)
   "Reset the fighter's position and animation."
