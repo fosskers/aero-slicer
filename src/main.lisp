@@ -205,7 +205,7 @@ schedule."
                  (@evil-ship (sprites-evil-ship sprites)
                              (beam-by-level game)
                              (fighter-pos fighter)
-                             level fc)))
+                             fc)))
           ;; --- Varying Spawn Rate by Level --- ;;
           ((and (< n (* level 116))
                 ;; Delays the spawning of missiles immediately after a bomb has been used.
@@ -214,12 +214,12 @@ schedule."
                  (@missile (sprites-missile sprites))))
           ((< n (* level 156))
            (setf (gethash fc (game-blobs game))
-                 (@blob (sprites-blob sprites) level)))
+                 (@blob (sprites-blob sprites))))
           ((< n (* level 181))
            (setf (gethash fc (game-tanks game))
                  (@tank (sprites-tank sprites)
                         (beam-by-level game)
-                        level fc))))))
+                        fc))))))
 
 ;; --- Rendering --- ;;
 

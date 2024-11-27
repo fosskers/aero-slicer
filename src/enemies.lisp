@@ -191,7 +191,7 @@ despawn them."
   (animated  nil :type animated)
   (pos       nil :type raylib:vector2)
   (bbox      nil :type raylib:rectangle)
-  (health    0   :type fixnum)
+  (health    3   :type fixnum)
   (beam      nil :type beam)
   ;; Ok / Charging
   (status    'ok :type symbol)
@@ -204,7 +204,7 @@ despawn them."
   (charge-dur 0  :type fixnum)
   (spawned-fc 0  :type fixnum))
 
-(defun @evil-ship (evil-ship-sprite beam-sprite fighter-pos level fc)
+(defun @evil-ship (evil-ship-sprite beam-sprite fighter-pos fc)
   "A smart-constructor for an `evil-ship'."
   (let* ((pos      (random-spawn-position))
          (animated (make-animated :sprite evil-ship-sprite))
@@ -217,7 +217,6 @@ despawn them."
                                                  :y (raylib:vector2-y pos)
                                                  :width width
                                                  :height (raylib:rectangle-height rect))
-                    :health (+ +evil-ship-base-hp+ level)
                     :beam (@beam beam-sprite pos width +evil-ship-beam-y-offset+)
                     :charge-dur (charge-duration evil-ship-sprite)
                     :spawned-fc fc)))
@@ -322,7 +321,7 @@ despawn them."
   (animated   nil :type animated)
   (pos        nil :type raylib:vector2)
   (bbox       nil :type raylib:rectangle)
-  (health     0   :type fixnum)
+  (health     2   :type fixnum)
   (beam       nil :type beam)
   (reversing? nil :type symbol)
   ;; Ok / Charging
@@ -333,7 +332,7 @@ despawn them."
   (charge-dur 0   :type fixnum)
   (spawned-fc 0   :type fixnum))
 
-(defun @tank (tank-sprite beam-sprite level fc)
+(defun @tank (tank-sprite beam-sprite fc)
   "Spawn a `tank' with an associated `beam'."
   (let* ((pos      (random-spawn-position))
          (animated (make-animated :sprite tank-sprite))
@@ -347,7 +346,6 @@ despawn them."
                                             :y (raylib:vector2-y pos)
                                             :width width
                                             :height (raylib:rectangle-height rect))
-               :health (+ +tank-base-hp+ level)
                :charge-dur (charge-duration tank-sprite)
                :spawned-fc fc
                :beam beam)))
@@ -438,16 +436,15 @@ despawn them."
   (orig-x   nil :type single-float)
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle)
-  (health   0   :type fixnum)
+  (health   1   :type fixnum)
   (hit-fc   0   :type fixnum))
 
-(defun @blob (sprite level)
+(defun @blob (sprite)
   "Spawn a `blob' somewhere off the top of the screen."
   (let* ((pos (random-spawn-position))
          (animated (make-animated :sprite sprite))
          (rect (bounding-box animated)))
     (make-blob :animated animated
-               :health (+ +blob-base-hp+ level)
                :orig-x (raylib:vector2-x pos)
                :pos pos
                :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
