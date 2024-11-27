@@ -50,12 +50,12 @@
     (tick! fighter fc)
     (despawn! (game-powerups game) fc)
     (handle-player-input! game)
-    (handle-fighter-collisions! game)
     (when (beam-shooting? beam)
       (damage-from-shot! game beam (game-blobs game))
       (damage-from-shot! game beam (game-tanks game))
       (damage-from-shot! game beam (game-evil-ships game))
       (damage-from-shot! game beam (game-missiles game)))
+    (handle-fighter-collisions! game)
     (when-let* ((pu (colliding-entity fighter (game-powerups game))))
       (collect-powerup! game (car pu) (cdr pu)))))
 
