@@ -195,20 +195,10 @@ schedule."
                 (has-bomb-capacity? fighter))
            (setf (gethash fc (game-powerups game))
                  (@ammo (sprites-bomb sprites) fc)))
-          ((and (< n 84)
-                ;; Delays the spawning of missiles immediately after a bomb has been used.
-                (not (bomb-cooling-down? fighter fc)))
-           (setf (gethash fc (game-missiles game))
-                 (@missile (sprites-missile sprites))))
-          ((< n 104)
-           (setf (gethash fc (game-blobs game))
-                 (@blob (sprites-blob sprites) level)))
-          ((< n 129)
-           (setf (gethash fc (game-tanks game))
-                 (@tank (sprites-tank sprites)
-                        (beam-by-level game)
-                        level fc)))
-          ((and (< n 145)
+          ((< n 20)
+           (setf (gethash fc (game-buildings game))
+                 (@building (sprites-building sprites))))
+          ((and (< n 36)
                 ;; Only one Evil Ship at a time.
                 (zerop (hash-table-count (game-evil-ships game))))
            (setf (gethash fc (game-evil-ships game))
@@ -216,9 +206,20 @@ schedule."
                              (beam-by-level game)
                              (fighter-pos fighter)
                              level fc)))
-          ((< n 161)
-           (setf (gethash fc (game-buildings game))
-                 (@building (sprites-building sprites)))))))
+          ;; --- Varying Spawn Rate by Level --- ;;
+          ((and (< n (* level 116))
+                ;; Delays the spawning of missiles immediately after a bomb has been used.
+                (not (bomb-cooling-down? fighter fc)))
+           (setf (gethash fc (game-missiles game))
+                 (@missile (sprites-missile sprites))))
+          ((< n (* level 156))
+           (setf (gethash fc (game-blobs game))
+                 (@blob (sprites-blob sprites) level)))
+          ((< n (* level 181))
+           (setf (gethash fc (game-tanks game))
+                 (@tank (sprites-tank sprites)
+                        (beam-by-level game)
+                        level fc))))))
 
 ;; --- Rendering --- ;;
 
