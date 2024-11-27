@@ -201,9 +201,10 @@ despawn them."
   ;; Tracking the fighter pos so that we can follow him.
   (fighter-pos nil :type raylib:vector2)
   ;; How long the beam charge should last.
-  (charge-dur 0  :type fixnum))
+  (charge-dur 0  :type fixnum)
+  (spawned-fc 0  :type fixnum))
 
-(defun @evil-ship (evil-ship-sprite beam-sprite fighter-pos level)
+(defun @evil-ship (evil-ship-sprite beam-sprite fighter-pos level fc)
   "A smart-constructor for an `evil-ship'."
   (let* ((pos      (random-spawn-position))
          (animated (make-animated :sprite evil-ship-sprite))
@@ -218,7 +219,8 @@ despawn them."
                                                  :height (raylib:rectangle-height rect))
                     :health (+ +evil-ship-base-hp+ level)
                     :beam (@beam beam-sprite pos width +evil-ship-beam-y-offset+)
-                    :charge-dur (charge-duration evil-ship-sprite))))
+                    :charge-dur (charge-duration evil-ship-sprite)
+                    :spawned-fc fc)))
 
 (defmethod pos ((evil-ship evil-ship))
   (evil-ship-pos evil-ship))
@@ -285,8 +287,9 @@ despawn them."
               ;; top of the screen.
               (> (raylib:vector2-y (evil-ship-pos evil-ship))
                  +world-min-y+)
-              (zerop (mod fc (* 2 +frame-rate+)))
-              (< (random 10) 5))
+              (zerop (mod (- fc (evil-ship-spawned-fc evil-ship))
+                          (* +frame-rate+)))
+              (< (random 10) 6))
          (setf (evil-ship-status evil-ship) 'charging)
          (setf (evil-ship-status-fc evil-ship) fc)
          (set-animation! (evil-ship-animated evil-ship) 'charging fc))
@@ -327,7 +330,8 @@ despawn them."
   (status-fc  0   :type fixnum)
   ;; The frame upon being last hit by the fighter.
   (hit-fc     0   :type fixnum)
-  (charge-dur 0   :type fixnum))
+  (charge-dur 0   :type fixnum)
+  (spawned-fc 0   :type fixnum))
 
 (defun @tank (tank-sprite beam-sprite level fc)
   "Spawn a `tank' with an associated `beam'."
@@ -345,6 +349,7 @@ despawn them."
                                             :height (raylib:rectangle-height rect))
                :health (+ +tank-base-hp+ level)
                :charge-dur (charge-duration tank-sprite)
+               :spawned-fc fc
                :beam beam)))
 
 (defun charge-duration (sprite)
@@ -383,8 +388,8 @@ despawn them."
               ;; the top of the screen.
               (> (raylib:vector2-y (tank-pos tank))
                  +world-min-y+)
-              (zerop (mod fc (* +frame-rate+)))
-              (< (random 10) 4))
+              (zerop (mod (- fc (tank-spawned-fc tank)) (* +frame-rate+)))
+              (< (random 10) 6))
          (setf (tank-status tank) 'charging)
          (setf (tank-status-fc tank) fc)
          (set-animation! (tank-animated tank) 'charging fc))

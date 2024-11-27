@@ -215,7 +215,7 @@ schedule."
                  (@evil-ship (sprites-evil-ship sprites)
                              (beam-by-level game)
                              (fighter-pos fighter)
-                             level)))
+                             level fc)))
           ((< n 161)
            (setf (gethash fc (game-buildings game))
                  (@building (sprites-building sprites)))))))
