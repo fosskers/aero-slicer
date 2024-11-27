@@ -75,16 +75,6 @@ shouldn't spawn if the fighter is already at max beam width."
                                             :width (raylib:rectangle-width rect)
                                             :height (raylib:rectangle-height rect)))))
 
-(defun maybe-spawn-ammo! (game)
-  "Spawn some bomb ammo depending on the current frame."
-  (let ((fighter (game-fighter game))
-        (fc (game-frame game)))
-    ;; TODO: 2024-11-08 Make more robust. Use randomness, etc.
-    (when (and (< (fighter-bombs fighter) +bomb-max-capacity+)
-               (zerop (mod fc (* 30 +frame-rate+))))
-      (let ((ammo (@ammo (sprites-bomb (game-sprites game)) fc)))
-        (setf (gethash fc (game-powerups game)) ammo)))))
-
 (defmethod pos ((ammo ammo))
   (ammo-pos ammo))
 

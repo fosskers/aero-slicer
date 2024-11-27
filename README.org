@@ -1,5 +1,29 @@
 #+title: Aero Fighter
 
+* Game Mechanics
+
+** Spawn Schedule
+
+Every frame, something might spawn.
+
+| Thing     | Timing    | Per-frame Chance |
+|-----------+-----------+------------------|
+| Bomb      | Every 20s | 4/5000           |
+|-----------+-----------+------------------|
+| Missile   | Every 1s  | 80/5000          |
+| Blob      | Every 2s  | 40/5000          |
+| Tank      | Every 3s  | 25/5000          |
+| Evil Ship | Every 5s  | 16/5000          |
+| Building  | Every 5s  | 16/5000          |
+
+Certain other entities have fixed spawn timings.
+
+| Thing               | Timing            |
+|---------------------+-------------------|
+| Beam Upgrade        | Every 1000 points |
+| Difficulty Increase | Every 5000 points |
+| Tripwire-Cannon     | Every 5000 points |
+
 * Coding Conventions
 
 - Prefix: =@= denotes a smart constructor.

@@ -29,11 +29,7 @@
 (defun update-enemies! (game)
   "Spawn and move the enemies around."
   (let ((fc (game-frame game)))
-    (maybe-spawn-blob! game)
-    (maybe-spawn-building! game)
-    (maybe-spawn-tank! game)
-    (maybe-spawn-ship! game)
-    (maybe-spawn-missile! game)
+    (maybe-spawn-something! game)
     (move-enemies! (game-blobs game))
     (move-enemies! (game-buildings game))
     (move-enemies! (game-tanks game))
@@ -49,7 +45,6 @@
   (let* ((fighter (game-fighter game))
          (beam    (fighter-beam fighter))
          (fc      (game-frame game)))
-    (maybe-spawn-ammo! game)
     (maybe-spawn-wide! game)
     (tick! (game-powerups game) fc)
     (tick! fighter fc)
@@ -187,6 +182,46 @@
                         (explode! game (pos (cdr enemy)))))
                #'t:for-each enemies))
 
+(defun maybe-spawn-something! (game)
+  "Potentially spawn an enemy / powerup depending on the predetermined spawn
+schedule."
+  (let ((n       (random 5000))
+        (fc      (game-frame game))
+        (level   (game-level game))
+        (sprites (game-sprites game))
+        (fighter (game-fighter game)))
+    (cond ((and (< n 4)
+                ;; Don't spawn a bomb if the player is already full.
+                (has-bomb-capacity? fighter))
+           (setf (gethash fc (game-powerups game))
+                 (@ammo (sprites-bomb sprites) fc)))
+          ((and (< n 84)
+                ;; Delays the spawning of missiles immediately after a bomb has been used.
+                (not (bomb-cooling-down? fighter fc)))
+           (setf (gethash fc (game-missiles game))
+                 (@missile (sprites-missile sprites))))
+          ((< n 104)
+           (setf (gethash fc (game-blobs game))
+                 (@blob (sprites-blob sprites) level)))
+          ((< n 129)
+           (setf (gethash fc (game-tanks game))
+                 (@tank (sprites-tank sprites)
+                        (beam-by-level game)
+                        level fc)))
+          ((and (< n 145)
+                ;; Only one Evil Ship at a time.
+                (zerop (hash-table-count (game-evil-ships game))))
+           (setf (gethash fc (game-evil-ships game))
+                 (@evil-ship (sprites-evil-ship sprites)
+                             (beam-by-level game)
+                             (fighter-pos fighter)
+                             level)))
+          ((< n 161)
+           (setf (gethash fc (game-buildings game))
+                 (@building (sprites-building sprites)))))))
+
+;; --- Rendering --- ;;
+
 (defun render (game)
   "Following TEA, render the updated state of a game."
   (with-drawing
@@ -279,6 +314,8 @@
   (raylib:draw-line +world-min-x+ +world-min-y+ +world-min-x+ +world-max-y+ raylib:+darkgray+)
   (raylib:draw-line +world-min-x+ +world-max-y+ +world-max-x+ +world-max-y+ raylib:+darkgray+)
   (raylib:draw-line +world-max-x+ +world-min-y+ +world-max-x+ +world-max-y+ raylib:+darkgray+))
+
+;; --- Top-level --- ;;
 
 (defun event-loop (game)
   "Loop until a signal to quit has been received."

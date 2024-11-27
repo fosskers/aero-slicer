@@ -176,15 +176,6 @@ despawn them."
   (incf (raylib:vector2-y (missile-pos missile)) 2.0)
   (incf (raylib:rectangle-y (missile-bbox missile)) 2.0))
 
-(defun maybe-spawn-missile! (game)
-  "Spawn a little missile, perhaps."
-  ;; TODO 2024-11-23 Tune this spawn frequency. Perhaps base it on the level?
-  (when (and (zerop (mod (game-frame game) (level->spawn-rate (game-level game))))
-             ;; Delays the spawning of missiles immediately after a bomb has been used.
-             (bomb-cooling-down? (game-fighter game) (game-frame game)))
-    (let ((missile (->> game game-sprites sprites-missile @missile)))
-      (setf (gethash (game-frame game) (game-missiles game)) missile))))
-
 (defun level->spawn-rate (level)
   (case level
     (1 60)
@@ -279,20 +270,6 @@ despawn them."
     (incf (raylib:rectangle-x bbox) nor-x)
     (incf (raylib:vector2-x (beam-pos beam)) nor-x)
     (incf (raylib:rectangle-x (beam-bbox beam)) nor-x)))
-
-(defun maybe-spawn-ship! (game)
-  "Spawn an evil ship depending on the current frame."
-  (let ((fc    (game-frame game))
-        (level (game-level game)))
-    ;; Only spawn one evil ship at a time.
-    (when (and (zerop (hash-table-count (game-evil-ships game)))
-               (= 0 (mod fc (* 6 +frame-rate+))))
-      (let* ((sprites (game-sprites game))
-             (evil-ship (@evil-ship (sprites-evil-ship sprites)
-                                    (beam-by-level game)
-                                    (fighter-pos (game-fighter game))
-                                    level)))
-        (setf (gethash fc (game-evil-ships game)) evil-ship)))))
 
 (defmethod tick! ((evil-ship evil-ship) fc)
   "Shooting and turning off the beam."
@@ -397,17 +374,6 @@ despawn them."
     (draw (tank-beam tank) fc))
   (draw-animated (tank-animated tank) (tank-pos tank) fc))
 
-(defun maybe-spawn-tank! (game)
-  "Spawn a tank depending on the current frame."
-  (let ((fc (game-frame game)))
-    (when (= 0 (mod fc (* 4 +frame-rate+)))
-      (let* ((sprites (game-sprites game))
-             (tank (@tank (sprites-tank sprites)
-                          (beam-by-level game)
-                          (game-level game)
-                          fc)))
-        (setf (gethash fc (game-tanks game)) tank)))))
-
 ;; TODO: 2024-11-09 Merge with `tick!'?
 (defun maybe-tank-shoot! (tank fc)
   "Make the tank fire if conditions are met."
@@ -499,13 +465,6 @@ despawn them."
     (incf (raylib:vector2-y   (blob-pos blob)) 1.0)
     (incf (raylib:rectangle-y (blob-bbox blob)) 1.0)))
 
-(defun maybe-spawn-blob! (game)
-  "Spawn a blob depending on the current frame."
-  (when (= 0 (mod (game-frame game) (* 2 +frame-rate+)))
-    (let ((blob (@blob (sprites-blob (game-sprites game))
-                       (game-level game))))
-      (setf (gethash (game-frame game) (game-blobs game)) blob))))
-
 (defmethod draw ((blob blob) fc)
   (raylib:draw-texture-v (->> blob blob-animated animated-sprite sprite-texture)
                          (blob-pos blob)
@@ -555,12 +514,6 @@ despawn them."
   "Straight movement down the screen."
   (incf (raylib:vector2-y   (building-pos building)) 0.25)
   (incf (raylib:rectangle-y (building-bbox building)) 0.25))
-
-(defun maybe-spawn-building! (game)
-  "Spawn a building depending on the current frame."
-  (when (= 0 (mod (game-frame game) (* 4 +frame-rate+)))
-    (let ((building (->> game game-sprites sprites-building @building)))
-      (setf (gethash (game-frame game) (game-buildings game)) building))))
 
 ;; TODO: 2024-11-01 Consider consolidating into something generic if this
 ;; pattern continues. Although I suspect that buildings will be the only things
