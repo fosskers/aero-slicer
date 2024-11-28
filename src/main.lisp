@@ -190,6 +190,10 @@ schedule."
         (level   (game-level game))
         (sprites (game-sprites game))
         (fighter (game-fighter game)))
+    (when (and (zerop (mod fc +frame-rate+))
+               (not (bomb-cooling-down? fighter fc)))
+      (setf (gethash fc (game-missiles game))
+            (@missile (sprites-missile sprites))))
     (cond ((and (< n 4)
                 ;; Don't spawn a bomb if the player is already full.
                 (has-bomb-capacity? fighter))
@@ -207,15 +211,10 @@ schedule."
                              (fighter-pos fighter)
                              fc)))
           ;; --- Varying Spawn Rate by Level --- ;;
-          ((and (< n (* level 116))
-                ;; Delays the spawning of missiles immediately after a bomb has been used.
-                (not (bomb-cooling-down? fighter fc)))
-           (setf (gethash fc (game-missiles game))
-                 (@missile (sprites-missile sprites))))
-          ((< n (* level 156))
+          ((< n (* level 76))
            (setf (gethash fc (game-blobs game))
                  (@blob (sprites-blob sprites))))
-          ((< n (* level 181))
+          ((< n (* level 101))
            (setf (gethash fc (game-tanks game))
                  (@tank (sprites-tank sprites)
                         (beam-by-level game)
