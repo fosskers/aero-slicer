@@ -46,6 +46,7 @@
          (beam    (fighter-beam fighter))
          (fc      (game-frame game)))
     (maybe-spawn-wide! game)
+    (maybe-spawn-shield! game)
     (tick! (game-powerups game) fc)
     (tick! fighter fc)
     (despawn! (game-powerups game) fc)
@@ -70,17 +71,17 @@
   "Alter the fighter according to a powerup he just grabbed."
   (let* ((fighter (game-fighter game))
          (beam    (fighter-beam fighter)))
-    (typecase pu
+    (etypecase pu
       (ammo (when (< (fighter-bombs fighter) +bomb-max-capacity+)
-              (remhash key (game-powerups game))
               (incf (fighter-bombs fighter))))
       (wide (let ((beam (@beam (upgrade-beam (game-sprites game)
                                              (->> beam beam-animated animated-sprite))
                                (fighter-pos fighter)
                                (raylib:rectangle-width (fighter-bbox fighter))
                                +beam-y-offset+)))
-              (setf (fighter-beam fighter) beam)
-              (remhash key (game-powerups game)))))))
+              (setf (fighter-beam fighter) beam)))
+      (shield (setf (->> game game-fighter fighter-shielded?) t)))
+    (remhash key (game-powerups game))))
 
 (defun bump-score-by-frame! (game)
   "Gradually increase the score over time."

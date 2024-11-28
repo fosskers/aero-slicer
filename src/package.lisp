@@ -49,7 +49,12 @@ programmatic based on each beam's width.")
 (defparameter +enemy-invincibility-frames+ (/ +frame-rate+ 2)
   "The same length as the duration of the fighter's beam. This ensures that a
 single beam shot will never damage the same enemy twice.")
-(defparameter +level-progression-interval+ 5000)
+(defparameter +level-progression-interval+ 5000
+  "How often, in points, that the difficulty level should increase.")
+(defparameter +beam-widening-interval+ 1000
+  "How often, in points, a beam widener should spawn.")
+(defparameter +shield-spawn-interval+ 3000
+  "How often, in points, a shield powerup should spawn.")
 
 ;; --- Fixed Positions --- ;;
 

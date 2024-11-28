@@ -23,7 +23,8 @@
   (beam      nil :type beam)
   (bombs     3   :type fixnum)
   ;; The last time a bomb was used.
-  (bomb-fc   (- +bomb-cooldown+) :type fixnum))
+  (bomb-fc   (- +bomb-cooldown+) :type fixnum)
+  (shielded? nil :type symbol))
 
 (defun @fighter (fighter-sprite beam-sprite)
   "A smart-constructor for `fighter'."

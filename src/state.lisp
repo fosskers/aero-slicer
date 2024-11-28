@@ -36,7 +36,8 @@
   (level     (sprite #p"assets/level-x.json"))
   (missile   (sprite #p"assets/missile.json"))
   (cannon-bulb (sprite #p"assets/cannon-bulb.json"))
-  (cannon-beam (sprite #p"assets/cannon-beam.json")))
+  (cannon-beam (sprite #p"assets/cannon-beam.json"))
+  (shield    (sprite #p"assets/shield.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -50,7 +51,8 @@
   (fighter nil :type fighter)
   (warp-ghost nil :type ghost)
   ;; The point after which the next Beam Widener powerup should spawn.
-  (widener-threshold 1000 :type fixnum)
+  (widener-threshold +beam-widening-interval+ :type fixnum)
+  (shield-threshold  +shield-spawn-interval+  :type fixnum)
   ;; The key is the frame number upon which the blob was spawned.
   (blobs      (make-hash-table :size 16) :type hash-table)
   (tanks      (make-hash-table :size 16) :type hash-table)
@@ -97,7 +99,8 @@
   (setf (game-score game) 0)
   (setf (game-level game) 1)
   (setf (game-mode game) 'playing)
-  (setf (game-widener-threshold game) 1000)
+  (setf (game-widener-threshold game) +beam-widening-interval+)
+  (setf (game-shield-threshold game) +shield-spawn-interval+)
   (setf (game-level-thresh game) +level-progression-interval+)
   (let ((fighter (game-fighter game)))
     (setf (fighter-bombs fighter) 3)
@@ -201,4 +204,5 @@
     (raylib:unload-texture (sprite-texture (sprites-level sprites)))
     (raylib:unload-texture (sprite-texture (sprites-missile sprites)))
     (raylib:unload-texture (sprite-texture (sprites-cannon-bulb sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-cannon-beam sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-cannon-beam sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-shield sprites)))))
