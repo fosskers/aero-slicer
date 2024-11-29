@@ -74,17 +74,32 @@
 
 (defstruct aura
   "The sheild aura of a fighter."
-  (animated nil :type animated)
-  (pos      nil :type raylib:vector2))
+  (animated    nil :type animated)
+  (pos         nil :type raylib:vector2)
+  (duration    0   :type fixnum)
+  (disperse-fc 0   :type fixnum))
 
 (defun @aura (sprite f-pos)
   "Construct a shield `aura'."
-  (make-aura :animated (make-animated :sprite sprite)
-             :pos (raylib:make-vector2 :x (raylib:vector2-x f-pos)
-                                       :y (raylib:vector2-y f-pos))))
+  (let ((duration (animation-duration sprite 'disperse)))
+    (make-aura :animated (make-animated :sprite sprite)
+               :pos (raylib:make-vector2 :x (raylib:vector2-x f-pos)
+                                         :y (raylib:vector2-y f-pos))
+               :duration duration
+               :disperse-fc (- duration))))
 
 (defmethod draw ((aura aura) fc)
   (draw-animated (aura-animated aura) (aura-pos aura) fc))
+
+(defmethod expired? ((aura aura) fc)
+  "Has the disperse animation ceased?"
+  (>= (- fc (aura-disperse-fc aura))
+      (aura-duration aura)))
+
+(defmethod tick! ((aura aura) fc)
+  (when (and (eq 'disperse (->> aura aura-animated animated-active))
+             (expired? aura fc))
+    (set-animation! (aura-animated aura) 'idle fc)))
 
 ;; --- Status --- ;;
 
@@ -141,15 +156,18 @@
               (>= (- fc (fighter-status-fc fighter)) (* 1.5 +frame-rate+)))
          (set-status! fighter 'ok fc)
          (set-animation! (fighter-animated fighter) 'idle fc)))
-  (tick! (fighter-beam fighter) fc))
+  (tick! (fighter-beam fighter) fc)
+  (tick! (fighter-shield fighter) fc))
 
 (defmethod draw ((fighter fighter) fc)
-  (let ((beam (fighter-beam fighter)))
+  (let ((beam (fighter-beam fighter))
+        (shield (fighter-shield fighter)))
     (when (beam-shooting? beam)
       (draw beam fc))
-    (when (fighter-shielded? fighter)
-      (draw (fighter-shield fighter) fc))
-    (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc)))
+    (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc)
+    (when (or (fighter-shielded? fighter)
+              (eq 'disperse (->> shield aura-animated animated-active)))
+      (draw shield fc))))
 
 (defmethod pos ((fighter fighter))
   (fighter-pos fighter))

@@ -119,7 +119,10 @@
              ;; killed, so that collision on the next frame doesn't immediately
              ;; kill the fighter anyway.
              (setf (fighter-shielded? fighter) nil)
-             (set-status! fighter 'hit fc))
+             (set-status! fighter 'hit fc)
+             (setf (->> fighter fighter-shield aura-disperse-fc) fc)
+             (set-animation! (->> fighter fighter-shield aura-animated)
+                             'disperse fc))
             (t (explode! game (fighter-pos fighter))
                ;; Kill the fighter.
                (-<>> fighter

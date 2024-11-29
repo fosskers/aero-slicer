@@ -90,6 +90,14 @@ and stopping at unexpected frames."
   (setf (animated-frame animated) 0)
   (setf (animated-started animated) fc))
 
+(defun animation-duration (sprite tag)
+  "The duration in frame-count of a particular animation within a sprite."
+  (->> sprite
+    (sprite-animations)
+    (gethash tag)
+    (animation-frames)
+    (t:transduce (t:map #'frame-duration-fs) #'+)))
+
 (defun sprite-duration (sprite)
   "The duration of the sprite animation in terms of frame-count. Works best for
 single-tag sprites."
