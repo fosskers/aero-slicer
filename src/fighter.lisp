@@ -110,8 +110,7 @@
 
 (defun kill-fighter! (fighter beam-sprite fc)
   "Reset the fighter's position and animation."
-  (setf (fighter-status fighter) 'hit)
-  (setf (fighter-status-fc fighter) fc)
+  (set-status! fighter 'hit fc)
   (set-animation! (fighter-animated fighter) 'damaged fc)
   ;; Move him back to the initial spawn position.
   (setf (raylib:vector2-x (fighter-pos fighter)) +fighter-spawn-x+)
@@ -129,14 +128,18 @@
                (raylib:rectangle-width (fighter-bbox fighter))
                +beam-y-offset+)))
 
+(defun set-status! (fighter status fc)
+  "Set the fighter's status."
+  (setf (fighter-status fighter) status)
+  (setf (fighter-status-fc fighter) fc))
+
 ;; --- Generics --- ;;
 
 (defmethod tick! ((fighter fighter) fc)
   "Resetting of the fighter's flashing respawn status, etc."
   (cond ((and (eq 'hit (fighter-status fighter))
               (>= (- fc (fighter-status-fc fighter)) (* 1.5 +frame-rate+)))
-         (setf (fighter-status fighter) 'ok)
-         (setf (fighter-status-fc fighter) fc)
+         (set-status! fighter 'ok fc)
          (set-animation! (fighter-animated fighter) 'idle fc)))
   (tick! (fighter-beam fighter) fc))
 

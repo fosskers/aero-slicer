@@ -115,17 +115,23 @@
                    ;; Or a tank/ship just shot you.
                    (got-shot? fighter (game-tanks game))
                    (got-shot? fighter (game-evil-ships game))))
-      (explode! game (fighter-pos fighter))
-      ;; Kill the fighter.
-      (-<>> fighter
-        (fighter-beam)
-        (beam-animated)
-        (animated-sprite)
-        (downgrade-beam (game-sprites game))
-        (kill-fighter! fighter <> fc))
-      (decf (game-lives game))
-      (when (<= (game-lives game) 0)
-        (setf (game-mode game) 'dead)))))
+      (cond ((fighter-shielded? fighter)
+             ;; This grants invincibility for the same span as being actually
+             ;; killed, so that collision on the next frame doesn't immediately
+             ;; kill the fighter anyway.
+             (setf (fighter-shielded? fighter) nil)
+             (set-status! fighter 'hit fc))
+            (t (explode! game (fighter-pos fighter))
+               ;; Kill the fighter.
+               (-<>> fighter
+                 (fighter-beam)
+                 (beam-animated)
+                 (animated-sprite)
+                 (downgrade-beam (game-sprites game))
+                 (kill-fighter! fighter <> fc))
+               (decf (game-lives game))
+               (when (<= (game-lives game) 0)
+                 (setf (game-mode game) 'dead)))))))
 
 (defun damage-from-shot! (game beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."
