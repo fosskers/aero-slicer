@@ -24,9 +24,10 @@
   (bombs     3   :type fixnum)
   ;; The last time a bomb was used.
   (bomb-fc   (- +bomb-cooldown+) :type fixnum)
-  (shielded? nil :type symbol))
+  (shielded? nil :type symbol)
+  (shield    nil :type aura))
 
-(defun @fighter (fighter-sprite beam-sprite)
+(defun @fighter (fighter-sprite beam-sprite shield-sprite)
   "A smart-constructor for `fighter'."
   (let* ((animated (make-animated :sprite fighter-sprite))
          (rect     (bounding-box animated))
@@ -39,7 +40,8 @@
                                                :y +fighter-spawn-y+
                                                :width width
                                                :height (raylib:rectangle-height rect))
-                  :beam (@beam beam-sprite pos width +beam-y-offset+))))
+                  :beam (@beam beam-sprite pos width +beam-y-offset+)
+                  :shield (@aura shield-sprite pos))))
 
 (defstruct ghost
   "A warp ghost."
@@ -69,6 +71,20 @@
                    (ghost-pos ghost)
                    fc
                    :colour +very-faded-blue+)))
+
+(defstruct aura
+  "The sheild aura of a fighter."
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2))
+
+(defun @aura (sprite f-pos)
+  "Construct a shield `aura'."
+  (make-aura :animated (make-animated :sprite sprite)
+             :pos (raylib:make-vector2 :x (raylib:vector2-x f-pos)
+                                       :y (raylib:vector2-y f-pos))))
+
+(defmethod draw ((aura aura) fc)
+  (draw-animated (aura-animated aura) (aura-pos aura) fc))
 
 ;; --- Status --- ;;
 
@@ -128,6 +144,8 @@
   (let ((beam (fighter-beam fighter)))
     (when (beam-shooting? beam)
       (draw beam fc))
+    (when (fighter-shielded? fighter)
+      (draw (fighter-shield fighter) fc))
     (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc)))
 
 (defmethod pos ((fighter fighter))
@@ -142,22 +160,26 @@
          (f-bbox (fighter-bbox fighter))
          (beam   (fighter-beam fighter))
          (b-pos  (beam-pos  beam))
-         (b-bbox (beam-bbox beam)))
+         (b-bbox (beam-bbox beam))
+         (s-pos  (->> fighter fighter-shield aura-pos)))
     (setf (raylib:vector2-x f-pos) new)
     (setf (raylib:rectangle-x f-bbox) new)
     (setf (raylib:vector2-x b-pos) (+ new (beam-x-offset beam)))
-    (setf (raylib:rectangle-x b-bbox) (+ new (beam-x-offset beam)))))
+    (setf (raylib:rectangle-x b-bbox) (+ new (beam-x-offset beam)))
+    (setf (raylib:rectangle-x s-pos) (- new 2))))
 
 (defun set-y! (fighter new)
   "Set a new y-axis value for the various subcomponents."
   (let* ((f-pos  (fighter-pos fighter))
          (f-bbox (fighter-bbox fighter))
          (b-pos  (beam-pos  (fighter-beam fighter)))
-         (b-bbox (beam-bbox (fighter-beam fighter))))
+         (b-bbox (beam-bbox (fighter-beam fighter)))
+         (s-pos  (->> fighter fighter-shield aura-pos)))
     (setf (raylib:vector2-y f-pos) new)
     (setf (raylib:rectangle-y f-bbox) new)
     (setf (raylib:vector2-y b-pos) (+ new +beam-y-offset+))
-    (setf (raylib:rectangle-y b-bbox) (+ new +beam-y-offset+))))
+    (setf (raylib:rectangle-y b-bbox) (+ new +beam-y-offset+))
+    (setf (raylib:rectangle-y s-pos) (- new 2))))
 
 (defmethod move! ((fighter fighter))
   "Move the fighter depending on the current button presses."

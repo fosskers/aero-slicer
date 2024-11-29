@@ -35,9 +35,10 @@
   (numbers   (sprite #p"assets/numbers.json"))
   (level     (sprite #p"assets/level-x.json"))
   (missile   (sprite #p"assets/missile.json"))
+  (shield    (sprite #p"assets/shield.json"))
+  (shield-aura (sprite #p"assets/shield-aura.json"))
   (cannon-bulb (sprite #p"assets/cannon-bulb.json"))
-  (cannon-beam (sprite #p"assets/cannon-beam.json"))
-  (shield    (sprite #p"assets/shield.json")))
+  (cannon-beam (sprite #p"assets/cannon-beam.json")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -79,7 +80,8 @@
     (make-game :sprites sprites
                :warp-ghost (@ghost (sprites-fighter sprites))
                :fighter (@fighter (sprites-fighter sprites)
-                                  (sprites-beam-2 sprites)))))
+                                  (sprites-beam-2 sprites)
+                                  (sprites-shield-aura sprites)))))
 
 ;; TODO: 2024-11-12 Should I just reconstruct the `game' entirely instead of
 ;; doing all this manual resetting?
@@ -104,6 +106,7 @@
   (setf (game-level-thresh game) +level-progression-interval+)
   (let ((fighter (game-fighter game)))
     (setf (fighter-bombs fighter) 3)
+    (setf (fighter-shielded? fighter) nil)
     (setf (fighter-beam fighter)
           (@beam (->> game game-sprites sprites-beam-2)
                  (fighter-pos fighter)
@@ -205,4 +208,5 @@
     (raylib:unload-texture (sprite-texture (sprites-missile sprites)))
     (raylib:unload-texture (sprite-texture (sprites-cannon-bulb sprites)))
     (raylib:unload-texture (sprite-texture (sprites-cannon-beam sprites)))
-    (raylib:unload-texture (sprite-texture (sprites-shield sprites)))))
+    (raylib:unload-texture (sprite-texture (sprites-shield sprites)))
+    (raylib:unload-texture (sprite-texture (sprites-shield-aura sprites)))))
