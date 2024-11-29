@@ -32,6 +32,8 @@ collision check.")
   "The pixel distance moved by the fighter during a warp.")
 (defparameter +bomb-cooldown+ (* 2 +frame-rate+)
   "How soon the player can use another bomb.")
+(defparameter +powerup-spawn-interval+ 1000
+  "How often, in points, a beam/shield powerup should spawn.")
 (defparameter +powerup-newness-timeout+ (* 4 +frame-rate+)
   "After which the powerup should start flashing.")
 (defparameter +powerup-spawn-timeout+ (* 6 +frame-rate+)
@@ -51,10 +53,6 @@ programmatic based on each beam's width.")
 single beam shot will never damage the same enemy twice.")
 (defparameter +level-progression-interval+ 5000
   "How often, in points, that the difficulty level should increase.")
-(defparameter +beam-widening-interval+ 1000
-  "How often, in points, a beam widener should spawn.")
-(defparameter +shield-spawn-interval+ 3000
-  "How often, in points, a shield powerup should spawn.")
 
 ;; --- Fixed Positions --- ;;
 

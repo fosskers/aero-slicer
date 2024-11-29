@@ -51,9 +51,8 @@
   (sprites nil :type sprites)
   (fighter nil :type fighter)
   (warp-ghost nil :type ghost)
-  ;; The point after which the next Beam Widener powerup should spawn.
-  (widener-threshold +beam-widening-interval+ :type fixnum)
-  (shield-threshold  +shield-spawn-interval+  :type fixnum)
+  ;; The point after which the next beam/shield powerup should spawn.
+  (powerup-threshold +powerup-spawn-interval+ :type fixnum)
   ;; The key is the frame number upon which the blob was spawned.
   (blobs      (make-hash-table :size 16) :type hash-table)
   (tanks      (make-hash-table :size 16) :type hash-table)
@@ -101,8 +100,7 @@
   (setf (game-score game) 0)
   (setf (game-level game) 1)
   (setf (game-mode game) 'playing)
-  (setf (game-widener-threshold game) +beam-widening-interval+)
-  (setf (game-shield-threshold game) +shield-spawn-interval+)
+  (setf (game-powerup-threshold game) +powerup-spawn-interval+)
   (setf (game-level-thresh game) +level-progression-interval+)
   (let ((fighter (game-fighter game)))
     (setf (fighter-bombs fighter) 3)

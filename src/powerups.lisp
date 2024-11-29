@@ -5,6 +5,18 @@
 #+nil
 (launch)
 
+(defun maybe-spawn-powerup! (game)
+  "Perhaps spawn a strong powerup."
+  (when (>= (game-score game) (game-powerup-threshold game))
+    (incf (game-powerup-threshold game) +powerup-spawn-interval+)
+    (let ((n (random 10)))
+      (cond ((and (->> game game-fighter fighter-shielded? not)
+                  (= 0 n))
+             (setf (gethash (game-frame game) (game-powerups game))
+                   (@shield (->> game game-sprites sprites-shield) (game-frame game))))
+            (t (setf (gethash (game-frame game) (game-powerups game))
+                     (@wide (->> game game-sprites sprites-wide))))))))
+
 ;; --- Shield --- ;;
 
 (defstruct shield
@@ -26,15 +38,6 @@
                                               :y (raylib:vector2-y pos)
                                               :width (raylib:rectangle-width rect)
                                               :height (raylib:rectangle-height rect)))))
-
-(defun maybe-spawn-shield! (game)
-  "Spawn a `shield' powerup depending on the current score. However, it shouldn't
-spawn if the fighter is already shielded."
-  (when (and (->> game game-fighter fighter-shielded? not)
-             (>= (game-score game) (game-shield-threshold game)))
-    (incf (game-shield-threshold game) +shield-spawn-interval+)
-    (setf (gethash (game-frame game) (game-powerups game))
-          (@shield (->> game game-sprites sprites-shield) (game-frame game)))))
 
 (defmethod pos ((shield shield))
   (shield-pos shield))
@@ -78,16 +81,6 @@ spawn if the fighter is already shielded."
                                             :y (raylib:vector2-y pos)
                                             :width (raylib:rectangle-width rect)
                                             :height (raylib:rectangle-height rect)))))
-
-(defun maybe-spawn-wide! (game)
-  "Spawn a `wide' laser powerup depending on the current score. However, it
-shouldn't spawn if the fighter is already at max beam width."
-  (when (>= (game-score game) (game-widener-threshold game))
-    (incf (game-widener-threshold game) +beam-widening-interval+)
-    (when (not (eq (->> game game-fighter fighter-beam beam-animated animated-sprite)
-                   (sprites-beam-18 (game-sprites game))))
-      (let ((wide (@wide (sprites-wide (game-sprites game)))))
-        (setf (gethash (game-frame game) (game-powerups game)) wide)))))
 
 (defmethod pos ((wide wide))
   (wide-pos wide))
