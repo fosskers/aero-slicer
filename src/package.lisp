@@ -239,6 +239,3 @@ powerups."
 #+nil
 (random-position)
 
-(defun neg? (n)
-  "Is a given number negative?"
-  (< n 0))

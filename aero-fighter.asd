@@ -9,6 +9,7 @@
                :transducers)
   :components ((:module "src"
                 :components ((:file "package")
+                             (:file "math")
                              (:file "state")
                              (:file "aseprite")
                              (:file "powerups")

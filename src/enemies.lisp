@@ -202,7 +202,10 @@ despawn them."
   (fighter-pos nil :type raylib:vector2)
   ;; How long the beam charge should last.
   (charge-dur 0  :type fixnum)
-  (spawned-fc 0  :type fixnum))
+  (spawned-fc 0  :type fixnum)
+  ;; A gradually adjusting normalised vector of where the Evil Ship wants to
+  ;; head on the next frame.
+  (heading    :nil :type raylib:vector2))
 
 (defun @evil-ship (evil-ship-sprite beam-sprite fighter-pos fc)
   "A smart-constructor for an `evil-ship'."
@@ -219,7 +222,9 @@ despawn them."
                                                  :height (raylib:rectangle-height rect))
                     :beam (@beam beam-sprite pos width +evil-ship-beam-y-offset+)
                     :charge-dur (charge-duration evil-ship-sprite)
-                    :spawned-fc fc)))
+                    :spawned-fc fc
+                    ;; Straight down.
+                    :heading (raylib:make-vector2 :x 0.0 :y 1.0))))
 
 (defmethod pos ((evil-ship evil-ship))
   (evil-ship-pos evil-ship))
@@ -243,6 +248,89 @@ despawn them."
 ;; - Thus, it will back up if the fighter approaches.
 ;; - Try to X-align such that a shot will hit.
 
+(defmethod move! ((evil-ship evil-ship))
+  "Move the evil fighter depending on the position of the good fighter."
+  (let* ((f-pos  (evil-ship-fighter-pos evil-ship))
+         (e-pos  (evil-ship-pos evil-ship))
+         #++
+         (x-diff (- (raylib:vector2-x f-pos)
+                    (raylib:vector2-x e-pos)))
+         #++
+         (y-diff (- (raylib:vector2-y f-pos)
+                    (raylib:vector2-y e-pos)))
+         #++
+         (dist   (euclidean-distance x-diff y-diff))
+         #++
+         (too-close? (< dist 96))
+         (angle  (angle-between e-pos f-pos))
+         (mag    (magnitude e-pos))
+         (nor-x  (/ (raylib:vector2-x e-pos) mag))
+         (nor-y  (/ (raylib:vector2-y e-pos) mag)))
+    (multiple-value-bind (rot-x rot-y) (rotate nor-x nor-y angle)
+      (inc-evil-x! evil-ship rot-x)
+      (inc-evil-y! evil-ship rot-y))
+    #++
+    (multiple-value-bind (corrected-x corrected-y)
+        (cond ((and too-close? (neg? x-diff)) (values (- y-diff) x-diff))
+              (too-close? (values y-diff (- x-diff)))
+              (t (values x-diff y-diff)))
+      (let* ((nor-x (round (/ corrected-x dist)))
+             (nor-y (round (/ corrected-y dist))))
+        (set-evil-y! nor-y)
+        (set-evil-x! nor-x)))))
+
+#++
+(defmethod move! ((evil-ship evil-ship))
+  "Move the evil fighter depending on the position of the good fighter."
+  (let* ((f-pos  (evil-ship-fighter-pos evil-ship))
+         (e-pos  (evil-ship-pos evil-ship))
+         (head   (evil-ship-heading evil-ship))
+         (x-diff (- (raylib:vector2-x f-pos)
+                    (raylib:vector2-x e-pos)))
+         (y-diff (- (raylib:vector2-y f-pos)
+                    (raylib:vector2-y e-pos)))
+         (dist   (euclidean-distance x-diff y-diff))
+         (too-close? (< dist 96))
+         (direction (if (greater-angle? head f-pos)
+                        1 -1)))
+    (multiple-value-bind (rot-x rot-y) (rotate (raylib:vector2-x head)
+                                               (raylib:vector2-y head)
+                                               (/ pi 2 +frame-rate+ direction))
+      (inc-evil-x! evil-ship rot-x)
+      (inc-evil-y! evil-ship rot-y))
+    #++
+    (multiple-value-bind (corrected-x corrected-y)
+        (cond ((and too-close? (neg? x-diff)) (values (- y-diff) x-diff))
+              (too-close? (values y-diff (- x-diff)))
+              (t (values x-diff y-diff)))
+      (let* ((nor-x (round (/ corrected-x dist)))
+             (nor-y (round (/ corrected-y dist))))
+        (set-evil-y! nor-y)
+        (set-evil-x! nor-x)))))
+
+(defun inc-evil-x! (evil-ship new)
+  (let ((e-pos (evil-ship-pos evil-ship))
+        (bbox  (evil-ship-bbox evil-ship))
+        (beam  (evil-ship-beam evil-ship))
+        (head  (evil-ship-heading evil-ship)))
+    (setf (raylib:vector2-x head) new)
+    (incf (raylib:vector2-x e-pos) new)
+    (incf (raylib:rectangle-x bbox) new)
+    (incf (raylib:vector2-x (beam-pos beam)) new)
+    (incf (raylib:rectangle-x (beam-bbox beam)) new)))
+
+(defun inc-evil-y! (evil-ship new)
+  (let ((e-pos (evil-ship-pos evil-ship))
+        (bbox  (evil-ship-bbox evil-ship))
+        (beam  (evil-ship-beam evil-ship))
+        (head  (evil-ship-heading evil-ship)))
+    (setf (raylib:vector2-y head) new)
+    (incf (raylib:vector2-y e-pos) new)
+    (incf (raylib:rectangle-y bbox) new)
+    (incf (raylib:vector2-y (beam-pos beam)) new)
+    (incf (raylib:rectangle-y (beam-bbox beam)) new)))
+
+#++
 (defmethod move! ((evil-ship evil-ship))
   "Move the evil fighter depending on the position of the good fighter."
   (let* ((f-pos  (evil-ship-fighter-pos evil-ship))

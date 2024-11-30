@@ -11,20 +11,6 @@
 
 ;; --- Abstract --- ;;
 
-(defun euclidean-distance (v1 v2)
-  "The distance between two `raylib:vector2'."
-  (sqrt (+ (expt (- (raylib:vector2-x v2)
-                    (raylib:vector2-x v1))
-                 2)
-           (expt (- (raylib:vector2-y v2)
-                    (raylib:vector2-y v1))
-                 2))))
-
-#+nil
-(let ((a (raylib:make-vector2 :x 2.0 :y -6.0))
-      (b (raylib:make-vector2 :x 7.0 :y 3.0)))
-  (euclidean-distance a b))
-
 (defgeneric near? (a b)
   (:documentation "Are two sprites in the same general vicinity?"))
 
