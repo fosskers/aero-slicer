@@ -21,7 +21,8 @@
   (status-fc 0   :type fixnum)
   (warp-dir  nil :type symbol)
   (beam      nil :type beam)
-  (bombs     3   :type fixnum)
+  (bombs     +bomb-max-capacity+ :type fixnum)
+  (beam-dmg  +beam-base-damage+ :type fixnum)
   ;; The last time a bomb was used.
   (bomb-fc   (- +bomb-cooldown+) :type fixnum)
   (shielded? nil :type symbol)
@@ -127,6 +128,7 @@
   "Reset the fighter's position and animation."
   (set-status! fighter 'hit fc)
   (set-animation! (fighter-animated fighter) 'damaged fc)
+  (setf (fighter-beam-dmg fighter) +beam-base-damage+)
   ;; Move him back to the initial spawn position.
   (setf (raylib:vector2-x (fighter-pos fighter)) +fighter-spawn-x+)
   (setf (raylib:vector2-y (fighter-pos fighter)) +fighter-spawn-y+)

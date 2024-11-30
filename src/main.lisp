@@ -22,8 +22,7 @@
 (defun update-dead! (game)
   "The player is dead, and they might restart the game."
   (update-enemies! game)
-  (when (or (raylib:is-key-down +key-space+)
-            (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+))
+  (when (pressing-start?)
     (reset-game! game)))
 
 (defun update-enemies! (game)
@@ -73,12 +72,14 @@
     (etypecase pu
       (ammo (when (< (fighter-bombs fighter) +bomb-max-capacity+)
               (incf (fighter-bombs fighter))))
-      (wide (let ((beam (@beam (upgrade-beam (game-sprites game)
-                                             (->> beam beam-animated animated-sprite))
-                               (fighter-pos fighter)
-                               (raylib:rectangle-width (fighter-bbox fighter))
-                               +beam-y-offset+)))
-              (setf (fighter-beam fighter) beam)))
+      (wide (cond ((max-beam? (game-sprites game) (->> beam beam-animated animated-sprite))
+                   (incf (fighter-beam-dmg fighter)))
+                  (t (setf (fighter-beam fighter)
+                           (@beam (upgrade-beam (game-sprites game)
+                                                (->> beam beam-animated animated-sprite))
+                                  (fighter-pos fighter)
+                                  (raylib:rectangle-width (fighter-bbox fighter))
+                                  +beam-y-offset+)))))
       (shield (setf (->> game game-fighter fighter-shielded?) t)))
     (remhash key (game-powerups game))))
 
@@ -138,10 +139,11 @@
 (defun damage-from-shot! (game beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."
   (let ((hits (enemies-hit-by-beam beam enemies))
+        (dmg  (->> game game-fighter fighter-beam-dmg))
         (fc   (game-frame game)))
     (t:transduce (t:comp (t:filter (lambda (enemy) (vulnerable? (cdr enemy) fc)))
                          (t:map (lambda (enemy)
-                                  (damage! (cdr enemy) fc)
+                                  (damage! (cdr enemy) dmg fc)
                                   (explode! game (pos (cdr enemy)))
                                   enemy))
                          ;; Despawn the enemy if it's dead, and reward the
@@ -166,6 +168,10 @@
                (or (raylib:is-key-down +key-enter+)
                    (raylib:is-gamepad-button-down +gamepad+ +gamepad-b+)))
       (launch-bomb! game)))
+  #++
+  (when (pressing-start?)
+    ;; TODO: 2024-11-30 Exclude this from release builds somehow.
+    (break "Aero Fighter: Paused"))
   #+nil
   (debugging-gamepad))
 
@@ -243,6 +249,7 @@ schedule."
         (dead    (render-dead game))))
     (raylib:draw-fps 10 (- +screen-height+ 50))
     (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)
+    (raylib:draw-text (format nil "DMG: ~a" (->> game game-fighter fighter-beam-dmg)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)
     #++ (raylib:draw-text (format nil "SCORE: ~a" (game-score game)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)))
 
 (defun render-waiting (game)

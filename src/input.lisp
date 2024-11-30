@@ -5,6 +5,11 @@
 #+nil
 (launch)
 
+(defun pressing-start? ()
+  "Is the player pressed a start-like button?"
+  (or (raylib:is-key-down +key-space+)
+      (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+)))
+
 (defun warp-button-down? ()
   "Is the warp trigger being held down?"
   (or (raylib:is-key-down +key-tab+)

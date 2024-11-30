@@ -143,6 +143,10 @@
         ((eq beam (sprites-beam-18 sprites)) 8)
         (t (error "Unknown sprite! Is it really a beam?"))))
 
+(defun max-beam? (sprites beam)
+  "Is this beam already the biggest one?"
+  (eq beam (sprites-beam-18 sprites)))
+
 (defun upgrade-beam (sprites beam)
   "Yield the sprite of the beam one level higher than the current one."
   (cond ((eq beam (sprites-beam-2 sprites))  (sprites-beam-4 sprites))
@@ -153,7 +157,7 @@
         ((eq beam (sprites-beam-12 sprites)) (sprites-beam-14 sprites))
         ((eq beam (sprites-beam-14 sprites)) (sprites-beam-16 sprites))
         ((eq beam (sprites-beam-16 sprites)) (sprites-beam-18 sprites))
-        ((eq beam (sprites-beam-18 sprites)) (sprites-beam-18 sprites))
+        ((max-beam? sprites beam)            (sprites-beam-18 sprites))
         (t (error "Unknown sprite! Is it really a beam?"))))
 
 (defun downgrade-beam (sprites beam)

@@ -157,8 +157,8 @@ despawn them."
   "Missiles can always be instantly shot down."
   t)
 
-(defmethod damage! ((missile missile) fc)
-  (decf (missile-health missile)))
+(defmethod damage! ((missile missile) dmg fc)
+  (decf (missile-health missile) dmg))
 
 (defmethod health ((missile missile))
   (missile-health missile))
@@ -304,9 +304,9 @@ despawn them."
   (>= (- fc (evil-ship-hit-fc evil-ship))
       +enemy-invincibility-frames+))
 
-(defmethod damage! ((evil-ship evil-ship) fc)
+(defmethod damage! ((evil-ship evil-ship) dmg fc)
   (setf (evil-ship-hit-fc evil-ship) fc)
-  (decf (evil-ship-health evil-ship)))
+  (decf (evil-ship-health evil-ship) dmg))
 
 (defmethod health ((evil-ship evil-ship))
   (evil-ship-health evil-ship))
@@ -406,9 +406,9 @@ despawn them."
   (>= (- fc (tank-hit-fc tank))
       +enemy-invincibility-frames+))
 
-(defmethod damage! ((tank tank) fc)
+(defmethod damage! ((tank tank) dmg fc)
   (setf (tank-hit-fc tank) fc)
-  (decf (tank-health tank)))
+  (decf (tank-health tank) dmg))
 
 (defmethod tick! ((tank tank) fc)
   "Turn off the beam, etc."
@@ -481,9 +481,9 @@ despawn them."
   (>= (- fc (blob-hit-fc blob))
       +enemy-invincibility-frames+))
 
-(defmethod damage! ((blob blob) fc)
+(defmethod damage! ((blob blob) dmg fc)
   (setf (blob-hit-fc blob) fc)
-  (decf (blob-health blob)))
+  (decf (blob-health blob) dmg))
 
 (defmethod points ((blob blob))
   100)
