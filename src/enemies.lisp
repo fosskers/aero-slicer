@@ -255,22 +255,21 @@ despawn them."
                     (raylib:vector2-y e-pos)))
          ;; Euclidean distance.
          (dist   (sqrt (+ (expt x-diff 2) (expt y-diff 2))))
-         ;; Normalisation with div-by-zero protection.
-         (nor-x  (* 2 ; A little speed boost.
-                    (/ x-diff (max dist 0.1))))
-         #+nil (nor-y  (/ y-diff (max dist 0.1))))
-    ;; Current stunted form: always approach a certain Y value.
-    (when (< (raylib:vector2-y e-pos)
-             (+ +world-min-y+ 50))
-      (incf (raylib:vector2-y e-pos) 0.5)
-      (incf (raylib:rectangle-y bbox) 0.5)
-      (incf (raylib:vector2-y (beam-pos beam)) 0.5)
-      (incf (raylib:rectangle-y (beam-bbox beam)) 0.5))
-    ;; Move X always toward the fighter.
-    (incf (raylib:vector2-x e-pos) nor-x)
-    (incf (raylib:rectangle-x bbox) nor-x)
-    (incf (raylib:vector2-x (beam-pos beam)) nor-x)
-    (incf (raylib:rectangle-x (beam-bbox beam)) nor-x)))
+         (too-close? (< dist 96)))
+    (multiple-value-bind (corrected-x corrected-y)
+        (cond ((and too-close? (neg? x-diff)) (values (- y-diff) x-diff))
+              (too-close? (values y-diff (- x-diff)))
+              (t (values x-diff y-diff)))
+      (let* ((nor-x (round (/ corrected-x dist)))
+             (nor-y (round (/ corrected-y dist))))
+        (incf (raylib:vector2-y e-pos) nor-y)
+        (incf (raylib:rectangle-y bbox) nor-y)
+        (incf (raylib:vector2-y (beam-pos beam)) nor-y)
+        (incf (raylib:rectangle-y (beam-bbox beam)) nor-y)
+        (incf (raylib:vector2-x e-pos) nor-x)
+        (incf (raylib:rectangle-x bbox) nor-x)
+        (incf (raylib:vector2-x (beam-pos beam)) nor-x)
+        (incf (raylib:rectangle-x (beam-bbox beam)) nor-x)))))
 
 (defmethod tick! ((evil-ship evil-ship) fc)
   "Shooting and turning off the beam."
