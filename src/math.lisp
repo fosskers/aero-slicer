@@ -92,11 +92,17 @@ is flipped, as it is for Raylib / graphics in general."
 
 (defun angle-between (u v)
   "The angle in radians between two vectors."
-  (acos (min 1.0
-             (/ (dot-product u v)
-                (* (magnitude u)
-                   (magnitude v))))))
+  (acos (min 1.      (/ (dot-product u v)
+                        (* (magnitude u)
+                           (magnitude v))))))
 
 #++
 (angle-between (raylib:make-vector2 :x 1.0 :y 0.0)
                (raylib:make-vector2 :x 0.0 :y 1.0))
+
+(defun close-to-zero? (n)
+  "Is some float quite close to zero?"
+  (< -0.005 n 0.001))
+
+#++
+(close-to-zero? -0.00486)
