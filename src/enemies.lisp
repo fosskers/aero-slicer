@@ -261,23 +261,63 @@ despawn them."
     (incf (raylib:vector2-y (beam-pos beam)) new)
     (incf (raylib:rectangle-y (beam-bbox beam)) new)))
 
-(defmethod move! ((evil-ship evil-ship))
-  "Move the evil fighter depending on the position of the good fighter."
+(defun move-evil-ship! (evil-ship buildings)
+  "Move the evil fighter depending on the position of the good fighter and the
+surrounding buildings."
   (let* ((f-pos  (evil-ship-fighter-pos evil-ship))
          (e-pos  (evil-ship-pos evil-ship))
          (x-diff (- (raylib:vector2-x f-pos)
                     (raylib:vector2-x e-pos)))
          (y-diff (- (raylib:vector2-y f-pos)
-                    (raylib:vector2-y e-pos)))
-         (dist   (euclidean-distance x-diff y-diff))
-         (too-close? (< dist +evil-ship-paranoia-radius+)))
+                    (raylib:vector2-y e-pos))))
+    (unless (t:transduce (t:comp (t:map #'cdr)
+                                 (t:map (lambda (building)
+                                          (let* ((b-pos (building-pos building))
+                                                 (rect  (->> building building-animated bounding-box))
+                                                 (x1    (raylib:vector2-x b-pos))
+                                                 (y1    (raylib:vector2-y b-pos))
+                                                 (x2    (+ x1 (raylib:rectangle-width rect)))
+                                                 (y2    (+ y1 (raylib:rectangle-height rect))))
+                                            (or (dodge-if-close! evil-ship x1 y1 :paranoia-radius 18 :dodge 'left)
+                                                (dodge-if-close! evil-ship x2 y2 :paranoia-radius 18 :dodge 'right))))))
+                         (t:fold (lambda (acc dodged?) (or acc dodged?)) nil) buildings)
+      (move-or-dodge-if-close! evil-ship x-diff y-diff))))
+
+(defun move-or-dodge-if-close! (evil-ship x-diff y-diff &key (paranoia-radius +evil-ship-paranoia-radius+))
+  "Moves the evil ship according to a given desired trajectory, but takes a
+perpendicular course instead if he detects he's too close to some object."
+  (let* ((dist   (euclidean-distance x-diff y-diff))
+         (too-close? (< dist paranoia-radius)))
     (multiple-value-bind (corrected-x corrected-y)
+        ;; This coordinate flipping has the effect in Linear Algebra of
+        ;; producing a perpendicular vector. For any given vector there are of
+        ;; course two possible perpendicular ones, and we bias toward the one
+        ;; the always moves the evil ship back up toward the top of the screen.
+        ;; The visual effect is that he's "backing up" to get a better shot on
+        ;; the fighter.
         (cond ((and too-close? (neg? x-diff)) (values (- y-diff) x-diff))
               (too-close? (values y-diff (- x-diff)))
               (t (values x-diff y-diff)))
       (let* ((nor-x (/ corrected-x dist))
              (nor-y (/ corrected-y dist)))
         (unless (close-to-zero? nor-y)
+          (inc-evil-x! evil-ship nor-x)
+          (inc-evil-y! evil-ship nor-y))))))
+
+(defun dodge-if-close! (evil-ship x-diff y-diff &key paranoia-radius dodge)
+  "Moves the evil ship away from some entity."
+  (let ((dist  (euclidean-distance x-diff y-diff)))
+    (when (< dist paranoia-radius)
+      (multiple-value-bind (corrected-x corrected-y)
+          (case dodge
+            (left (if (neg? y-diff)
+                      (values y-diff (- x-diff))
+                      (values (- y-diff) x-diff)))
+            (right (if (neg? y-diff)
+                       (values (- y-diff) x-diff)
+                       (values y-diff (- x-diff)))))
+        (let* ((nor-x (/ corrected-x (max dist 0.1)))
+               (nor-y (/ corrected-y (max dist 0.1))))
           (inc-evil-x! evil-ship nor-x)
           (inc-evil-y! evil-ship nor-y))))))
 
