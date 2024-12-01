@@ -47,6 +47,8 @@ fixed for all beam types as they are all the same height, but the X offset is
 programmatic based on each beam's width.")
 (defparameter +tank-beam-y-offset+ 13
   "The Y position of the beam relative to a tank.")
+(defparameter +evil-ship-paranoia-radius+ 128
+  "How far away from you the evil ship wants to stay.")
 (defparameter +evil-ship-beam-y-offset+ 13
   "The Y position of the beam relative to a evil ship.")
 (defparameter +enemy-invincibility-frames+ (/ +frame-rate+ 2)

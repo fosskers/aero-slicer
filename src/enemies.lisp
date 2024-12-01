@@ -269,9 +269,8 @@ despawn them."
                     (raylib:vector2-x e-pos)))
          (y-diff (- (raylib:vector2-y f-pos)
                     (raylib:vector2-y e-pos)))
-         ;; Euclidean distance.
-         (dist   (sqrt (+ (expt x-diff 2) (expt y-diff 2))))
-         (too-close? (< dist 112)))
+         (dist   (euclidean-distance x-diff y-diff))
+         (too-close? (< dist +evil-ship-paranoia-radius+)))
     (multiple-value-bind (corrected-x corrected-y)
         (cond ((and too-close? (neg? x-diff)) (values (- y-diff) x-diff))
               (too-close? (values y-diff (- x-diff)))
@@ -472,7 +471,7 @@ despawn them."
 
 (defmethod move! ((blob blob))
   "Gradual sinusoidal movement down the screen."
-  (let* ((x-diff (coerce (* 16 (sin (* pi 1/32 (raylib:vector2-y (blob-pos blob))))) 'single-float))
+  (let* ((x-diff (real->float (* 16 (sin (* pi 1/32 (raylib:vector2-y (blob-pos blob)))))))
          (new-x  (+ x-diff (blob-orig-x blob))))
     (setf (raylib:vector2-x   (blob-pos blob)) new-x)
     (setf (raylib:rectangle-x (blob-bbox blob)) new-x)
