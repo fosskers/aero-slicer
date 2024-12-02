@@ -74,7 +74,7 @@
       (ammo (when (< (fighter-bombs fighter) +bomb-max-capacity+)
               (incf (fighter-bombs fighter))))
       (wide (cond ((max-beam? (game-sprites game) (->> beam beam-animated animated-sprite))
-                   (incf (fighter-beam-dmg fighter)))
+                   (setf (fighter-beam-dmg fighter) 2))
                   (t (setf (fighter-beam fighter)
                            (@beam (upgrade-beam (game-sprites game)
                                                 (->> beam beam-animated animated-sprite))
