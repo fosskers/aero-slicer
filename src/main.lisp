@@ -21,6 +21,7 @@
 
 (defun update-dead! (game)
   "The player is dead, and they might restart the game."
+  (update-environment! game)
   (update-enemies! game)
   (when (pressing-start?)
     (reset-game! game)))
@@ -59,8 +60,14 @@
     (when-let* ((pu (colliding-entity fighter (game-powerups game))))
       (collect-powerup! game (car pu) (cdr pu)))))
 
+(defun update-environment! (game)
+  "Move the ground, etc."
+  (t:transduce (t:map (lambda (ground) (move! (cdr ground))))
+               #'t:for-each (game-ground game)))
+
 (defun update-playing! (game)
   "Logic specific to a started game."
+  (update-environment! game)
   (update-enemies! game)
   (update-player! game)
   (bump-score-by-frame! game)
@@ -273,6 +280,7 @@ schedule."
 (defun render-playing (game)
   "Render a running game."
   (let ((fc (game-frame game)))
+    (draw (game-ground game) fc)
     (render-enemies game)
     (draw (game-powerups game) fc)
     (draw (game-fighter game) fc)
@@ -284,6 +292,7 @@ schedule."
 
 (defun render-dead (game)
   "Render the Game Over screen."
+  (draw (game-ground game) (game-frame game))
   (render-enemies game)
   (draw-hud game)
   (raylib:draw-text (format nil "GAME OVER, DUDE")

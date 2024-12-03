@@ -10,6 +10,7 @@
   :components ((:module "src"
                 :components ((:file "package")
                              (:file "math")
+                             (:file "background")
                              (:file "state")
                              (:file "aseprite")
                              (:file "powerups")
