@@ -39,7 +39,7 @@
   (shield-aura (sprite #p"assets/shield-aura.json"))
   (cannon-bulb (sprite #p"assets/cannon-bulb.json"))
   (cannon-beam (sprite #p"assets/cannon-beam.json"))
-  (ground    (raylib:load-texture "assets/ground.png")))
+  (ground    (raylib:load-texture "assets/lighter-ground.png")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
