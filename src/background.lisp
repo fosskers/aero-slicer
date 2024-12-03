@@ -16,8 +16,10 @@
 
 (defun entire-ground (texture)
   "Construct enough `ground' to cover the screen."
-  (t:transduce (t:comp (t:take 15)
-                       (t:map (lambda (n) (cons n (@ground texture :y (+ +world-min-y+ (* n 16)))))))
+  (t:transduce (t:comp (t:take 16)
+                       (t:map (lambda (n)
+                                (cons n (@ground texture :y (+ (- +world-min-y+ 16)
+                                                               (* n 16)))))))
                #'t:hash-table (t:ints 0)))
 
 (defmethod move! ((ground ground))
@@ -25,7 +27,7 @@
   (incf (->> ground ground-pos raylib:vector2-y) 0.25)
   (when (> (->> ground ground-pos raylib:vector2-y)
            +world-max-y+)
-    (setf (->> ground ground-pos raylib:vector2-y) (float +world-min-y+))))
+    (setf (->> ground ground-pos raylib:vector2-y) (float (- +world-min-y+ 16)))))
 
 (defmethod draw ((ground ground) fc)
   (declare (ignore fc))
