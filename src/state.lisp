@@ -40,7 +40,8 @@
   (cannon-bulb (sprite #p"assets/cannon-bulb.json"))
   (cannon-beam (sprite #p"assets/cannon-beam.json"))
   (ground    (raylib:load-texture "assets/lighter-ground.png"))
-  (road      (raylib:load-texture "assets/road.png")))
+  (road      (raylib:load-texture "assets/road.png"))
+  (shadow    (raylib:load-texture "assets/shadow.png")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -84,7 +85,8 @@
                :warp-ghost (@ghost (sprites-fighter sprites))
                :fighter (@fighter (sprites-fighter sprites)
                                   (sprites-beam-2 sprites)
-                                  (sprites-shield-aura sprites))
+                                  (sprites-shield-aura sprites)
+                                  (sprites-shadow sprites))
                :ground (entire-ground (sprites-ground sprites))
                :road (entire-road (sprites-road sprites)))))
 
@@ -219,4 +221,5 @@
     (raylib:unload-texture (sprite-texture (sprites-shield sprites)))
     (raylib:unload-texture (sprite-texture (sprites-shield-aura sprites)))
     (raylib:unload-texture (sprites-ground sprites))
-    (raylib:unload-texture (sprites-road sprites))))
+    (raylib:unload-texture (sprites-road sprites))
+    (raylib:unload-texture (sprites-shadow sprites))))

@@ -300,7 +300,7 @@ schedule."
   (render-enemies game)
   (draw-hud game)
   (raylib:draw-text (format nil "GAME OVER, DUDE")
-                    (- 0 45) 0 10 raylib:+lightgray+))
+                    (- 0 45) 0 10 raylib:+white+))
 
 #++
 (defun draw-hud (game)

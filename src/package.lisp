@@ -1,5 +1,6 @@
 (defpackage aero-fighter
   (:use :cl :arrow-macros)
+  (:shadow #:shadow)
   (:local-nicknames (#:jzon #:com.inuoe.jzon)
                     (#:p #:filepaths)
                     (#:t #:transducers)))
@@ -47,6 +48,7 @@ collision check.")
   "The Y position of the beam relative to the fighter. Note that the Y offset is
 fixed for all beam types as they are all the same height, but the X offset is
 programmatic based on each beam's width.")
+(defparameter +shadow-offset+ 16)
 (defparameter +tank-beam-y-offset+ 13
   "The Y position of the beam relative to a tank.")
 (defparameter +evil-ship-paranoia-radius+ 128

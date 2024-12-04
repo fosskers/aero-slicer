@@ -26,9 +26,10 @@
   ;; The last time a bomb was used.
   (bomb-fc   (- +bomb-cooldown+) :type fixnum)
   (shielded? nil :type symbol)
-  (shield    nil :type aura))
+  (shield    nil :type aura)
+  (shadow    nil :type shadow))
 
-(defun @fighter (fighter-sprite beam-sprite shield-sprite)
+(defun @fighter (fighter-sprite beam-sprite shield-sprite shadow-texture)
   "A smart-constructor for `fighter'."
   (let* ((animated (make-animated :sprite fighter-sprite))
          (rect     (bounding-box animated))
@@ -42,7 +43,23 @@
                                                :width width
                                                :height (raylib:rectangle-height rect))
                   :beam (@beam beam-sprite pos width +beam-y-offset+)
-                  :shield (@aura shield-sprite pos))))
+                  :shield (@aura shield-sprite pos)
+                  :shadow (@shadow shadow-texture pos))))
+
+(defstruct shadow
+  "A shadow rendered offset to the fighter / evil ship that gives a sense of depth."
+  (texture nil :type raylib:texture)
+  (pos     nil :type raylib:vector2))
+
+(defun @shadow (texture f-pos)
+  "Construct a `shadow' based on the position of the fighter."
+  (make-shadow :texture texture
+               :pos (raylib:make-vector2 :x (+ +shadow-offset+ (raylib:vector2-x f-pos))
+                                         :y (+ +shadow-offset+ (raylib:vector2-y f-pos)))))
+
+(defmethod draw ((shadow shadow) fc)
+  (declare (ignore fc))
+  (raylib:draw-texture-v (shadow-texture shadow) (shadow-pos shadow) +very-faded-white+))
 
 (defstruct ghost
   "A warp ghost."
@@ -134,6 +151,8 @@
   (setf (raylib:vector2-y (fighter-pos fighter)) +fighter-spawn-y+)
   (setf (raylib:rectangle-x (fighter-bbox fighter)) +fighter-spawn-x+)
   (setf (raylib:rectangle-y (fighter-bbox fighter)) +fighter-spawn-y+)
+  (setf (->> fighter fighter-shadow shadow-pos raylib:vector2-x) (+ +fighter-spawn-x+ +shadow-offset+))
+  (setf (->> fighter fighter-shadow shadow-pos raylib:vector2-y) (+ +fighter-spawn-y+ +shadow-offset+))
   ;; One of the punishments for dying is the downgrading of your awesome beam width.
   (reset-beam! fighter beam-sprite))
 
@@ -162,10 +181,12 @@
   (tick! (fighter-shield fighter) fc))
 
 (defmethod draw ((fighter fighter) fc)
+  "The fighter controls the drawing of his own beam, shield, etc."
   (let ((beam (fighter-beam fighter))
         (shield (fighter-shield fighter)))
     (when (beam-shooting? beam)
       (draw beam fc))
+    (draw (fighter-shadow fighter) fc)
     (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc)
     (when (or (fighter-shielded? fighter)
               (eq 'disperse (->> shield aura-animated animated-active)))
@@ -184,12 +205,14 @@
          (beam   (fighter-beam fighter))
          (b-pos  (beam-pos  beam))
          (b-bbox (beam-bbox beam))
-         (s-pos  (->> fighter fighter-shield aura-pos)))
+         (a-pos  (->> fighter fighter-shield aura-pos))
+         (s-pos  (->> fighter fighter-shadow shadow-pos)))
     (setf (raylib:vector2-x f-pos) new)
     (setf (raylib:rectangle-x f-bbox) new)
     (setf (raylib:vector2-x b-pos) (+ new (beam-x-offset beam)))
     (setf (raylib:rectangle-x b-bbox) (+ new (beam-x-offset beam)))
-    (setf (raylib:rectangle-x s-pos) (- new 2))))
+    (setf (raylib:rectangle-x a-pos) (- new 2))
+    (setf (raylib:vector2-x s-pos) (+ new +shadow-offset+))))
 
 (defun set-y! (fighter new)
   "Set a new y-axis value for the various subcomponents."
@@ -197,12 +220,14 @@
          (f-bbox (fighter-bbox fighter))
          (b-pos  (beam-pos  (fighter-beam fighter)))
          (b-bbox (beam-bbox (fighter-beam fighter)))
-         (s-pos  (->> fighter fighter-shield aura-pos)))
+         (a-pos  (->> fighter fighter-shield aura-pos))
+         (s-pos  (->> fighter fighter-shadow shadow-pos)))
     (setf (raylib:vector2-y f-pos) new)
     (setf (raylib:rectangle-y f-bbox) new)
     (setf (raylib:vector2-y b-pos) (+ new +beam-y-offset+))
     (setf (raylib:rectangle-y b-bbox) (+ new +beam-y-offset+))
-    (setf (raylib:rectangle-y s-pos) (- new 2))))
+    (setf (raylib:rectangle-y a-pos) (- new 2))
+    (setf (raylib:vector2-y s-pos) (+ new +shadow-offset+))))
 
 (defmethod move! ((fighter fighter))
   "Move the fighter depending on the current button presses."
