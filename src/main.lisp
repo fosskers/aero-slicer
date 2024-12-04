@@ -62,6 +62,8 @@
 
 (defun update-environment! (game)
   "Move the ground, etc."
+  (t:transduce (t:map (lambda (road) (move! (cdr road))))
+               #'t:for-each (game-road game))
   (t:transduce (t:map (lambda (ground) (move! (cdr ground))))
                #'t:for-each (game-ground game)))
 
@@ -281,6 +283,7 @@ schedule."
   "Render a running game."
   (let ((fc (game-frame game)))
     (draw (game-ground game) fc)
+    (draw (game-road game) (game-frame game))
     (render-enemies game)
     (draw (game-powerups game) fc)
     (draw (game-fighter game) fc)
@@ -293,6 +296,7 @@ schedule."
 (defun render-dead (game)
   "Render the Game Over screen."
   (draw (game-ground game) (game-frame game))
+  (draw (game-road game) (game-frame game))
   (render-enemies game)
   (draw-hud game)
   (raylib:draw-text (format nil "GAME OVER, DUDE")

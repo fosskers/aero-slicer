@@ -298,8 +298,8 @@ perpendicular course instead if he detects he's too close to some object."
         (cond ((and too-close? (neg? x-diff)) (values (- y-diff) x-diff))
               (too-close? (values y-diff (- x-diff)))
               (t (values x-diff y-diff)))
-      (let* ((nor-x (/ corrected-x (* dist 2)))
-             (nor-y (/ corrected-y (* dist 2))))
+      (let* ((nor-x (/ corrected-x (* dist 1.5)))
+             (nor-y (/ corrected-y (* dist 1.5))))
         (unless (close-to-zero? nor-y)
           (inc-evil-x! evil-ship nor-x)
           (inc-evil-y! evil-ship nor-y))))))
@@ -565,8 +565,8 @@ perpendicular course instead if he detects he's too close to some object."
 
 (defmethod move! ((building building))
   "Straight movement down the screen."
-  (incf (raylib:vector2-y   (building-pos building)) 0.25)
-  (incf (raylib:rectangle-y (building-bbox building)) 0.25))
+  (incf (raylib:vector2-y   (building-pos building)) +slowest-scroll-rate+)
+  (incf (raylib:rectangle-y (building-bbox building)) +slowest-scroll-rate+))
 
 ;; TODO: 2024-11-01 Consider consolidating into something generic if this
 ;; pattern continues. Although I suspect that buildings will be the only things

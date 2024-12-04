@@ -39,7 +39,8 @@
   (shield-aura (sprite #p"assets/shield-aura.json"))
   (cannon-bulb (sprite #p"assets/cannon-bulb.json"))
   (cannon-beam (sprite #p"assets/cannon-beam.json"))
-  (ground    (raylib:load-texture "assets/lighter-ground.png")))
+  (ground    (raylib:load-texture "assets/lighter-ground.png"))
+  (road      (raylib:load-texture "assets/road.png")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -63,6 +64,7 @@
   (missiles   (make-hash-table :size 16) :type hash-table)
   (powerups   (make-hash-table :size 16) :type hash-table)
   (ground     nil :type hash-table)
+  (road       nil :type hash-table)
   ;; TODO: 2024-11-14 Consider generalising this to any other on-screen
   ;; animations.
   (explosions (make-hash-table :size 16) :type hash-table)
@@ -83,7 +85,8 @@
                :fighter (@fighter (sprites-fighter sprites)
                                   (sprites-beam-2 sprites)
                                   (sprites-shield-aura sprites))
-               :ground (entire-ground (sprites-ground sprites)))))
+               :ground (entire-ground (sprites-ground sprites))
+               :road (entire-road (sprites-road sprites)))))
 
 ;; TODO: 2024-11-12 Should I just reconstruct the `game' entirely instead of
 ;; doing all this manual resetting?
@@ -215,4 +218,5 @@
     (raylib:unload-texture (sprite-texture (sprites-cannon-beam sprites)))
     (raylib:unload-texture (sprite-texture (sprites-shield sprites)))
     (raylib:unload-texture (sprite-texture (sprites-shield-aura sprites)))
-    (raylib:unload-texture (sprites-ground sprites))))
+    (raylib:unload-texture (sprites-ground sprites))
+    (raylib:unload-texture (sprites-road sprites))))

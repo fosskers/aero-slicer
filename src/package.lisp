@@ -21,6 +21,8 @@
 (defparameter +world-max-x+ +127)
 (defparameter +world-min-y+ -120)
 (defparameter +world-max-y+ +119)
+(defparameter +slowest-scroll-rate+ 0.25
+  "The rate at which the slowest objects move down the screen.")
 (defparameter +nearness-radius+ 32.0
   "The minimum distance between two sprites to be considered near enough for a
 collision check.")
