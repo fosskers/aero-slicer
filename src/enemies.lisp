@@ -202,9 +202,10 @@ despawn them."
   (fighter-pos nil :type raylib:vector2)
   ;; How long the beam charge should last.
   (charge-dur 0  :type fixnum)
-  (spawned-fc 0  :type fixnum))
+  (spawned-fc 0  :type fixnum)
+  (shadow    nil :type shadow))
 
-(defun @evil-ship (evil-ship-sprite beam-sprite fighter-pos fc)
+(defun @evil-ship (evil-ship-sprite beam-sprite shadow-texture fighter-pos fc)
   "A smart-constructor for an `evil-ship'."
   (let* ((pos      (random-spawn-position))
          (animated (make-animated :sprite evil-ship-sprite))
@@ -219,7 +220,8 @@ despawn them."
                                                  :height (raylib:rectangle-height rect))
                     :beam (@beam beam-sprite pos width +evil-ship-beam-y-offset+)
                     :charge-dur (charge-duration evil-ship-sprite)
-                    :spawned-fc fc)))
+                    :spawned-fc fc
+                    :shadow (@shadow shadow-texture pos))))
 
 (defmethod pos ((evil-ship evil-ship))
   (evil-ship-pos evil-ship))
@@ -234,6 +236,7 @@ despawn them."
   (let ((beam (evil-ship-beam evil-ship)))
     (when (beam-shooting? beam)
       (draw beam fc)))
+  (draw (evil-ship-shadow evil-ship) fc)
   (draw-animated (evil-ship-animated evil-ship)
                  (evil-ship-pos evil-ship)
                  fc))
@@ -250,7 +253,8 @@ despawn them."
     (incf (raylib:vector2-x e-pos) new)
     (incf (raylib:rectangle-x bbox) new)
     (incf (raylib:vector2-x (beam-pos beam)) new)
-    (incf (raylib:rectangle-x (beam-bbox beam)) new)))
+    (incf (raylib:rectangle-x (beam-bbox beam)) new)
+    (incf (->> evil-ship evil-ship-shadow shadow-pos raylib:vector2-x) new)))
 
 (defun inc-evil-y! (evil-ship new)
   (let ((e-pos (evil-ship-pos evil-ship))
@@ -259,7 +263,8 @@ despawn them."
     (incf (raylib:vector2-y e-pos) new)
     (incf (raylib:rectangle-y bbox) new)
     (incf (raylib:vector2-y (beam-pos beam)) new)
-    (incf (raylib:rectangle-y (beam-bbox beam)) new)))
+    (incf (raylib:rectangle-y (beam-bbox beam)) new)
+    (incf (->> evil-ship evil-ship-shadow shadow-pos raylib:vector2-y) new)))
 
 (defun move-evil-ship! (evil-ship buildings)
   "Move the evil fighter depending on the position of the good fighter and the

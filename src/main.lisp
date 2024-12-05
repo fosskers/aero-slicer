@@ -233,6 +233,7 @@ schedule."
            (setf (gethash fc (game-evil-ships game))
                  (@evil-ship (sprites-evil-ship sprites)
                              (beam-by-level game)
+                             (sprites-shadow sprites)
                              (fighter-pos fighter)
                              fc)))
           ;; --- Varying Spawn Rate by Level --- ;;
