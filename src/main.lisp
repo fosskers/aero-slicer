@@ -239,7 +239,7 @@ schedule."
           ;; --- Varying Spawn Rate by Level --- ;;
           ((< n (* level 76))
            (setf (gethash fc (game-blobs game))
-                 (@blob (sprites-blob sprites))))
+                 (@blob (sprites-blob sprites) (sprites-blob-shadow sprites))))
           ((< n (* level 101))
            (setf (gethash fc (game-tanks game))
                  (@tank (sprites-tank sprites)

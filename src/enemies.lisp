@@ -493,9 +493,10 @@ perpendicular course instead if he detects he's too close to some object."
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle)
   (health   1   :type fixnum)
-  (hit-fc   0   :type fixnum))
+  (hit-fc   0   :type fixnum)
+  (shadow   nil :type shadow))
 
-(defun @blob (sprite)
+(defun @blob (sprite shadow-texture)
   "Spawn a `blob' somewhere off the top of the screen."
   (let* ((pos (random-spawn-position))
          (animated (make-animated :sprite sprite))
@@ -503,6 +504,7 @@ perpendicular course instead if he detects he's too close to some object."
     (make-blob :animated animated
                :orig-x (raylib:vector2-x pos)
                :pos pos
+               :shadow (@shadow shadow-texture pos)
                :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
                                             :y (raylib:vector2-y pos)
                                             :width (raylib:rectangle-width rect)
@@ -517,13 +519,17 @@ perpendicular course instead if he detects he's too close to some object."
 (defmethod move! ((blob blob))
   "Gradual sinusoidal movement down the screen."
   (let* ((x-diff (real->float (* 16 (sin (* pi 1/32 (raylib:vector2-y (blob-pos blob)))))))
-         (new-x  (+ x-diff (blob-orig-x blob))))
+         (new-x  (+ x-diff (blob-orig-x blob)))
+         (s-pos  (->> blob blob-shadow shadow-pos)))
     (setf (raylib:vector2-x   (blob-pos blob)) new-x)
-    (setf (raylib:rectangle-x (blob-bbox blob)) new-x)
     (incf (raylib:vector2-y   (blob-pos blob)) 1.0)
-    (incf (raylib:rectangle-y (blob-bbox blob)) 1.0)))
+    (setf (raylib:rectangle-x (blob-bbox blob)) new-x)
+    (incf (raylib:rectangle-y (blob-bbox blob)) 1.0)
+    (setf (raylib:vector2-x s-pos) (+ +shadow-offset+ new-x))
+    (incf (raylib:vector2-y s-pos) 1.0)))
 
 (defmethod draw ((blob blob) fc)
+  (draw (blob-shadow blob) fc)
   (raylib:draw-texture-v (->> blob blob-animated animated-sprite sprite-texture)
                          (blob-pos blob)
                          raylib:+white+))
