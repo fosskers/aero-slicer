@@ -221,7 +221,7 @@ despawn them."
                     :beam (@beam beam-sprite pos width +evil-ship-beam-y-offset+)
                     :charge-dur (charge-duration evil-ship-sprite)
                     :spawned-fc fc
-                    :shadow (@shadow shadow-texture pos))))
+                    :shadow (@shadow shadow-texture pos :flip? t))))
 
 (defmethod pos ((evil-ship evil-ship))
   (evil-ship-pos evil-ship))
@@ -236,7 +236,7 @@ despawn them."
   (let ((beam (evil-ship-beam evil-ship)))
     (when (beam-shooting? beam)
       (draw beam fc)))
-  (draw (evil-ship-shadow evil-ship) fc)
+  (draw-shadow (evil-ship-shadow evil-ship))
   (draw-animated (evil-ship-animated evil-ship)
                  (evil-ship-pos evil-ship)
                  fc))
@@ -529,7 +529,7 @@ perpendicular course instead if he detects he's too close to some object."
     (incf (raylib:vector2-y s-pos) 1.0)))
 
 (defmethod draw ((blob blob) fc)
-  (draw (blob-shadow blob) fc)
+  (draw-shadow (blob-shadow blob))
   (raylib:draw-texture-v (->> blob blob-animated animated-sprite sprite-texture)
                          (blob-pos blob)
                          raylib:+white+))

@@ -49,17 +49,24 @@
 (defstruct shadow
   "A shadow rendered offset to the fighter / evil ship that gives a sense of depth."
   (texture nil :type raylib:texture)
-  (pos     nil :type raylib:vector2))
+  (pos     nil :type raylib:vector2)
+  (rect    nil :type raylib:rectangle))
 
-(defun @shadow (texture f-pos)
+(defun @shadow (texture f-pos &key (flip? nil))
   "Construct a `shadow' based on the position of the fighter."
-  (make-shadow :texture texture
-               :pos (raylib:make-vector2 :x (+ +shadow-offset+ (raylib:vector2-x f-pos))
-                                         :y (+ +shadow-offset+ (raylib:vector2-y f-pos)))))
+  (let ((height (if flip?
+                    (float (- (raylib:texture-height texture)))
+                    (float (raylib:texture-height texture)))))
+    (make-shadow :texture texture
+                 :pos (raylib:make-vector2 :x (+ +shadow-offset+ (raylib:vector2-x f-pos))
+                                           :y (+ +shadow-offset+ (raylib:vector2-y f-pos)))
+                 :rect (raylib:make-rectangle :x 0.0 :y 0.0 :height height :width (float (raylib:texture-width texture))))))
 
-(defmethod draw ((shadow shadow) fc)
-  (declare (ignore fc))
-  (raylib:draw-texture-v (shadow-texture shadow) (shadow-pos shadow) +very-faded-white+))
+(defun draw-shadow (shadow)
+  "Special variant of `draw' to support texture flipping."
+  (let ((texture (shadow-texture shadow))
+        (pos     (shadow-pos shadow)))
+    (raylib:draw-texture-rec texture (shadow-rect shadow) pos +very-faded-white+)))
 
 (defstruct ghost
   "A warp ghost."
@@ -186,7 +193,7 @@
         (shield (fighter-shield fighter)))
     (when (beam-shooting? beam)
       (draw beam fc))
-    (draw (fighter-shadow fighter) fc)
+    (draw-shadow (fighter-shadow fighter))
     (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc)
     (when (or (fighter-shielded? fighter)
               (eq 'disperse (->> shield aura-animated animated-active)))
