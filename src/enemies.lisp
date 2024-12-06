@@ -10,7 +10,7 @@
   (let ((rand-x (- (random +world-pixels-x+)
                    +world-max-x+
                    8)))
-    (raylib:make-vector2 :y (float (- +world-min-y+ 8))
+    (raylib:make-vector2 :y (float (- +world-min-y+ 24))
                          :x (float (max +world-min-x+ rand-x)))))
 
 (defun offscreen-vert? (guy)
