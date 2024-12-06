@@ -226,7 +226,7 @@ schedule."
                  (@ammo (sprites-bomb sprites) fc)))
           ((< n 20)
            (setf (gethash fc (game-buildings game))
-                 (@building (sprites-building sprites))))
+                 (@building (sprites-building sprites) (game-buildings game))))
           ((and (< n 36)
                 ;; Only one Evil Ship at a time.
                 (zerop (hash-table-count (game-evil-ships game))))

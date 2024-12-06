@@ -31,6 +31,17 @@ despawn them."
                    (recurse)))))
       (recurse))))
 
+(defun random-off-road (rect buildings)
+  ""
+  (let ((pos (random-spawn-position)))
+    (setf (raylib:rectangle-x rect) (raylib:vector2-x pos))
+    (setf (raylib:rectangle-y rect) (raylib:vector2-y pos))
+    (if (t:transduce #'t:pass
+                     (t:anyp (lambda (building) (colliding? rect (cdr building))))
+                     buildings)
+        (random-off-road rect buildings)
+        pos)))
+
 (defun random-pos-clear-of-building (width buildings)
   "Find a spawn position that isn't behind some building. A bit crude, but gets the
 job done."
@@ -582,11 +593,11 @@ perpendicular course instead if he detects he's too close to some object."
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle))
 
-(defun @building (sprite)
+(defun @building (sprite buildings)
   "Spawn a `building' somewhere off the top of the screen."
-  (let* ((pos (random-spawn-position))
-         (animated (make-animated :sprite sprite))
-         (rect (bounding-box animated)))
+  (let* ((animated (make-animated :sprite sprite))
+         (rect     (bounding-box animated))
+         (pos      (random-off-road rect buildings)))
     (make-building :animated animated
                    :pos pos
                    :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)

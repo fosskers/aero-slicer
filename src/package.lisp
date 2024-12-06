@@ -193,6 +193,9 @@ PROGN."
 (defgeneric bbox (sprite)
   (:documentation "A `raylib:rectangle' that represents the bounding box of a sprite."))
 
+(defmethod bbox ((rect raylib:rectangle))
+  rect)
+
 (defgeneric draw (entity fc)
   (:documentation "Anything that can be drawn to the screen."))
 
