@@ -7,13 +7,18 @@
 
 (defstruct road
   (texture nil :type raylib:texture)
-  (pos     nil :type raylib:vector2))
+  (pos     nil :type raylib:vector2)
+  (bbox    nil :type raylib:rectangle))
 
 (defun @road (texture &key (y +world-min-y+))
   "Smart constructor for a `road' tile."
-  (make-road :texture texture
-             :pos (raylib:make-vector2 :x -24.0  ; TODO: Wrong
-                                       :y (float y))))
+  (let ((pos (raylib:make-vector2 :x -24.0 :y (float y))))
+    (make-road :texture texture
+               :pos pos
+               :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
+                                            :y (raylib:vector2-y pos)
+                                            :width (float (raylib:texture-width texture))
+                                            :height (float (raylib:texture-height texture))))))
 
 (defun entire-road (texture)
   "Construct enough `road' to cover the center of the screen."
@@ -25,12 +30,20 @@
 
 (defmethod move! ((road road))
   (incf (->> road road-pos raylib:vector2-y) +slowest-scroll-rate+)
+  (incf (->> road road-bbox raylib:rectangle-y) +slowest-scroll-rate+)
   (when (= (->> road road-pos raylib:vector2-y) (1+ +world-max-y+))
-    (setf (->> road road-pos raylib:vector2-y) (float (- +world-min-y+ 16)))))
+    (setf (->> road road-pos raylib:vector2-y) (float (- +world-min-y+ 16)))
+    (setf (->> road road-bbox raylib:rectangle-y) (float (- +world-min-y+ 16)))))
 
 (defmethod draw ((road road) fc)
   (declare (ignore fc))
   (raylib:draw-texture-v (road-texture road) (road-pos road) raylib:+white+))
+
+(defmethod pos ((road road))
+  (road-pos road))
+
+(defmethod bbox ((road road))
+  (road-bbox road))
 
 ;; --- Ground --- ;;
 

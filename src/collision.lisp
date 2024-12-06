@@ -9,6 +9,19 @@
 #+nil
 (launch)
 
+;; --- Types --- ;;
+
+(defstruct rect-pos
+  "A simple pair for collision detection when a more complex entity has yet to be created."
+  (pos  nil :type raylib:vector2)
+  (rect nil :type raylib:rectangle))
+
+(defmethod pos ((rect-pos rect-pos))
+  (rect-pos-pos rect-pos))
+
+(defmethod bbox ((rect-pos rect-pos))
+  (rect-pos-rect rect-pos))
+
 ;; --- Abstract --- ;;
 
 (defgeneric near? (a b)
@@ -30,13 +43,21 @@ doesn't work."
   "Are two near sprites actually colliding?"
   (raylib:check-collision-recs (bbox a) (bbox b)))
 
-;; --- Specific --- ;;
+(defun near-entity-collision? (thing entities)
+  "Is some `thing' colliding with any of a collection of `entities'? For
+performance, only checks things that are detected to be already close."
+  (t:transduce (t:filter (lambda (entity) (near? thing (cdr entity))))
+               (t:anyp (lambda (entity) (colliding? thing (cdr entity))))
+               entities))
 
-(defun enemy-collision? (fighter enemies-ht)
-  "Is the fighter colliding with any enemy?"
-  (t:transduce (t:comp (t:map #'cdr)
-                       (t:filter (lambda (enemy) (near? fighter enemy))))
-               (t:anyp (lambda (enemy) (colliding? fighter enemy))) enemies-ht))
+(defun any-entity-collision? (thing entities)
+  "Is some `thing' colliding with any of a collection of `entities'? Checks the
+entire Hash Table of the given entities, so may not be performant if large."
+  (t:transduce #'t:pass
+               (t:anyp (lambda (entity) (colliding? thing (cdr entity))))
+               entities))
+
+;; --- Specific --- ;;
 
 (defun enemies-hit-by-beam (beam enemies-ht)
   "Find all enemies that the beam is hitting."

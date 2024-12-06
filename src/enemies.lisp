@@ -31,15 +31,16 @@ despawn them."
                    (recurse)))))
       (recurse))))
 
-(defun random-off-road (rect buildings)
-  ""
-  (let ((pos (random-spawn-position)))
+(defun random-off-road (rect buildings road)
+  "Find a random spawn position for a building, such that it isn't on the road, nor
+is it overlapping with any existing buildings."
+  (let* ((pos  (random-spawn-position))
+         (pair (make-rect-pos :pos pos :rect rect)))
     (setf (raylib:rectangle-x rect) (raylib:vector2-x pos))
     (setf (raylib:rectangle-y rect) (raylib:vector2-y pos))
-    (if (t:transduce #'t:pass
-                     (t:anyp (lambda (building) (colliding? rect (cdr building))))
-                     buildings)
-        (random-off-road rect buildings)
+    (if (or (any-entity-collision? pair buildings)
+            (any-entity-collision? pair road))
+        (random-off-road rect buildings road)
         pos)))
 
 (defun random-pos-clear-of-building (width buildings)
@@ -53,15 +54,16 @@ job done."
 (defun behind-buildings? (pos width buildings)
   "Is some entity (given by its `pos') behind one of the buildings? If so, yields
 the X of that building."
-  (t:transduce (t:comp (t:filter (lambda (building) (behind-building? pos width (cdr building))))
+  (t:transduce (t:comp (t:filter (lambda (building) (x-overlapping? pos width (cdr building))))
                        (t:map (lambda (building) (->> building cdr building-pos raylib:vector2-x))))
                (t:find #'identity) buildings))
 
-(defun behind-building? (pos width building)
-  "Is some entity (given by its `pos') behind a building? If so, yields the X of
-that building."
-  (let* ((b-l (->> building building-pos raylib:vector2-x))
-         (b-r (+ b-l (->> building building-bbox raylib:rectangle-width)))
+(defun x-overlapping? (pos width thing)
+  "Is some entity (given by its `pos' and `width') overlapping some other entity,
+at least in the X-direction? If so, yields the minimum X of that overlapped
+entity."
+  (let* ((b-l (->> thing pos raylib:vector2-x))
+         (b-r (+ b-l (->> thing bbox raylib:rectangle-width)))
          (p-l (raylib:vector2-x pos))
          (p-r (+ p-l width)))
     (when (or (<= b-l p-r b-r)
@@ -593,11 +595,11 @@ perpendicular course instead if he detects he's too close to some object."
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle))
 
-(defun @building (sprite buildings)
+(defun @building (sprite buildings road)
   "Spawn a `building' somewhere off the top of the screen."
   (let* ((animated (make-animated :sprite sprite))
          (rect     (bounding-box animated))
-         (pos      (random-off-road rect buildings)))
+         (pos      (random-off-road rect buildings road)))
     (make-building :animated animated
                    :pos pos
                    :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)

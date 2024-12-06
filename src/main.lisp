@@ -120,8 +120,8 @@
                      ;; An explosion over top of the collided enemy.
                      (explode! game pos))
                    ;; Certain enemies/obstacles don't get destroyed upon collision.
-                   (enemy-collision? fighter (game-buildings game))
-                   (enemy-collision? fighter (game-cannons game))
+                   (near-entity-collision? fighter (game-buildings game))
+                   (near-entity-collision? fighter (game-cannons game))
                    ;; Or a tank/ship just shot you.
                    (got-shot? fighter (game-tanks game))
                    (got-shot? fighter (game-evil-ships game))))
@@ -226,7 +226,9 @@ schedule."
                  (@ammo (sprites-bomb sprites) fc)))
           ((< n 20)
            (setf (gethash fc (game-buildings game))
-                 (@building (sprites-building sprites) (game-buildings game))))
+                 (@building (sprites-building sprites)
+                            (game-buildings game)
+                            (game-road game))))
           ((and (< n 36)
                 ;; Only one Evil Ship at a time.
                 (zerop (hash-table-count (game-evil-ships game))))
