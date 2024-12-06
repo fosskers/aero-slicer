@@ -244,6 +244,7 @@ schedule."
            (setf (gethash fc (game-tanks game))
                  (@tank (sprites-tank sprites)
                         (beam-by-level game)
+                        (game-buildings game)
                         fc))))))
 
 ;; --- Rendering --- ;;

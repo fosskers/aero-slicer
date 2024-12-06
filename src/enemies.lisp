@@ -31,6 +31,32 @@ despawn them."
                    (recurse)))))
       (recurse))))
 
+(defun random-pos-clear-of-building (width buildings)
+  "Find a spawn position that isn't behind some building. A bit crude, but gets the
+job done."
+  (let ((pos (random-spawn-position)))
+    (if (behind-buildings? pos width buildings)
+        (random-pos-clear-of-building width buildings)
+        pos)))
+
+(defun behind-buildings? (pos width buildings)
+  "Is some entity (given by its `pos') behind one of the buildings? If so, yields
+the X of that building."
+  (t:transduce (t:comp (t:filter (lambda (building) (behind-building? pos width (cdr building))))
+                       (t:map (lambda (building) (->> building cdr building-pos raylib:vector2-x))))
+               (t:find #'identity) buildings))
+
+(defun behind-building? (pos width building)
+  "Is some entity (given by its `pos') behind a building? If so, yields the X of
+that building."
+  (let* ((b-l (->> building building-pos raylib:vector2-x))
+         (b-r (+ b-l (->> building building-bbox raylib:rectangle-width)))
+         (p-l (raylib:vector2-x pos))
+         (p-r (+ p-l width)))
+    (when (or (<= b-l p-r b-r)
+              (<= b-l p-l b-r))
+      b-l)))
+
 ;; --- Cannons --- ;;
 
 (defstruct cannon
@@ -386,12 +412,12 @@ perpendicular course instead if he detects he's too close to some object."
   (charge-dur 0   :type fixnum)
   (spawned-fc 0   :type fixnum))
 
-(defun @tank (tank-sprite beam-sprite fc)
+(defun @tank (tank-sprite beam-sprite buildings fc)
   "Spawn a `tank' with an associated `beam'."
-  (let* ((pos      (random-spawn-position))
-         (animated (make-animated :sprite tank-sprite))
+  (let* ((animated (make-animated :sprite tank-sprite))
          (rect     (bounding-box animated))
          (width    (raylib:rectangle-width rect))
+         (pos      (random-pos-clear-of-building width buildings))
          (beam     (@beam beam-sprite pos width +tank-beam-y-offset+)))
     (setf (beam-shot-fc beam) fc)
     (make-tank :animated animated
@@ -475,7 +501,7 @@ perpendicular course instead if he detects he's too close to some object."
          (setf (tank-reversing? tank) t))
         ((and (tank-reversing? tank)
               (zerop (mod (- fc (tank-spawned-fc tank))
-                          (* 3 +frame-rate+))))
+                          (* 2 +frame-rate+))))
          (setf (tank-reversing? tank) nil))))
 
 (defmethod points ((tank tank))
