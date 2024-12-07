@@ -112,6 +112,7 @@
     (incf (game-level game))
     (setf (gethash (game-frame game) (game-cannons game))
           (let ((sprites (game-sprites game)))
+            (->> game game-sounds sounds-cannon raylib:play-sound)
             (@cannon (sprites-cannon-bulb sprites)
                      (sprites-cannon-beam sprites))))))
 
