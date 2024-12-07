@@ -172,15 +172,17 @@ entity."
   (animated nil :type animated)
   (pos      nil :type raylib:vector2)
   (bbox     nil :type raylib:rectangle)
-  (health   1   :type fixnum))
+  (health   1   :type fixnum)
+  (shadow   nil :type shadow))
 
-(defun @missile (sprite)
+(defun @missile (sprite shadow-texture)
   "Construct a little missile."
   (let* ((pos      (random-spawn-position))
          (animated (make-animated :sprite sprite))
          (rect     (bounding-box animated)))
     (make-missile :animated animated
                   :pos pos
+                  :shadow (@shadow shadow-texture pos :x-offset 12)
                   :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
                                                :y (raylib:vector2-y pos)
                                                :width (raylib:rectangle-width rect)
@@ -206,6 +208,7 @@ entity."
   10)
 
 (defmethod draw ((missile missile) fc)
+  (draw-shadow (missile-shadow missile))
   (draw-animated (missile-animated missile)
                  (missile-pos missile)
                  fc))
@@ -213,15 +216,8 @@ entity."
 (defmethod move! ((missile missile))
   "Missiles shoot straight ahead quickly."
   (incf (raylib:vector2-y (missile-pos missile)) 2.0)
-  (incf (raylib:rectangle-y (missile-bbox missile)) 2.0))
-
-(defun level->spawn-rate (level)
-  (case level
-    (1 60)
-    (2 30)
-    (3 20)
-    (4 10)
-    (t 5)))
+  (incf (raylib:rectangle-y (missile-bbox missile)) 2.0)
+  (incf (->> missile missile-shadow shadow-pos raylib:vector2-y) 2.0))
 
 ;; --- Evil Ships --- ;;
 

@@ -45,6 +45,7 @@
   (shadow    (raylib:load-texture "assets/shadow.png"))
   (blob-shadow (raylib:load-texture "assets/blob-shadow.png"))
   (building-shadow (raylib:load-texture "assets/building-shadow.png"))
+  (missile-shadow (raylib:load-texture "assets/missile-shadow.png"))
   (god-mode  (sprite #p"assets/god-mode.json")))
 
 (defstruct (sounds (:constructor @sounds))
@@ -251,7 +252,8 @@
   (raylib:unload-texture (sprites-road sprites))
   (raylib:unload-texture (sprites-shadow sprites))
   (raylib:unload-texture (sprites-blob-shadow sprites))
-  (raylib:unload-texture (sprites-building-shadow sprites)))
+  (raylib:unload-texture (sprites-building-shadow sprites))
+  (raylib:unload-texture (sprites-missile-shadow sprites)))
 
 (defun unload-sounds (sounds)
   (raylib:unload-sound (sounds-beam-collect sounds))

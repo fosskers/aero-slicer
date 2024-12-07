@@ -233,7 +233,7 @@ schedule."
     (when (and (zerop (mod fc +frame-rate+))
                (not (bomb-cooling-down? fighter fc)))
       (setf (gethash fc (game-missiles game))
-            (@missile (sprites-missile sprites))))
+            (@missile (sprites-missile sprites) (sprites-missile-shadow sprites))))
     (cond ((and (< n 4)
                 ;; Don't spawn a bomb if the player is already full.
                 (has-bomb-capacity? fighter))
