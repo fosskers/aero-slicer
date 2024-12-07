@@ -22,7 +22,8 @@
   "layers": [
    { "name": "Border", "opacity": 255, "blendMode": "normal" },
    { "name": "Walls", "opacity": 255, "blendMode": "normal" },
-   { "name": "Windows", "opacity": 255, "blendMode": "normal" }
+   { "name": "Windows", "opacity": 255, "blendMode": "normal" },
+   { "name": "Shading", "opacity": 255, "blendMode": "normal" }
   ],
   "slices": [
   ]
