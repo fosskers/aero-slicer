@@ -20,9 +20,9 @@
   (status    'ok :type symbol)
   (status-fc 0   :type fixnum)
   (warp-dir  nil :type symbol)
+  (god-mode? nil :type symbol)
   (beam      nil :type beam)
   (bombs     +bomb-max-capacity+ :type fixnum)
-  (beam-dmg  +beam-base-damage+ :type fixnum)
   ;; The last time a bomb was used.
   (bomb-fc   (- +bomb-cooldown+) :type fixnum)
   (shielded? nil :type symbol)
@@ -128,6 +128,10 @@
 
 ;; --- Status --- ;;
 
+(defun fighter-beam-dmg (fighter)
+  "The current damage of the fighter's beam."
+  (if (fighter-god-mode? fighter) 2 1))
+
 (defun maybe-set-warp-direction! (fighter)
   "Attempt to set the warp direction."
   (when (warp-button-down?)
@@ -148,11 +152,11 @@
   "Has at least one bomb been used?"
   (< (fighter-bombs fighter) +bomb-max-capacity+))
 
-(defun kill-fighter! (fighter beam-sprite fc)
+(defun kill-fighter! (fighter beam-sprite sound fc)
   "Reset the fighter's position and animation."
   (set-status! fighter 'hit fc)
   (set-animation! (fighter-animated fighter) 'damaged fc)
-  (setf (fighter-beam-dmg fighter) +beam-base-damage+)
+  (setf (fighter-god-mode? fighter) nil)
   ;; Move him back to the initial spawn position.
   (setf (raylib:vector2-x (fighter-pos fighter)) +fighter-spawn-x+)
   (setf (raylib:vector2-y (fighter-pos fighter)) +fighter-spawn-y+)
@@ -161,7 +165,8 @@
   (setf (->> fighter fighter-shadow shadow-pos raylib:vector2-x) (+ +fighter-spawn-x+ +shadow-offset+))
   (setf (->> fighter fighter-shadow shadow-pos raylib:vector2-y) (+ +fighter-spawn-y+ +shadow-offset+))
   ;; One of the punishments for dying is the downgrading of your awesome beam width.
-  (reset-beam! fighter beam-sprite))
+  (reset-beam! fighter beam-sprite)
+  (raylib:play-sound sound))
 
 (defun reset-beam! (fighter beam-sprite)
   "Shrink the beam back to a narrower size because the fighter was destroyed, etc."
@@ -262,7 +267,7 @@
 (defun move-by-press! (fighter)
   "Move the fighter in a normal, non-warping fashion."
   (let ((pos  (fighter-pos fighter))
-        (dist 2.0))
+        (dist (if (fighter-god-mode? fighter) 3.0 2.0)))
     (when (or (raylib:is-key-down +key-right+)
               (raylib:is-gamepad-button-down +gamepad+ +gamepad-right+))
       (let ((new (min +112.0 (+ dist (raylib:vector2-x pos)))))

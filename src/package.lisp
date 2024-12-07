@@ -43,7 +43,6 @@ collision check.")
   "After which the powerup should despawn entirely.")
 (defparameter +bomb-max-capacity+ 3
   "The max number of bombs that the fighter has hold.")
-(defparameter +beam-base-damage+ 1)
 (defparameter +beam-y-offset+ -224
   "The Y position of the beam relative to the fighter. Note that the Y offset is
 fixed for all beam types as they are all the same height, but the X offset is

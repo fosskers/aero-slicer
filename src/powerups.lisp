@@ -9,13 +9,15 @@
   "Perhaps spawn a strong powerup."
   (when (>= (game-score game) (game-powerup-threshold game))
     (incf (game-powerup-threshold game) +powerup-spawn-interval+)
-    (let ((n (random 5)))
-      (cond ((and (->> game game-fighter fighter-shielded? not)
+    (let ((n (random 5))
+          (fighter (game-fighter game)))
+      (cond ((and (not (fighter-shielded? fighter))
                   (= 0 n))
              (setf (gethash (game-frame game) (game-powerups game))
                    (@shield (->> game game-sprites sprites-shield) (game-frame game))))
-            (t (setf (gethash (game-frame game) (game-powerups game))
-                     (@wide (->> game game-sprites sprites-wide))))))))
+            ((not (fighter-god-mode? fighter))
+             (setf (gethash (game-frame game) (game-powerups game))
+                   (@wide (->> game game-sprites sprites-wide))))))))
 
 ;; --- Shield --- ;;
 
