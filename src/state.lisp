@@ -49,16 +49,16 @@
 
 (defstruct (sounds (:constructor @sounds))
   "All sound effects and music in the game."
-  (beam-collect (raylib:load-sound "assets/sound/Power Up/Power Up 6.wav"))
-  (explosion-1  (raylib:load-sound "assets/sound/Kills/Enemy Kill 4.wav"))
-  (explosion-2  (raylib:load-sound "assets/sound/Kills/Enemy Kill 5.wav"))
-  (explosion-3  (raylib:load-sound "assets/sound/Kills/Enemy Kill 6.wav"))
-  (explosion-4  (raylib:load-sound "assets/sound/Kills/Enemy Kill 1.wav"))
-  (shield-up    (raylib:load-sound "assets/sound/Power Up/Power Up 3.wav"))
-  (get-ammo     (raylib:load-sound "assets/sound/GUI/GUI 3.wav"))
-  (bomb-use     (raylib:load-sound "assets/sound/Hit/Hit 7.wav"))
-  (shield-down  (raylib:load-sound "assets/sound/Hit/Hit 3.wav"))
-  (god-mode     (raylib:load-sound "assets/sound/Power Up/Power Up 2.wav")))
+  (beam-collect (raylib:load-sound "assets/sound/Power Up 6.wav"))
+  (explosion-1  (raylib:load-sound "assets/sound/Enemy Kill 4.wav"))
+  (explosion-2  (raylib:load-sound "assets/sound/Enemy Kill 5.wav"))
+  (explosion-3  (raylib:load-sound "assets/sound/Enemy Kill 6.wav"))
+  (explosion-4  (raylib:load-sound "assets/sound/Enemy Kill 1.wav"))
+  (shield-up    (raylib:load-sound "assets/sound/Power Up 3.wav"))
+  (get-ammo     (raylib:load-sound "assets/sound/GUI 3.wav"))
+  (bomb-use     (raylib:load-sound "assets/sound/Hit 7.wav"))
+  (shield-down  (raylib:load-sound "assets/sound/Hit 3.wav"))
+  (god-mode     (raylib:load-sound "assets/sound/Power Up 2.wav")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -84,8 +84,6 @@
   (powerups   (make-hash-table :size 16) :type hash-table)
   (ground     nil :type hash-table)
   (road       nil :type hash-table)
-  ;; TODO: 2024-11-14 Consider generalising this to any other on-screen
-  ;; animations.
   (explosions (make-hash-table :size 16) :type hash-table)
   (frame 0 :type fixnum)
   (lives 3 :type fixnum)
@@ -109,13 +107,6 @@
                :ground (entire-ground (sprites-ground sprites))
                :road (entire-road (sprites-road sprites)))))
 
-;; TODO: 2024-11-12 Should I just reconstruct the `game' entirely instead of
-;; doing all this manual resetting?
-;;
-;; Disdvantage: it would reread all the sprite data, reset the camera, and reset
-;; the current frame number.
-;;
-;; 2024-11-23 Yup I'm leaning towards a No.
 (defun reset-game! (game)
   "Reset the `game' to an initial, reusable state."
   (setf (game-lives game) 3)

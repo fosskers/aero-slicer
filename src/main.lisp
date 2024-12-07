@@ -277,7 +277,7 @@ schedule."
         (dead    (render-dead game))))
     (raylib:draw-fps 10 (- +screen-height+ 50))
     (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)
-    (raylib:draw-text (format nil "DMG: ~a" (->> game game-fighter fighter-beam-dmg)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)
+    #++ (raylib:draw-text (format nil "DMG: ~a" (->> game game-fighter fighter-beam-dmg)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)
     #++ (raylib:draw-text (format nil "SCORE: ~a" (game-score game)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)))
 
 (defun render-waiting (game)
