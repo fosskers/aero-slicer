@@ -61,6 +61,10 @@
   (god-mode     (raylib:load-sound "assets/sound/Power Up 2.wav"))
   (cannon       (raylib:load-sound "assets/sound/playerLaser.wav")))
 
+(defstruct (music (:constructor @music))
+  (intro (raylib:load-music-stream "assets/sound/BossIntro.ogg"))
+  (main  (raylib:load-music-stream "assets/sound/BossMain.ogg")))
+
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
 ;; 2024-11-21 Probably yes, because it can still be useful to handle them
@@ -71,6 +75,8 @@
   (camera  (camera) :type raylib:camera-2d)
   (sprites nil :type sprites)
   (sounds  nil :type sounds)
+  (music   nil :type music)
+  (track   nil :type raylib:music)
   (fighter nil :type fighter)
   (warp-ghost nil :type ghost)
   ;; The point after which the next beam/shield powerup should spawn.
@@ -97,9 +103,13 @@
 
 (defun @game ()
   "Initialise the various game resources."
-  (let ((sprites (@sprites)))
+  (let ((sprites (@sprites))
+        (music   (@music)))
+    (setf (->> music music-intro raylib:music-looping) nil)
     (make-game :sprites sprites
                :sounds (@sounds)
+               :music music
+               :track (music-intro music)
                :warp-ghost (@ghost (sprites-fighter sprites))
                :fighter (@fighter (sprites-fighter sprites)
                                   (sprites-beam-2 sprites)
@@ -203,7 +213,8 @@
 (defun ungame (game)
   "Release various resources."
   (->> game game-sprites unload-sprites)
-  (->> game game-sounds unload-sounds))
+  (->> game game-sounds unload-sounds)
+  (->> game game-music unload-music))
 
 (defun unload-sprites (sprites)
   (raylib:unload-texture (sprite-texture (sprites-fighter sprites)))
@@ -254,3 +265,7 @@
   (raylib:unload-sound (sounds-bomb-use sounds))
   (raylib:unload-sound (sounds-god-mode sounds))
   (raylib:unload-sound (sounds-cannon sounds)))
+
+(defun unload-music (music)
+  (raylib:unload-music-stream (music-intro music))
+  (raylib:unload-music-stream (music-main music)))

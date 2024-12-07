@@ -8,6 +8,7 @@
 (defun update! (game)
   "Following TEA, update the game state."
   (incf (game-frame game))
+  (track-transition game)
   (case (game-mode game)
     (playing (update-playing! game))
     (waiting (update-waiting! game))
@@ -364,6 +365,15 @@ schedule."
   (raylib:draw-line +world-min-x+ +world-max-y+ +world-max-x+ +world-max-y+ raylib:+darkgray+)
   (raylib:draw-line +world-max-x+ +world-min-y+ +world-max-x+ +world-max-y+ raylib:+darkgray+))
 
+;; --- Sound --- ;;
+
+(defun track-transition (game)
+  "Handle the transition of the Intro track into the Main track."
+  (unless (->> game game-track raylib:is-music-stream-playing)
+    (setf (game-track game) (->> game game-music music-main))
+    (->> game game-track raylib:play-music-stream))
+  (->> game game-track raylib:update-music-stream))
+
 ;; --- Top-level --- ;;
 
 (defun event-loop (game)
@@ -379,6 +389,7 @@ schedule."
   (raylib:init-audio-device)
   (raylib:set-target-fps +frame-rate+)
   (let ((game (@game)))
+    (->> game game-track raylib:play-music-stream)
     (event-loop game)
     (ungame game))
   (raylib:close-audio-device)
