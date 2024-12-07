@@ -1,0 +1,57 @@
+{ "frames": [
+   {
+    "filename": "god-mode 0.ase",
+    "frame": { "x": 0, "y": 0, "w": 19, "h": 18 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 19, "h": 18 },
+    "sourceSize": { "w": 19, "h": 18 },
+    "duration": 100
+   },
+   {
+    "filename": "god-mode 1.ase",
+    "frame": { "x": 19, "y": 0, "w": 19, "h": 18 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 19, "h": 18 },
+    "sourceSize": { "w": 19, "h": 18 },
+    "duration": 100
+   },
+   {
+    "filename": "god-mode 2.ase",
+    "frame": { "x": 38, "y": 0, "w": 19, "h": 18 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 19, "h": 18 },
+    "sourceSize": { "w": 19, "h": 18 },
+    "duration": 100
+   },
+   {
+    "filename": "god-mode 3.ase",
+    "frame": { "x": 57, "y": 0, "w": 19, "h": 18 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 19, "h": 18 },
+    "sourceSize": { "w": 19, "h": 18 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.3.8.1-dev",
+  "image": "god-mode.png",
+  "format": "I8",
+  "size": { "w": 76, "h": 18 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "Idle", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Base", "opacity": 255, "blendMode": "normal" },
+   { "name": "G", "opacity": 255, "blendMode": "normal" },
+   { "name": "Aura", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}
