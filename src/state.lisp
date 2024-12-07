@@ -43,7 +43,8 @@
   (road      (raylib:load-texture "assets/road.png"))
   (shadow    (raylib:load-texture "assets/shadow.png"))
   (blob-shadow (raylib:load-texture "assets/blob-shadow.png"))
-  (building-shadow (raylib:load-texture "assets/building-shadow.png")))
+  (building-shadow (raylib:load-texture "assets/building-shadow.png"))
+  (god-mode  (sprite #p"assets/god-mode.json")))
 
 (defstruct (sounds (:constructor @sounds))
   "All sound effects and music in the game."
@@ -239,6 +240,7 @@
   (raylib:unload-texture (sprite-texture (sprites-cannon-beam sprites)))
   (raylib:unload-texture (sprite-texture (sprites-shield sprites)))
   (raylib:unload-texture (sprite-texture (sprites-shield-aura sprites)))
+  (raylib:unload-texture (sprite-texture (sprites-god-mode sprites)))
   (raylib:unload-texture (sprites-ground sprites))
   (raylib:unload-texture (sprites-road sprites))
   (raylib:unload-texture (sprites-shadow sprites))

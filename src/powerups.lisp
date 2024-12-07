@@ -11,7 +11,12 @@
     (incf (game-powerup-threshold game) +powerup-spawn-interval+)
     (let ((n (random 5))
           (fighter (game-fighter game)))
-      (cond ((and (not (fighter-shielded? fighter))
+      (cond ((and (not (fighter-god-mode? fighter))
+                  (max-beam? (game-sprites game)
+                             (->> fighter fighter-beam beam-animated animated-sprite)))
+             (setf (gethash (game-frame game) (game-powerups game))
+                   (@god-mode (->> game game-sprites sprites-god-mode))))
+            ((and (not (fighter-shielded? fighter))
                   (= 0 n))
              (setf (gethash (game-frame game) (game-powerups game))
                    (@shield (->> game game-sprites sprites-shield) (game-frame game))))
@@ -63,6 +68,43 @@
 (defmethod expired? ((shield shield) fc)
   (>= (- fc (shield-spawn-fc shield))
       +powerup-spawn-timeout+))
+
+;; --- God Mode --- ;;
+
+(defstruct god-mode
+  "Fun mode!"
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2)
+  (bbox     nil :type raylib:rectangle))
+
+(defun @god-mode (sprite)
+  "A smart-consturctor for `god-mode'."
+  (let* ((pos      (raylib:make-vector2 :x 0.0 :y 0.0))
+         (animated (make-animated :sprite sprite))
+         (rect     (bounding-box animated)))
+    (make-god-mode :animated animated
+                   :pos pos
+                   :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
+                                                :y (raylib:vector2-y pos)
+                                                :width (raylib:rectangle-width rect)
+                                                :height (raylib:rectangle-height rect)))))
+
+(defmethod pos ((god-mode god-mode))
+  (god-mode-pos god-mode))
+
+(defmethod bbox ((god-mode god-mode))
+  (god-mode-bbox god-mode))
+
+(defmethod draw ((god-mode god-mode) fc)
+  (draw-animated (god-mode-animated god-mode)
+                 (god-mode-pos god-mode)
+                 fc))
+
+(defmethod tick! ((god-mode god-mode) fc)
+  nil)
+
+(defmethod expired? ((god-mode god-mode) fc)
+  nil)
 
 ;; --- Wide Laser --- ;;
 
