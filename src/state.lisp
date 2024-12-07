@@ -57,7 +57,8 @@
   (shield-up    (raylib:load-sound "assets/sound/Power Up/Power Up 3.wav"))
   (get-ammo     (raylib:load-sound "assets/sound/GUI/GUI 3.wav"))
   (bomb-use     (raylib:load-sound "assets/sound/Hit/Hit 7.wav"))
-  (shield-down  (raylib:load-sound "assets/sound/Hit/Hit 3.wav")))
+  (shield-down  (raylib:load-sound "assets/sound/Hit/Hit 3.wav"))
+  (god-mode     (raylib:load-sound "assets/sound/Power Up/Power Up 2.wav")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -258,4 +259,5 @@
   (raylib:unload-sound (sounds-shield-up sounds))
   (raylib:unload-sound (sounds-shield-down sounds))
   (raylib:unload-sound (sounds-get-ammo sounds))
-  (raylib:unload-sound (sounds-bomb-use sounds)))
+  (raylib:unload-sound (sounds-bomb-use sounds))
+  (raylib:unload-sound (sounds-god-mode sounds)))

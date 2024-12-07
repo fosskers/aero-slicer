@@ -94,7 +94,9 @@
       (shield
        (setf (->> game game-fighter fighter-shielded?) t)
        (->> game game-sounds sounds-shield-up raylib:play-sound))
-      (god-mode (setf (fighter-god-mode? fighter) t)))
+      (god-mode
+       (setf (fighter-god-mode? fighter) t)
+       (->> game game-sounds sounds-god-mode raylib:play-sound)))
     (remhash key (game-powerups game))))
 
 (defun bump-score-by-frame! (game)

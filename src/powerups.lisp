@@ -79,9 +79,10 @@
 
 (defun @god-mode (sprite)
   "A smart-consturctor for `god-mode'."
-  (let* ((pos      (raylib:make-vector2 :x 0.0 :y 0.0))
-         (animated (make-animated :sprite sprite))
-         (rect     (bounding-box animated)))
+  (let* ((animated (make-animated :sprite sprite))
+         (rect     (bounding-box animated))
+         (pos      (raylib:make-vector2 :x (- 0.0 (/ (raylib:rectangle-width rect) 2))
+                                        :y 0.0)))
     (make-god-mode :animated animated
                    :pos pos
                    :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
