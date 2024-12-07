@@ -342,8 +342,8 @@ perpendicular course instead if he detects he's too close to some object."
         (cond ((and too-close? (neg? x-diff)) (values (- y-diff) x-diff))
               (too-close? (values y-diff (- x-diff)))
               (t (values x-diff y-diff)))
-      (let* ((nor-x (/ corrected-x (* dist 1.5)))
-             (nor-y (/ corrected-y (* dist 1.5))))
+      (let* ((nor-x (/ corrected-x (* dist 1.25)))
+             (nor-y (/ corrected-y (* dist 1.25))))
         (unless (close-to-zero? nor-y)
           (inc-evil-x! evil-ship nor-x)
           (inc-evil-y! evil-ship nor-y))))))
@@ -459,7 +459,7 @@ perpendicular course instead if he detects he's too close to some object."
 
 (defmethod move! ((tank tank))
   "Steady movement down the screen with occasional reversals."
-  (let ((movement (if (tank-reversing? tank) -0.15 0.5)))
+  (let ((movement (if (tank-reversing? tank) -0.15 0.75)))
     (incf (raylib:vector2-y   (tank-pos tank)) movement)
     (incf (raylib:rectangle-y (tank-bbox tank)) movement)
     (incf (raylib:vector2-y   (beam-pos (tank-beam tank))) movement)
