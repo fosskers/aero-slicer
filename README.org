@@ -35,3 +35,13 @@ Otherwise, we keep things simple: just structs and functions. No CLOS, other
 than light use of =defgeneric=.
 
 All dependencies are vendored.
+* Credits
+
+Aero Fighter uses [[https://github.com/bohonghuang/claw-raylib][bindings]] for [[https://github.com/raysan5/raylib/][Raylib]] for windowing, sound effects, collision,
+etc. The rest of the game logic is in pure Common Lisp.
+
+| Person       | Role          |
+|--------------+---------------|
+| Colin        | Author        |
+| Gumichan01   | [[https://opengameart.org/content/laser-shot][Sound Effects]] |
+| Joel Burford | [[https://joelfrancisburford.itch.io/jrpg-8-bitchiptune-sfx-pack][Sound Effects]] |
