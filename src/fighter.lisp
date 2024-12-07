@@ -52,14 +52,14 @@
   (pos     nil :type raylib:vector2)
   (rect    nil :type raylib:rectangle))
 
-(defun @shadow (texture f-pos &key (flip? nil))
+(defun @shadow (texture f-pos &key (flip? nil) (x-offset +shadow-offset+) (y-offset +shadow-offset+))
   "Construct a `shadow' based on the position of the fighter."
   (let ((height (if flip?
                     (float (- (raylib:texture-height texture)))
                     (float (raylib:texture-height texture)))))
     (make-shadow :texture texture
-                 :pos (raylib:make-vector2 :x (+ +shadow-offset+ (raylib:vector2-x f-pos))
-                                           :y (+ +shadow-offset+ (raylib:vector2-y f-pos)))
+                 :pos (raylib:make-vector2 :x (+ x-offset (raylib:vector2-x f-pos))
+                                           :y (+ y-offset (raylib:vector2-y f-pos)))
                  :rect (raylib:make-rectangle :x 0.0 :y 0.0 :height height :width (float (raylib:texture-width texture))))))
 
 (defun draw-shadow (shadow)

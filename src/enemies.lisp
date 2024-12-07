@@ -10,7 +10,7 @@
   (let ((rand-x (- (random +world-pixels-x+)
                    +world-max-x+
                    8)))
-    (raylib:make-vector2 :y (float (- +world-min-y+ 24))
+    (raylib:make-vector2 :y (float (- +world-min-y+ 36))
                          :x (float (max +world-min-x+ rand-x)))))
 
 (defun offscreen-vert? (guy)
@@ -593,9 +593,10 @@ perpendicular course instead if he detects he's too close to some object."
   "A building structure that the fighter shouldn't crash into."
   (animated nil :type animated)
   (pos      nil :type raylib:vector2)
-  (bbox     nil :type raylib:rectangle))
+  (bbox     nil :type raylib:rectangle)
+  (shadow   nil :type shadow))
 
-(defun @building (sprite buildings road)
+(defun @building (sprite buildings road shadow-texture)
   "Spawn a `building' somewhere off the top of the screen."
   (let* ((animated (make-animated :sprite sprite))
          (rect     (bounding-box animated))
@@ -605,7 +606,8 @@ perpendicular course instead if he detects he's too close to some object."
                    :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
                                                 :y (raylib:vector2-y pos)
                                                 :width (raylib:rectangle-width rect)
-                                                :height (raylib:rectangle-height rect)))))
+                                                :height (raylib:rectangle-height rect))
+                   :shadow (@shadow shadow-texture pos :x-offset 4 :y-offset 20))))
 
 (defmethod pos ((building building))
   (building-pos building))
@@ -616,18 +618,11 @@ perpendicular course instead if he detects he's too close to some object."
 (defmethod move! ((building building))
   "Straight movement down the screen."
   (incf (raylib:vector2-y   (building-pos building)) +slowest-scroll-rate+)
-  (incf (raylib:rectangle-y (building-bbox building)) +slowest-scroll-rate+))
+  (incf (raylib:rectangle-y (building-bbox building)) +slowest-scroll-rate+)
+  (incf (->> building building-shadow shadow-pos raylib:vector2-y) +slowest-scroll-rate+))
 
-;; TODO: 2024-11-01 Consider consolidating into something generic if this
-;; pattern continues. Although I suspect that buildings will be the only things
-;; that don't actually animate. For everything else, `draw-animated' would be
-;; used.
-;;
-;; What about sprite-based UI elements, like Lives and Bombs? Those don't need
-;; to animate either.
-;;
-;; 2024-11-04 I've made these a `defmethod' to reduce some overall duplication.
 (defmethod draw ((building building) fc)
+  (draw-shadow (building-shadow building))
   (raylib:draw-texture-v (->> building building-animated animated-sprite sprite-texture)
                          (building-pos building)
                          raylib:+white+))

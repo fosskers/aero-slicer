@@ -42,7 +42,8 @@
   (ground    (raylib:load-texture "assets/lighter-ground.png"))
   (road      (raylib:load-texture "assets/road.png"))
   (shadow    (raylib:load-texture "assets/shadow.png"))
-  (blob-shadow (raylib:load-texture "assets/blob-shadow.png")))
+  (blob-shadow (raylib:load-texture "assets/blob-shadow.png"))
+  (building-shadow (raylib:load-texture "assets/building-shadow.png")))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
@@ -224,4 +225,5 @@
     (raylib:unload-texture (sprites-ground sprites))
     (raylib:unload-texture (sprites-road sprites))
     (raylib:unload-texture (sprites-shadow sprites))
-    (raylib:unload-texture (sprites-blob-shadow sprites))))
+    (raylib:unload-texture (sprites-blob-shadow sprites))
+    (raylib:unload-texture (sprites-building-shadow sprites))))

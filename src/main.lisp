@@ -228,7 +228,8 @@ schedule."
            (setf (gethash fc (game-buildings game))
                  (@building (sprites-building sprites)
                             (game-buildings game)
-                            (game-road game))))
+                            (game-road game)
+                            (sprites-building-shadow sprites))))
           ((and (< n 36)
                 ;; Only one Evil Ship at a time.
                 (zerop (hash-table-count (game-evil-ships game))))
