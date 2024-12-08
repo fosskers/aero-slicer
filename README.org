@@ -45,3 +45,4 @@ etc. The rest of the game logic is in pure Common Lisp.
 | Colin        | Author        |
 | Gumichan01   | [[https://opengameart.org/content/laser-shot][Sound Effects]] |
 | Joel Burford | [[https://joelfrancisburford.itch.io/jrpg-8-bitchiptune-sfx-pack][Sound Effects]] |
+| SketchyLogic | [[https://opengameart.org/content/nes-shooter-music-5-tracks-3-jingles][Music]]         |
