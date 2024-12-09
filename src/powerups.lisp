@@ -81,7 +81,7 @@
   "A smart-consturctor for `god-mode'."
   (let* ((animated (make-animated :sprite sprite))
          (rect     (bounding-box animated))
-         (pos      (raylib:make-vector2 :x (- 0.0 (/ (raylib:rectangle-width rect) 2))
+         (pos      (raylib:make-vector2 :x (- 0.0 (round (/ (raylib:rectangle-width rect) 2)))
                                         :y 0.0)))
     (make-god-mode :animated animated
                    :pos pos
