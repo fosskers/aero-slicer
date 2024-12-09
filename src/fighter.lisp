@@ -278,7 +278,7 @@
         (set-x! fighter new)))
     (when (or (raylib:is-key-down +key-down+)
               (raylib:is-gamepad-button-down +gamepad+ +gamepad-down+))
-      (let ((new  (min +104.0 (+ dist (raylib:vector2-y pos)))))
+      (let ((new  (min +104.0 (+ (1+ dist) (raylib:vector2-y pos)))))
         (set-y! fighter new)))
     (when (or (raylib:is-key-down +key-up+)
               (raylib:is-gamepad-button-down +gamepad+ +gamepad-up+))

@@ -455,7 +455,7 @@ perpendicular course instead if he detects he's too close to some object."
 
 (defmethod move! ((tank tank))
   "Steady movement down the screen with occasional reversals."
-  (let ((movement (if (tank-reversing? tank) +slowest-scroll-rate+ 0.75)))
+  (let ((movement +slowest-scroll-rate+ #++(if (tank-reversing? tank) +slowest-scroll-rate+ 0.75)))
     (incf (raylib:vector2-y   (tank-pos tank)) movement)
     (incf (raylib:rectangle-y (tank-bbox tank)) movement)
     (incf (raylib:vector2-y   (beam-pos (tank-beam tank))) movement)
@@ -557,11 +557,11 @@ perpendicular course instead if he detects he's too close to some object."
          (new-x  (+ x-diff (blob-orig-x blob)))
          (s-pos  (->> blob blob-shadow shadow-pos)))
     (setf (raylib:vector2-x   (blob-pos blob)) new-x)
-    (incf (raylib:vector2-y   (blob-pos blob)) 1.0)
+    (incf (raylib:vector2-y   (blob-pos blob)) +blob-y-speed+)
     (setf (raylib:rectangle-x (blob-bbox blob)) new-x)
-    (incf (raylib:rectangle-y (blob-bbox blob)) 1.0)
+    (incf (raylib:rectangle-y (blob-bbox blob)) +blob-y-speed+)
     (setf (raylib:vector2-x s-pos) (+ +shadow-offset+ new-x))
-    (incf (raylib:vector2-y s-pos) 1.0)))
+    (incf (raylib:vector2-y s-pos) +blob-y-speed+)))
 
 (defmethod draw ((blob blob) fc)
   (draw-shadow (blob-shadow blob))
