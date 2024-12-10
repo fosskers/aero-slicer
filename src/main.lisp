@@ -287,14 +287,14 @@ schedule."
         (waiting (render-waiting game))
         (dead    (render-dead game))))
     (raylib:draw-fps 10 (- +screen-height+ 25))
-    #++(raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)
+    (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 45) 20 raylib:+lightgray+)
     #++ (raylib:draw-text (format nil "DMG: ~a" (->> game game-fighter fighter-beam-dmg)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)
     #++ (raylib:draw-text (format nil "SCORE: ~a" (game-score game)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)))
 
 (defun render-booting (game)
   "The initial boot-up animation."
-  (declare (ignore game))
-  (raylib:clear-background raylib:+black+))
+  (raylib:clear-background raylib:+black+)
+  (draw-sa-logo (->> game game-sprites sprites-sa-logo) (game-frame game)))
 
 (defun render-waiting (game)
   "Render a splash screen."

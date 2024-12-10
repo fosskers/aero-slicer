@@ -42,6 +42,7 @@
   (cannon-bulb (sprite #p"assets/cannon-bulb.json"))
   (cannon-beam (sprite #p"assets/cannon-beam.json"))
   (logo      (raylib:load-texture "assets/logo.png"))
+  (sa-logo   (raylib:load-texture "assets/sa-logo.png"))
   (ground    (raylib:load-texture "assets/lighter-ground.png"))
   (road      (raylib:load-texture "assets/road.png"))
   (shadow    (raylib:load-texture "assets/shadow.png"))
@@ -257,7 +258,8 @@
   (raylib:unload-texture (sprites-blob-shadow sprites))
   (raylib:unload-texture (sprites-building-shadow sprites))
   (raylib:unload-texture (sprites-missile-shadow sprites))
-  (raylib:unload-texture (sprites-logo sprites)))
+  (raylib:unload-texture (sprites-logo sprites))
+  (raylib:unload-texture (sprites-sa-logo sprites)))
 
 (defun unload-sounds (sounds)
   (raylib:unload-sound (sounds-beam-collect sounds))

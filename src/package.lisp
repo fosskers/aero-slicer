@@ -84,7 +84,7 @@ single beam shot will never damage the same enemy twice.")
 (defparameter *score-pos* (raylib:make-vector2 :x +score-x+ :y +score-y+))
 (defparameter +level-x+  (+ 100 +world-min-x+))
 (defparameter +level-y+  (+ 2 +world-min-y+))
-(defparameter +logo-lower-bound+ (+ +world-min-y+ 64))
+(defparameter +logo-lower-bound+ (+ +world-min-y+ 48))
 
 ;; --- Colours --- ;;
 
