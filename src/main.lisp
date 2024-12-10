@@ -11,11 +11,19 @@
   (track-transition game)
   (case (game-mode game)
     (playing (update-playing! game))
+    (booting (update-booting! game))
     (waiting (update-waiting! game))
     (dead    (update-dead! game))))
 
+(defun update-booting! (game)
+  (when (> (game-frame game)
+           (* 2 +frame-rate+))
+    (setf (game-mode game) 'waiting)))
+
 (defun update-waiting! (game)
   "We're waiting for the player to start the game."
+  (update-environment! game)
+  (move! (game-logo game))
   (when (or (raylib:is-key-down +key-space+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+))
     (setf (game-mode game) 'playing)))
@@ -275,18 +283,28 @@ schedule."
       #++ (debugging-dots)
       (case (game-mode game)
         (playing (render-playing game))
+        (booting (render-booting game))
         (waiting (render-waiting game))
         (dead    (render-dead game))))
-    (raylib:draw-fps 10 (- +screen-height+ 50))
-    (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)
+    (raylib:draw-fps 10 (- +screen-height+ 25))
+    #++(raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 25) 20 raylib:+lightgray+)
     #++ (raylib:draw-text (format nil "DMG: ~a" (->> game game-fighter fighter-beam-dmg)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)
     #++ (raylib:draw-text (format nil "SCORE: ~a" (game-score game)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)))
 
+(defun render-booting (game)
+  "The initial boot-up animation."
+  (declare (ignore game))
+  (raylib:clear-background raylib:+black+))
+
 (defun render-waiting (game)
   "Render a splash screen."
-  (declare (ignore game))
-  (raylib:draw-text (format nil "PRESS SPACE TO PLAY")
-                    (- 0 55) 0 10 raylib:+gray+))
+  (let ((fc (game-frame game)))
+    (draw (game-ground game) fc)
+    (draw (game-road game) fc)
+    (draw (game-logo game) fc)
+    #++
+    (raylib:draw-text (format nil "PRESS SPACE TO PLAY")
+                      (- 0 55) 0 10 raylib:+white+)))
 
 (defun render-enemies (game)
   "Render all enemies."

@@ -11,6 +11,7 @@
                 :components ((:file "package")
                              (:file "math")
                              (:file "background")
+                             (:file "landing")
                              (:file "state")
                              (:file "aseprite")
                              (:file "powerups")

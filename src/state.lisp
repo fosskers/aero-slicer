@@ -29,6 +29,7 @@
   (wide      (sprite #p"assets/wide-laser.json"))
   (explosion (sprite #p"assets/explosion.json"))
   (hud       (sprite #p"assets/hud.json"))
+  (god-mode  (sprite #p"assets/god-mode.json"))
   (little-f  (sprite #p"assets/little-fighter.json"))
   (little-b  (sprite #p"assets/little-bomb.json"))
   (little-p  (sprite #p"assets/little-beam.json"))
@@ -40,13 +41,13 @@
   (shield-aura (sprite #p"assets/shield-aura.json"))
   (cannon-bulb (sprite #p"assets/cannon-bulb.json"))
   (cannon-beam (sprite #p"assets/cannon-beam.json"))
+  (logo      (raylib:load-texture "assets/logo.png"))
   (ground    (raylib:load-texture "assets/lighter-ground.png"))
   (road      (raylib:load-texture "assets/road.png"))
   (shadow    (raylib:load-texture "assets/shadow.png"))
   (blob-shadow (raylib:load-texture "assets/blob-shadow.png"))
   (building-shadow (raylib:load-texture "assets/building-shadow.png"))
-  (missile-shadow (raylib:load-texture "assets/missile-shadow.png"))
-  (god-mode  (sprite #p"assets/god-mode.json")))
+  (missile-shadow (raylib:load-texture "assets/missile-shadow.png")))
 
 (defstruct (sounds (:constructor @sounds))
   "All sound effects and music in the game."
@@ -78,6 +79,7 @@
   (sounds  nil :type sounds)
   (music   nil :type music)
   (track   nil :type raylib:music)
+  (logo    nil :type logo)
   (fighter nil :type fighter)
   (warp-ghost nil :type ghost)
   ;; The point after which the next beam/shield powerup should spawn.
@@ -97,7 +99,7 @@
   (lives 3 :type fixnum)
   (score 0 :type fixnum)
   ;; Waiting / Playing / Dead
-  (mode  'playing :type symbol)
+  (mode  'booting :type symbol)
   (level 1 :type fixnum)
   ;; The point after which the level should increase.
   (level-thresh +level-progression-interval+ :type fixnum))
@@ -111,6 +113,7 @@
                :sounds (@sounds)
                :music music
                :track (music-intro music)
+               :logo (@logo (sprites-logo sprites))
                :warp-ghost (@ghost (sprites-fighter sprites))
                :fighter (@fighter (sprites-fighter sprites)
                                   (sprites-beam-2 sprites)
@@ -253,7 +256,8 @@
   (raylib:unload-texture (sprites-shadow sprites))
   (raylib:unload-texture (sprites-blob-shadow sprites))
   (raylib:unload-texture (sprites-building-shadow sprites))
-  (raylib:unload-texture (sprites-missile-shadow sprites)))
+  (raylib:unload-texture (sprites-missile-shadow sprites))
+  (raylib:unload-texture (sprites-logo sprites)))
 
 (defun unload-sounds (sounds)
   (raylib:unload-sound (sounds-beam-collect sounds))
