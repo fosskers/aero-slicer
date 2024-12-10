@@ -338,7 +338,17 @@ schedule."
   (render-enemies game)
   (draw-hud game)
   (raylib:draw-text (format nil "GAME OVER, DUDE")
-                    (- 0 45) 0 10 raylib:+white+))
+                    (- 0 72) 0 16 raylib:+white+)
+  (raylib:draw-text (format nil "(Press Start)")
+                    (- 0 36) 16 10 raylib:+white+)
+  (raylib:draw-text (format nil "AERO FIGHTER by Colin W")
+                    (- +world-max-x+ 136)
+                    (- +world-max-y+ 20)
+                    10 raylib:+white+)
+  (raylib:draw-text (format nil "Concept by JPJ")
+                    (- +world-max-x+ 82)
+                    (- +world-max-y+ 10)
+                    10 raylib:+white+))
 
 #++
 (defun draw-hud (game)

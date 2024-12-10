@@ -40,9 +40,10 @@ All dependencies are vendored.
 Aero Fighter uses [[https://github.com/bohonghuang/claw-raylib][bindings]] for [[https://github.com/raysan5/raylib/][Raylib]] for windowing, sound effects, collision,
 etc. The rest of the game logic is in pure Common Lisp.
 
-| Person       | Role          |
-|--------------+---------------|
-| Colin        | Author        |
-| Gumichan01   | [[https://opengameart.org/content/laser-shot][Sound Effects]] |
-| Joel Burford | [[https://joelfrancisburford.itch.io/jrpg-8-bitchiptune-sfx-pack][Sound Effects]] |
-| SketchyLogic | [[https://opengameart.org/content/nes-shooter-music-5-tracks-3-jingles][Music]]         |
+| Person       | Role           |
+|--------------+----------------|
+| Colin        | Code, Graphics |
+| JPJ          | Concept        |
+| Gumichan01   | [[https://opengameart.org/content/laser-shot][Sound Effects]]  |
+| Joel Burford | [[https://joelfrancisburford.itch.io/jrpg-8-bitchiptune-sfx-pack][Sound Effects]]  |
+| SketchyLogic | [[https://opengameart.org/content/nes-shooter-music-5-tracks-3-jingles][Music]]          |
