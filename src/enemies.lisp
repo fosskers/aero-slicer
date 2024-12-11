@@ -455,7 +455,7 @@ perpendicular course instead if he detects he's too close to some object."
 
 (defmethod move! ((tank tank))
   "Steady movement down the screen with occasional reversals."
-  (let ((movement +slowest-scroll-rate+ #++(if (tank-reversing? tank) +slowest-scroll-rate+ 0.75)))
+  (let ((movement (if (tank-reversing? tank) +slowest-scroll-rate+ (+ +slowest-scroll-rate+ 0.1))))
     (incf (raylib:vector2-y   (tank-pos tank)) movement)
     (incf (raylib:rectangle-y (tank-bbox tank)) movement)
     (incf (raylib:vector2-y   (beam-pos (tank-beam tank))) movement)
