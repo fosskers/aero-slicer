@@ -62,7 +62,7 @@ entire Hash Table of the given entities, so may not be performant if large."
 (defun enemies-hit-by-beam (beam enemies-ht)
   "Find all enemies that the beam is hitting."
   (t:transduce (t:filter (lambda (enemy) (colliding? beam (cdr enemy))))
-               #'t:cons enemies-ht))
+               #'t:snoc enemies-ht))
 
 (defun colliding-entity (fighter entity-ht)
   "Which entity, if any, is colliding with the fighter?"

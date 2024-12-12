@@ -7,6 +7,9 @@
 
 (in-package :aero-fighter)
 
+#+ecl
+(declaim (optimize (speed 3) (debug 1) (safety 0)))
+
 #+nil
 (launch)
 
