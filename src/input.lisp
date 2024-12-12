@@ -38,6 +38,27 @@
       ;; Doesn't crash if the gamepad isn't plugged in.
       (raylib:is-gamepad-button-pressed +gamepad+ +gamepad-a+)))
 
+;; --- Gamepads --- ;;
+
+(defun set-gamepad! ()
+  "Set the global gamepad number to a known, good value."
+  (let ((gamepad (->> (gamepads) car car)))
+    (if gamepad
+        (setf +gamepad+ gamepad)
+        (setf +gamepad+ 0))))
+
+(defun gamepads ()
+  "The current gamepads detected by the system."
+  (t:transduce (t:comp (t:take-while #'raylib:is-gamepad-available)
+                       (t:map #'raylib:get-gamepad-name)
+                       #'t:enumerate)
+               #'t:snoc (t:ints 0)))
+
+#++
+(gamepads)
+
+;; --- Debugging --- ;;
+
 (defun debugging-gamepad ()
   (let ((last-pressed (raylib:get-gamepad-button-pressed)))
     (when (not (zerop last-pressed))

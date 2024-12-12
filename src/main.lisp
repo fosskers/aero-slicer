@@ -287,7 +287,7 @@ schedule."
         (waiting (render-waiting game))
         (dead    (render-dead game))))
     (raylib:draw-fps 10 (- +screen-height+ 25))
-    (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 45) 20 raylib:+lightgray+)
+    #++ (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 45) 20 raylib:+lightgray+)
     #++ (raylib:draw-text (format nil "DMG: ~a" (->> game game-fighter fighter-beam-dmg)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)
     #++ (raylib:draw-text (format nil "SCORE: ~a" (game-score game)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)))
 
@@ -320,7 +320,7 @@ the player is pressing."
     (raylib:draw-circle (- +world-max-x+ 5)
                         (- +world-max-y+ 8)
                         2.0 raylib:+red+)
-    (raylib:draw-text "SHOOT" (- +world-max-x+ 34) (- +world-max-y+ 25) 10 raylib:+white+))
+    (raylib:draw-text "SHOOT" (- +world-max-x+ 35) (- +world-max-y+ 25) 10 raylib:+white+))
   (when (or (raylib:is-key-down +key-enter+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-b+))
     (raylib:draw-circle (- +world-max-x+ 12)
