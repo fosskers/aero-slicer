@@ -28,7 +28,7 @@ around multiple instances of an `animated'."
   (texture    nil :type raylib:texture :read-only t)
   (animations nil :type hash-table :read-only t))
 
-(defun sprite (path)
+(defun @sprite (path)
   "Read animated sprite data from the given JSON file. Must be called after a GL
 context has been initialised via `raylib:init-window'."
   (let* ((json   (jzon:parse path))

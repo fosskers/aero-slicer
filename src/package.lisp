@@ -3,12 +3,13 @@
   (:shadow #:shadow)
   (:local-nicknames (#:jzon #:com.inuoe.jzon)
                     (#:p #:filepaths)
-                    (#:t #:transducers)))
+                    (#:t #:transducers))
+  (:export #:launch))
 
 (in-package :aero-fighter)
 
 #+ecl
-(declaim (optimize (speed 3) (debug 1) (safety 0)))
+(declaim (optimize (debug 2) (safety 1)))
 
 #+nil
 (launch)
