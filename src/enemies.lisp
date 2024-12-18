@@ -3,72 +3,45 @@
 #+nil
 (launch)
 
-;; --- General --- ;;
+;; --- Buildings --- ;;
 
-(defun random-spawn-position ()
-  "A useful spawn position for enemies."
-  (let ((rand-x (- (random +world-pixels-x+)
-                   +world-max-x+
-                   8)))
-    (raylib:make-vector2 :y (float (- +world-min-y+ 36))
-                         :x (float (max +world-min-x+ rand-x)))))
+(defstruct building
+  "A building structure that the fighter shouldn't crash into."
+  (animated nil :type animated)
+  (pos      nil :type raylib:vector2)
+  (bbox     nil :type raylib:rectangle)
+  (shadow   nil :type shadow))
 
-(defun offscreen-vert? (guy)
-  "Is the dude off the bottom end of the screen?"
-  (let ((y (raylib:vector2-y (pos guy))))
-    (> y +world-max-y+)))
+(defun @building (sprite buildings road shadow-texture)
+  "Spawn a `building' somewhere off the top of the screen."
+  (let* ((animated (make-animated :sprite sprite))
+         (rect     (bounding-box animated))
+         (pos      (random-off-road rect buildings road)))
+    (make-building :animated animated
+                   :pos pos
+                   :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
+                                                :y (raylib:vector2-y pos)
+                                                :width (raylib:rectangle-width rect)
+                                                :height (raylib:rectangle-height rect))
+                   :shadow (@shadow shadow-texture pos :x-offset 4 :y-offset 20))))
 
-(defun move-enemies! (enemies)
-  "Move all enemies of a certain type. If they move off the end of the screen,
-despawn them."
-  (with-hash-table-iterator (iter enemies)
-    (labels ((recurse ()
-               (multiple-value-bind (entry? key enemy) (iter)
-                 (when entry?
-                   (move! enemy)
-                   (when (offscreen-vert? enemy)
-                     (remhash key enemies))
-                   (recurse)))))
-      (recurse))))
+(defmethod pos ((building building))
+  (building-pos building))
 
-(defun random-off-road (rect buildings road)
-  "Find a random spawn position for a building, such that it isn't on the road, nor
-is it overlapping with any existing buildings."
-  (let* ((pos  (random-spawn-position))
-         (pair (make-rect-pos :pos pos :rect rect)))
-    (setf (raylib:rectangle-x rect) (raylib:vector2-x pos))
-    (setf (raylib:rectangle-y rect) (raylib:vector2-y pos))
-    (if (or (any-entity-collision? pair buildings)
-            (any-entity-collision? pair road))
-        (random-off-road rect buildings road)
-        pos)))
+(defmethod bbox ((building building))
+  (building-bbox building))
 
-(defun random-pos-clear-of-building (width buildings)
-  "Find a spawn position that isn't behind some building. A bit crude, but gets the
-job done."
-  (let ((pos (random-spawn-position)))
-    (if (behind-buildings? pos width buildings)
-        (random-pos-clear-of-building width buildings)
-        pos)))
+(defmethod move! ((building building))
+  "Straight movement down the screen."
+  (incf (raylib:vector2-y   (building-pos building)) +slowest-scroll-rate+)
+  (incf (raylib:rectangle-y (building-bbox building)) +slowest-scroll-rate+)
+  (incf (->> building building-shadow shadow-pos raylib:vector2-y) +slowest-scroll-rate+))
 
-(defun behind-buildings? (pos width buildings)
-  "Is some entity (given by its `pos') behind one of the buildings? If so, yields
-the X of that building."
-  (t:transduce (t:comp (t:filter (lambda (building) (x-overlapping? pos width (cdr building))))
-                       (t:map (lambda (building) (->> building cdr building-pos raylib:vector2-x))))
-               (t:find #'identity) buildings))
-
-(defun x-overlapping? (pos width thing)
-  "Is some entity (given by its `pos' and `width') overlapping some other entity,
-at least in the X-direction? If so, yields the minimum X of that overlapped
-entity."
-  (let* ((b-l (->> thing pos raylib:vector2-x))
-         (b-r (+ b-l (->> thing bbox raylib:rectangle-width)))
-         (p-l (raylib:vector2-x pos))
-         (p-r (+ p-l width)))
-    (when (or (<= b-l p-r b-r)
-              (<= b-l p-l b-r))
-      b-l)))
+(defmethod draw ((building building) fc)
+  (draw-shadow (building-shadow building))
+  (raylib:draw-texture-v (->> building building-animated animated-sprite sprite-texture)
+                         (building-pos building)
+                         raylib:+white+))
 
 ;; --- Cannons --- ;;
 
@@ -583,42 +556,69 @@ perpendicular course instead if he detects he's too close to some object."
 (defmethod points ((blob blob))
   100)
 
-;; --- Buildings --- ;;
+;; --- General --- ;;
 
-(defstruct building
-  "A building structure that the fighter shouldn't crash into."
-  (animated nil :type animated)
-  (pos      nil :type raylib:vector2)
-  (bbox     nil :type raylib:rectangle)
-  (shadow   nil :type shadow))
+(defun random-spawn-position ()
+  "A useful spawn position for enemies."
+  (let ((rand-x (- (random +world-pixels-x+)
+                   +world-max-x+
+                   8)))
+    (raylib:make-vector2 :y (float (- +world-min-y+ 36))
+                         :x (float (max +world-min-x+ rand-x)))))
 
-(defun @building (sprite buildings road shadow-texture)
-  "Spawn a `building' somewhere off the top of the screen."
-  (let* ((animated (make-animated :sprite sprite))
-         (rect     (bounding-box animated))
-         (pos      (random-off-road rect buildings road)))
-    (make-building :animated animated
-                   :pos pos
-                   :bbox (raylib:make-rectangle :x (raylib:vector2-x pos)
-                                                :y (raylib:vector2-y pos)
-                                                :width (raylib:rectangle-width rect)
-                                                :height (raylib:rectangle-height rect))
-                   :shadow (@shadow shadow-texture pos :x-offset 4 :y-offset 20))))
+(defun offscreen-vert? (guy)
+  "Is the dude off the bottom end of the screen?"
+  (let ((y (raylib:vector2-y (pos guy))))
+    (> y +world-max-y+)))
 
-(defmethod pos ((building building))
-  (building-pos building))
+(defun move-enemies! (enemies)
+  "Move all enemies of a certain type. If they move off the end of the screen,
+despawn them."
+  (with-hash-table-iterator (iter enemies)
+    (labels ((recurse ()
+               (multiple-value-bind (entry? key enemy) (iter)
+                 (when entry?
+                   (move! enemy)
+                   (when (offscreen-vert? enemy)
+                     (remhash key enemies))
+                   (recurse)))))
+      (recurse))))
 
-(defmethod bbox ((building building))
-  (building-bbox building))
+(defun random-off-road (rect buildings road)
+  "Find a random spawn position for a building, such that it isn't on the road, nor
+is it overlapping with any existing buildings."
+  (let* ((pos  (random-spawn-position))
+         (pair (make-rect-pos :pos pos :rect rect)))
+    (setf (raylib:rectangle-x rect) (raylib:vector2-x pos))
+    (setf (raylib:rectangle-y rect) (raylib:vector2-y pos))
+    (if (or (any-entity-collision? pair buildings)
+            (any-entity-collision? pair road))
+        (random-off-road rect buildings road)
+        pos)))
 
-(defmethod move! ((building building))
-  "Straight movement down the screen."
-  (incf (raylib:vector2-y   (building-pos building)) +slowest-scroll-rate+)
-  (incf (raylib:rectangle-y (building-bbox building)) +slowest-scroll-rate+)
-  (incf (->> building building-shadow shadow-pos raylib:vector2-y) +slowest-scroll-rate+))
+(defun random-pos-clear-of-building (width buildings)
+  "Find a spawn position that isn't behind some building. A bit crude, but gets the
+job done."
+  (let ((pos (random-spawn-position)))
+    (if (behind-buildings? pos width buildings)
+        (random-pos-clear-of-building width buildings)
+        pos)))
 
-(defmethod draw ((building building) fc)
-  (draw-shadow (building-shadow building))
-  (raylib:draw-texture-v (->> building building-animated animated-sprite sprite-texture)
-                         (building-pos building)
-                         raylib:+white+))
+(defun behind-buildings? (pos width buildings)
+  "Is some entity (given by its `pos') behind one of the buildings? If so, yields
+the X of that building."
+  (t:transduce (t:comp (t:filter (lambda (building) (x-overlapping? pos width (cdr building))))
+                       (t:map (lambda (building) (->> building cdr building-pos raylib:vector2-x))))
+               (t:find #'identity) buildings))
+
+(defun x-overlapping? (pos width thing)
+  "Is some entity (given by its `pos' and `width') overlapping some other entity,
+at least in the X-direction? If so, yields the minimum X of that overlapped
+entity."
+  (let* ((b-l (->> thing pos raylib:vector2-x))
+         (b-r (+ b-l (->> thing bbox raylib:rectangle-width)))
+         (p-l (raylib:vector2-x pos))
+         (p-r (+ p-l width)))
+    (when (or (<= b-l p-r b-r)
+              (<= b-l p-l b-r))
+      b-l)))
