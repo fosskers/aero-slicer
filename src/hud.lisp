@@ -29,7 +29,7 @@
   "Draw the score."
   (let* ((sprite    (->> game game-sprites sprites-numbers))
          (texture   (sprite-texture sprite))
-         (animation (gethash 'numbers (sprite-animations sprite))))
+         (animation (gethash :numbers (sprite-animations sprite))))
     (t:transduce #'t:pass
                  (t:fold (lambda (acc place)
                            (if (zerop acc)

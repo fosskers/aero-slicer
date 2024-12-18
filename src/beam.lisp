@@ -28,7 +28,7 @@
 
 (defun @beam (sprite parent-pos parent-width y-offset)
   "Construct a beam."
-  (let* ((animated (make-animated :sprite sprite :default 'shooting :active 'shooting))
+  (let* ((animated (make-animated :sprite sprite :default :shooting :active :shooting))
          (rect     (bounding-box animated))
          (x-offset (- (/ parent-width 2)
                       (/ (raylib:rectangle-width rect) 2)))
@@ -52,7 +52,7 @@
   ;; While it is redundant to tell the `animated' what the active animation is
   ;; here (since there is only one), calling `set-animation!' handles setting
   ;; the frame values in a consistent way. Previously it was more ad-hoc.
-  (set-animation! (beam-animated beam) 'shooting fc))
+  (set-animation! (beam-animated beam) :shooting fc))
 
 ;; --- Generics --- ;;
 

@@ -106,7 +106,7 @@
 
 (defun @aura (sprite f-pos)
   "Construct a shield `aura'."
-  (let ((duration (animation-duration sprite 'disperse)))
+  (let ((duration (animation-duration sprite :disperse)))
     (make-aura :animated (make-animated :sprite sprite)
                :pos (raylib:make-vector2 :x (raylib:vector2-x f-pos)
                                          :y (raylib:vector2-y f-pos))
@@ -122,9 +122,9 @@
       (aura-duration aura)))
 
 (defmethod tick! ((aura aura) fc)
-  (when (and (eq 'disperse (->> aura aura-animated animated-active))
+  (when (and (eq :disperse (->> aura aura-animated animated-active))
              (expired? aura fc))
-    (set-animation! (aura-animated aura) 'idle fc)))
+    (set-animation! (aura-animated aura) :idle fc)))
 
 ;; --- Status --- ;;
 
@@ -155,7 +155,7 @@
 (defun kill-fighter! (fighter beam-sprite sound fc)
   "Reset the fighter's position and animation."
   (set-status! fighter 'hit fc)
-  (set-animation! (fighter-animated fighter) 'damaged fc)
+  (set-animation! (fighter-animated fighter) :damaged fc)
   (setf (fighter-god-mode? fighter) nil)
   ;; Move him back to the initial spawn position.
   (setf (raylib:vector2-x (fighter-pos fighter)) +fighter-spawn-x+)
@@ -188,7 +188,7 @@
   (cond ((and (eq 'hit (fighter-status fighter))
               (>= (- fc (fighter-status-fc fighter)) (* 1.5 +frame-rate+)))
          (set-status! fighter 'ok fc)
-         (set-animation! (fighter-animated fighter) 'idle fc)))
+         (set-animation! (fighter-animated fighter) :idle fc)))
   (tick! (fighter-beam fighter) fc)
   (tick! (fighter-shield fighter) fc))
 
@@ -201,7 +201,7 @@
     (draw-shadow (fighter-shadow fighter))
     (draw-animated (fighter-animated fighter) (fighter-pos fighter) fc)
     (when (or (fighter-shielded? fighter)
-              (eq 'disperse (->> shield aura-animated animated-active)))
+              (eq :disperse (->> shield aura-animated animated-active)))
       (draw shield fc))))
 
 (defmethod pos ((fighter fighter))

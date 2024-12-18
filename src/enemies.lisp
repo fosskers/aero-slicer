@@ -116,7 +116,7 @@
 
 (defun @explosion (sprite parent-pos fc)
   "Construct an `explosion' that knows when it should despawn."
-  (make-explosion :animated (make-animated :sprite sprite :default 'exploding :active 'exploding)
+  (make-explosion :animated (make-animated :sprite sprite :default :exploding :active :exploding)
                   :pos parent-pos
                   :start-fc fc
                   :duration (sprite-duration sprite)))
@@ -353,13 +353,13 @@ perpendicular course instead if he detects he's too close to some object."
               (< (random 10) 6))
          (setf (evil-ship-status evil-ship) 'charging)
          (setf (evil-ship-status-fc evil-ship) fc)
-         (set-animation! (evil-ship-animated evil-ship) 'charging fc))
+         (set-animation! (evil-ship-animated evil-ship) :charging fc))
         ((and (eq 'charging (evil-ship-status evil-ship))
               (>= (- fc (evil-ship-status-fc evil-ship))
                   (evil-ship-charge-dur evil-ship)))
          (setf (evil-ship-status evil-ship) 'ok)
          (setf (evil-ship-status-fc evil-ship) fc)
-         (set-animation! (evil-ship-animated evil-ship) 'idle fc)
+         (set-animation! (evil-ship-animated evil-ship) :idle fc)
          (shoot-beam! (evil-ship-beam evil-ship) fc))))
 
 (defmethod vulnerable? ((evil-ship evil-ship) fc)
@@ -415,7 +415,7 @@ perpendicular course instead if he detects he's too close to some object."
 (defun charge-duration (sprite)
   "How long does the charging animation last in frames?"
   (t:transduce (t:map #'frame-duration-fs)
-               #'+ (->> sprite sprite-animations (gethash 'charging) animation-frames)))
+               #'+ (->> sprite sprite-animations (gethash :charging) animation-frames)))
 
 (defmethod pos ((tank tank))
   (tank-pos tank))
@@ -452,13 +452,13 @@ perpendicular course instead if he detects he's too close to some object."
               (< (random 10) 6))
          (setf (tank-status tank) 'charging)
          (setf (tank-status-fc tank) fc)
-         (set-animation! (tank-animated tank) 'charging fc))
+         (set-animation! (tank-animated tank) :charging fc))
         ((and (eq 'charging (tank-status tank))
               (>= (- fc (tank-status-fc tank))
                   (tank-charge-dur tank)))
          (setf (tank-status tank) 'ok)
          (setf (tank-status-fc tank) fc)
-         (set-animation! (tank-animated tank) 'idle fc)
+         (set-animation! (tank-animated tank) :idle fc)
          (shoot-beam! (tank-beam tank) fc))))
 
 (defmethod health ((tank tank))

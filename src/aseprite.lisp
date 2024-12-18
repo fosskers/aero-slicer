@@ -45,8 +45,8 @@ context has been initialised via `raylib:init-window'."
 entity in the game, but all instances of the same entity type should share an
 underlying `sprite' definition."
   (sprite  nil   :type sprite :read-only t)
-  (default 'idle :type symbol)
-  (active  'idle :type symbol)
+  (default :idle :type keyword)
+  (active  :idle :type keyword)
   (frame   0     :type fixnum)
   ;; The fc when _this frame_ began.
   (started 0     :type fixnum))
@@ -77,7 +77,7 @@ underlying `sprite' definition."
                                     (t:take (1+ (- to from)))
                                     (t:map #'json->frame))
                             #'t:vector frames)))
-    (cons (intern (string-upcase (gethash "name" json)))
+    (cons (intern (string-upcase (gethash "name" json)) "KEYWORD")
           (make-animation :frames frs))))
 
 ;; --- Helpers --- ;;

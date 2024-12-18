@@ -60,10 +60,10 @@
 (defmethod tick! ((shield shield) fc)
   "Start to despawn the `shield' if too much time has passed."
   (let ((animated (shield-animated shield)))
-    (when (and (eq 'idle (animated-active animated))
+    (when (and (eq :idle (animated-active animated))
                (>= (- fc (shield-spawn-fc shield))
                    +powerup-newness-timeout+))
-      (set-animation! animated 'flashing fc))))
+      (set-animation! animated :flashing fc))))
 
 (defmethod expired? ((shield shield) fc)
   (>= (- fc (shield-spawn-fc shield))
@@ -192,10 +192,10 @@
     ;; - It means the number of states of the entity and sprite stay synced.
     ;; - It means the active state of the entity can't drift from the animation.
     ;; - Reduces a bit of boilerplate..
-    (when (and (eq 'idle (animated-active animated))
+    (when (and (eq :idle (animated-active animated))
                (>= (- fc (ammo-spawn-fc ammo))
                    +powerup-newness-timeout+))
-      (set-animation! animated 'flashing fc))))
+      (set-animation! animated :flashing fc))))
 
 (defmethod expired? ((ammo ammo) fc)
   (>= (- fc (ammo-spawn-fc ammo))
