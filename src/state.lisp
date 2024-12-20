@@ -69,6 +69,12 @@
   (intro (raylib:load-music-stream "assets/sound/BossIntro.ogg"))
   (main  (raylib:load-music-stream "assets/sound/BossMain.ogg")))
 
+(defstruct (colours (:constructor @colours))
+  "Colour structs are usual stored directly in the entities that need them, but
+there are some exceptions where a colour is needed but there is no parent
+struct. For such cases, we store the colour here."
+  (bomb-fade (very-faded-white) :type raylib:color))
+
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
 ;; 2024-11-21 Probably yes, because it can still be useful to handle them
@@ -76,11 +82,12 @@
 ;; Blobs don't have any internal time-based state.
 (defstruct game
   "The state of the running game."
-  (camera  (camera) :type raylib:camera-2d)
+  (camera  (@camera) :type raylib:camera-2d)
   (sprites nil :type sprites)
   (sounds  nil :type sounds)
   (music   nil :type music)
   (track   nil :type raylib:music)
+  (colours (@colours) :type colours)
   (logo    nil :type logo)
   (fighter nil :type fighter)
   (warp-ghost nil :type ghost)
@@ -97,9 +104,10 @@
   (ground     nil :type hash-table)
   (road       nil :type hash-table)
   (explosions (make-hash-table :size 16) :type hash-table)
-  (frame 0 :type fixnum)
-  (lives 3 :type fixnum)
-  (score 0 :type fixnum)
+  (frame      0 :type fixnum)
+  (lives      3 :type fixnum)
+  (score      0 :type fixnum)
+  (score-pos  (raylib:make-vector2 :x +score-x+ :y +score-y+) :type raylib:vector2)
   ;; Waiting / Playing / Dead
   (mode  'booting :type symbol)
   (level 1 :type fixnum)
@@ -208,7 +216,7 @@
         ((eq beam (sprites-beam-18 sprites)) (sprites-beam-16 sprites))
         (t (error "Unknown sprite! Is it really a beam?"))))
 
-(defun camera ()
+(defun @camera ()
   "Initialise a 2D Camera."
   (let* ((center-x (/ +screen-width+ 2.0))
          (center-y (/ +screen-height+ 2.0))

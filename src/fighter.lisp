@@ -42,7 +42,7 @@
                                                :y +fighter-spawn-y+
                                                :width width
                                                :height (raylib:rectangle-height rect))
-                  :beam (@beam beam-sprite pos width +beam-y-offset+)
+                  :beam   (@beam beam-sprite pos width +beam-y-offset+)
                   :shield (@aura shield-sprite pos)
                   :shadow (@shadow shadow-texture pos))))
 
@@ -50,7 +50,8 @@
   "A shadow rendered offset to the fighter / evil ship that gives a sense of depth."
   (texture nil :type raylib:texture)
   (pos     nil :type raylib:vector2)
-  (rect    nil :type raylib:rectangle))
+  (rect    nil :type raylib:rectangle)
+  (colour  (very-faded-white) :type raylib:color))
 
 (defun @shadow (texture f-pos &key (flip? nil) (x-offset +shadow-offset+) (y-offset +shadow-offset+))
   "Construct a `shadow' based on the position of the fighter."
@@ -66,12 +67,13 @@
   "Special variant of `draw' to support texture flipping."
   (let ((texture (shadow-texture shadow))
         (pos     (shadow-pos shadow)))
-    (raylib:draw-texture-rec texture (shadow-rect shadow) pos +very-faded-white+)))
+    (raylib:draw-texture-rec texture (shadow-rect shadow) pos (shadow-colour shadow))))
 
 (defstruct ghost
   "A warp ghost."
   (animated nil :type animated)
-  (pos      nil :type raylib:vector2))
+  (pos      nil :type raylib:vector2)
+  (colour   (very-faded-blue) :type raylib:color))
 
 (defun @ghost (sprite)
   "Construct a warp `ghost'."
@@ -95,7 +97,7 @@
     (draw-animated (ghost-animated ghost)
                    (ghost-pos ghost)
                    fc
-                   :colour +very-faded-blue+)))
+                   :colour (ghost-colour ghost))))
 
 (defstruct aura
   "The sheild aura of a fighter."

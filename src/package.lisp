@@ -85,16 +85,24 @@ single beam shot will never damage the same enemy twice.")
 (defparameter +beam-8-x+ (+ 154 +world-min-x+))
 (defparameter +score-y+  (float (+ 2 +world-min-y+)))
 (defparameter +score-x+  (float (+ 153 +world-min-x+)))
-(defparameter *score-pos* (raylib:make-vector2 :x +score-x+ :y +score-y+))
 (defparameter +level-x+  (+ 100 +world-min-x+))
 (defparameter +level-y+  (+ 2 +world-min-y+))
 (defparameter +logo-lower-bound+ (+ +world-min-y+ 32))
 
 ;; --- Colours --- ;;
 
-(defparameter +faded-white+ (raylib:color-alpha raylib:+white+ 0.85))
-(defparameter +very-faded-white+ (raylib:color-alpha raylib:+white+ 0.5))
-(defparameter +very-faded-blue+ (raylib:color-alpha raylib:+blue+ 0.35))
+;; NOTE: 2024-12-21 These can't be global variables, and they store a `cobject',
+;; which can't be saved into the Lisp image's heap when creating an
+;; "executable".
+
+(defun faded-white ()
+  (raylib:color-alpha raylib:+white+ 0.85))
+
+(defun very-faded-white ()
+  (raylib:color-alpha raylib:+white+ 0.5))
+
+(defun very-faded-blue ()
+  (raylib:color-alpha raylib:+blue+ 0.35))
 
 ;; --- Keys --- ;;
 
