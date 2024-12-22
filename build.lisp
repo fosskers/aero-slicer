@@ -24,8 +24,13 @@
                    (format t "--- DONE ---~%")
                    (si:exit)))
 
-#-ecl
-(format t "--- NO OP ---~%")
+#+sbcl
+(progn
+  (format t "POLICY: ~a~%" sb-c::*policy*)
+  (sb-ext:save-lisp-and-die #p"aero-fighter"
+                            :toplevel #'aero-fighter:launch
+                            :executable t
+                            :compression t))
 
 (format t "--- DONE ---~%")
 
