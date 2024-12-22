@@ -1,0 +1,33 @@
+(require :asdf)
+
+;; Force ASDF to only look here for systems.
+(asdf:initialize-source-registry `(:source-registry (:tree ,(uiop:getcwd)) :ignore-inherited-configuration))
+
+;; Load and compile the binary.
+(format t "--- LOADING SYSTEM ---~%")
+(asdf:load-system :aero-fighter)
+(format t "--- COMPILING EXECUTABLE ---~%")
+
+#+ecl
+(asdf:make-build :aero-fighter
+                 :type :program
+                 :move-here #p"./"
+                 :prologue-code
+                 '(progn
+                   (format t "--- LOADING ---~%")
+                   (require :asdf)
+                   (format t "--- LOADED ---~%"))
+                 :epilogue-code
+                 '(progn
+                   (format t "--- RUNNING ---~%")
+                   (aero-fighter:launch)
+                   (format t "--- DONE ---~%")
+                   (si:exit)))
+
+#-ecl
+(format t "--- NO OP ---~%")
+
+(format t "--- DONE ---~%")
+
+#+ecl
+(si:exit)
