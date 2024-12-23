@@ -10,15 +10,15 @@
   (incf (game-frame game))
   (track-transition game)
   (case (game-mode game)
-    (playing (update-playing! game))
-    (booting (update-booting! game))
-    (waiting (update-waiting! game))
-    (dead    (update-dead! game))))
+    (:playing (update-playing! game))
+    (:booting (update-booting! game))
+    (:waiting (update-waiting! game))
+    (:dead    (update-dead! game))))
 
 (defun update-booting! (game)
   (when (> (game-frame game)
            (* 2 +frame-rate+))
-    (setf (game-mode game) 'waiting)))
+    (setf (game-mode game) :waiting)))
 
 (defun update-waiting! (game)
   "We're waiting for the player to start the game."
@@ -26,7 +26,7 @@
   (move! (game-logo game))
   (when (or (raylib:is-key-down +key-space+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+))
-    (setf (game-mode game) 'playing)))
+    (setf (game-mode game) :playing)))
 
 (defun update-dead! (game)
   "The player is dead, and they might restart the game."
@@ -129,7 +129,7 @@
   "If the fighter got hit by something, kill and (maybe) respawn him."
   (let* ((fighter (game-fighter game))
          (fc      (game-frame game)))
-    (when (and (eq 'ok (fighter-status fighter))
+    (when (and (eq :ok (fighter-status fighter))
                (or (when-let* ((pos (or (direct-collision! fighter (game-blobs game))
                                         (direct-collision! fighter (game-evil-ships game))
                                         (direct-collision! fighter (game-missiles game)))))
@@ -146,7 +146,7 @@
              ;; killed, so that collision on the next frame doesn't immediately
              ;; kill the fighter anyway.
              (setf (fighter-shielded? fighter) nil)
-             (set-status! fighter 'hit fc)
+             (set-status! fighter :hit fc)
              (setf (->> fighter fighter-shield aura-disperse-fc) fc)
              (set-animation! (->> fighter fighter-shield aura-animated) :disperse fc)
              (->> game game-sounds sounds-shield-down raylib:play-sound))
@@ -160,7 +160,7 @@
                  (kill-fighter! fighter <> (->> game game-sounds sounds-explosion-4) fc))
                (decf (game-lives game))
                (when (<= (game-lives game) 0)
-                 (setf (game-mode game) 'dead)))))))
+                 (setf (game-mode game) :dead)))))))
 
 (defun damage-from-shot! (game beam enemies)
   "Check for hits by the fighter's beam and apply damage if necessary."
@@ -282,10 +282,10 @@ schedule."
     (with-2d-camera (game-camera game)
       #++ (debugging-dots)
       (case (game-mode game)
-        (playing (render-playing game))
-        (booting (render-booting game))
-        (waiting (render-waiting game))
-        (dead    (render-dead game))))
+        (:playing (render-playing game))
+        (:booting (render-booting game))
+        (:waiting (render-waiting game))
+        (:dead    (render-dead game))))
     (raylib:draw-fps 10 (- +screen-height+ 25))
     #++ (raylib:draw-text (format nil "FC: ~a" (game-frame game)) 10 (- +screen-height+ 45) 20 raylib:+lightgray+)
     #++ (raylib:draw-text (format nil "DMG: ~a" (->> game game-fighter fighter-beam-dmg)) 10 (- +screen-height+ 75) 20 raylib:+lightgray+)

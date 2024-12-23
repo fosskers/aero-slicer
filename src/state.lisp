@@ -102,7 +102,7 @@
   (score      0 :type fixnum)
   (score-pos  (raylib:make-vector2 :x +score-x+ :y +score-y+) :type raylib:vector2)
   ;; Waiting / Playing / Dead
-  (mode  'booting :type symbol)
+  (mode  :booting :type symbol)
   (level 1 :type fixnum)
   ;; The point after which the level should increase.
   (level-thresh +level-progression-interval+ :type fixnum))
@@ -135,7 +135,7 @@
   (setf (game-explosions game) (make-hash-table :size 16))
   (setf (game-score game) 0)
   (setf (game-level game) 1)
-  (setf (game-mode game) 'playing)
+  (setf (game-mode game) :playing)
   (setf (game-powerup-threshold game) +powerup-spawn-interval+)
   (setf (game-level-thresh game) +level-progression-interval+)
   (let ((fighter (game-fighter game)))

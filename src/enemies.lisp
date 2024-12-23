@@ -202,7 +202,7 @@
   (health    3   :type fixnum)
   (beam      nil :type beam)
   ;; Ok / Charging
-  (status    'ok :type symbol)
+  (status    :ok :type symbol)
   (status-fc 0   :type fixnum)
   ;; The frame upon being last hit by the fighter.
   (hit-fc    0   :type fixnum)
@@ -342,7 +342,7 @@ perpendicular course instead if he detects he's too close to some object."
 
 (defun maybe-ship-shoot! (evil-ship fc)
   "Make the evil ship shoot if conditions are met."
-  (cond ((and (eq 'ok (evil-ship-status evil-ship))
+  (cond ((and (eq :ok (evil-ship-status evil-ship))
               (not (beam-shooting? (evil-ship-beam evil-ship)))
               ;; NOTE: So that the ship will never try to shoot while off the
               ;; top of the screen.
@@ -351,13 +351,13 @@ perpendicular course instead if he detects he's too close to some object."
               (zerop (mod (- fc (evil-ship-spawned-fc evil-ship))
                           (* +frame-rate+)))
               (< (random 10) 6))
-         (setf (evil-ship-status evil-ship) 'charging)
+         (setf (evil-ship-status evil-ship) :charging)
          (setf (evil-ship-status-fc evil-ship) fc)
          (set-animation! (evil-ship-animated evil-ship) :charging fc))
-        ((and (eq 'charging (evil-ship-status evil-ship))
+        ((and (eq :charging (evil-ship-status evil-ship))
               (>= (- fc (evil-ship-status-fc evil-ship))
                   (evil-ship-charge-dur evil-ship)))
-         (setf (evil-ship-status evil-ship) 'ok)
+         (setf (evil-ship-status evil-ship) :ok)
          (setf (evil-ship-status-fc evil-ship) fc)
          (set-animation! (evil-ship-animated evil-ship) :idle fc)
          (shoot-beam! (evil-ship-beam evil-ship) fc))))
@@ -387,7 +387,7 @@ perpendicular course instead if he detects he's too close to some object."
   (beam       nil :type beam)
   (reversing? nil :type symbol)
   ;; Ok / Charging
-  (status     'ok :type symbol)
+  (status     :ok :type symbol)
   (status-fc  0   :type fixnum)
   ;; The frame upon being last hit by the fighter.
   (hit-fc     0   :type fixnum)
@@ -442,7 +442,7 @@ perpendicular course instead if he detects he's too close to some object."
 ;; TODO: 2024-11-09 Merge with `tick!'?
 (defun maybe-tank-shoot! (tank fc)
   "Make the tank fire if conditions are met."
-  (cond ((and (eq 'ok (tank-status tank))
+  (cond ((and (eq :ok (tank-status tank))
               (not (beam-shooting? (tank-beam tank)))
               ;; NOTE: So that the tank will never try to shoot while its off
               ;; the top of the screen.
@@ -450,13 +450,13 @@ perpendicular course instead if he detects he's too close to some object."
                  +world-min-y+)
               (zerop (mod (- fc (tank-spawned-fc tank)) (* +frame-rate+)))
               (< (random 10) 6))
-         (setf (tank-status tank) 'charging)
+         (setf (tank-status tank) :charging)
          (setf (tank-status-fc tank) fc)
          (set-animation! (tank-animated tank) :charging fc))
-        ((and (eq 'charging (tank-status tank))
+        ((and (eq :charging (tank-status tank))
               (>= (- fc (tank-status-fc tank))
                   (tank-charge-dur tank)))
-         (setf (tank-status tank) 'ok)
+         (setf (tank-status tank) :ok)
          (setf (tank-status-fc tank) fc)
          (set-animation! (tank-animated tank) :idle fc)
          (shoot-beam! (tank-beam tank) fc))))

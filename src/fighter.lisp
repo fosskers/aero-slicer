@@ -17,7 +17,7 @@
   (pos       nil :type raylib:vector2)
   (bbox      nil :type raylib:rectangle)
   ;; Ok / Hit
-  (status    'ok :type symbol)
+  (status    :ok :type symbol)
   (status-fc 0   :type fixnum)
   (warp-dir  nil :type symbol)
   (god-mode? nil :type symbol)
@@ -153,7 +153,7 @@
 
 (defun kill-fighter! (fighter beam-sprite sound fc)
   "Reset the fighter's position and animation."
-  (set-status! fighter 'hit fc)
+  (set-status! fighter :hit fc)
   (set-animation! (fighter-animated fighter) :damaged fc)
   (setf (fighter-god-mode? fighter) nil)
   ;; Move him back to the initial spawn position.
@@ -184,9 +184,9 @@
 
 (defmethod tick! ((fighter fighter) fc)
   "Resetting of the fighter's flashing respawn status, etc."
-  (cond ((and (eq 'hit (fighter-status fighter))
+  (cond ((and (eq :hit (fighter-status fighter))
               (>= (- fc (fighter-status-fc fighter)) (* 1.5 +frame-rate+)))
-         (set-status! fighter 'ok fc)
+         (set-status! fighter :ok fc)
          (set-animation! (fighter-animated fighter) :idle fc)))
   (tick! (fighter-beam fighter) fc)
   (tick! (fighter-shield fighter) fc))
