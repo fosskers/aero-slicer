@@ -20,17 +20,17 @@
   "The direction the player intends to warp."
   (cond ((or (raylib:is-key-down +key-up+)
              (raylib:is-gamepad-button-down +gamepad+ +gamepad-up+))
-         'up)
+         :up)
         ((or (raylib:is-key-down +key-down+)
              (raylib:is-gamepad-button-down +gamepad+ +gamepad-down+))
-         'down)
+         :down)
         ((or (raylib:is-key-down +key-left+)
              (raylib:is-gamepad-button-down +gamepad+ +gamepad-left+))
-         'left)
+         :left)
         ((or (raylib:is-key-down +key-right+)
              (raylib:is-gamepad-button-down +gamepad+ +gamepad-right+))
-         'right)
-        (t nil)))
+         :right)
+        (t :up)))
 
 (defun trying-to-shoot? ()
   "Is the player trying to shoot?"

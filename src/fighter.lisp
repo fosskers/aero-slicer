@@ -81,12 +81,12 @@
 (defun draw-ghost (ghost dir f-pos fc)
   "Draw a spoooky warp ghost."
   (let ((x-diff (case dir
-                  (left  (- +warp-distance+))
-                  (right +warp-distance+)
+                  (:left  (- +warp-distance+))
+                  (:right +warp-distance+)
                   (t 0)))
         (y-diff (case dir
-                  (up (- +warp-distance+))
-                  (down +warp-distance+)
+                  (:up (- +warp-distance+))
+                  (:down +warp-distance+)
                   (t 0))))
     (setf (raylib:vector2-x (ghost-pos ghost))
           (+ x-diff (raylib:vector2-x f-pos)))
@@ -135,8 +135,7 @@
 (defun maybe-set-warp-direction! (fighter)
   "Attempt to set the warp direction."
   (when (warp-button-down?)
-    (when-let* ((dir (warp-direction)))
-      (setf (fighter-warp-dir fighter) dir))))
+    (setf (fighter-warp-dir fighter) (warp-direction))))
 
 (defun can-bomb? (fighter fc)
   "Could the fighter launch a bomb on this frame?"
@@ -254,14 +253,14 @@
   "The fighter is warping in a set direction."
   (let ((pos (fighter-pos fighter)))
     (case (fighter-warp-dir fighter)
-      (up (let ((new (max -106.0 (- (raylib:vector2-y pos) +warp-distance+))))
-            (set-y! fighter new)))
-      (down (let ((new (min +104.0 (+ +warp-distance+ (raylib:vector2-y pos)))))
-              (set-y! fighter new)))
-      (left (let ((new (max -128.0 (- (raylib:vector2-x pos) +warp-distance+))))
-              (set-x! fighter new)))
-      (right (let ((new (min +112.0 (+ +warp-distance+ (raylib:vector2-x pos)))))
-               (set-x! fighter new))))
+      (:up (let ((new (max -106.0 (- (raylib:vector2-y pos) +warp-distance+))))
+             (set-y! fighter new)))
+      (:down (let ((new (min +104.0 (+ +warp-distance+ (raylib:vector2-y pos)))))
+               (set-y! fighter new)))
+      (:left (let ((new (max -128.0 (- (raylib:vector2-x pos) +warp-distance+))))
+               (set-x! fighter new)))
+      (:right (let ((new (min +112.0 (+ +warp-distance+ (raylib:vector2-x pos)))))
+                (set-x! fighter new))))
     (setf (fighter-warp-dir fighter) nil)))
 
 (defun move-by-press! (fighter)
