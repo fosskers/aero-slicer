@@ -12,7 +12,7 @@
      (:persistent #:claw-raylib.raylib
       :asd-path #.(merge-pathnames "claw-raylib.raylib.asd"
                                    (asdf:component-pathname (asdf:find-system '#:claw-raylib)))
-                  :bindings-path #.(merge-pathnames "raylib/" (asdf:component-pathname (asdf:find-system '#:claw-raylib))))
+      :bindings-path #.(merge-pathnames "raylib/" (asdf:component-pathname (asdf:find-system '#:claw-raylib))))
      (:include-definitions ".*")
      (:exclude-definitions "^gamma$" "^gammaf$" "^gammal$"
                            "^lgamma$" "^lgammaf$" "^lgammal$"
@@ -58,7 +58,7 @@
      (:persistent #:claw-raylib.rlgl
       :asd-path #.(merge-pathnames "claw-raylib.rlgl.asd"
                                    (asdf:component-pathname (asdf:find-system '#:claw-raylib)))
-                  :bindings-path #.(merge-pathnames "rlgl/" (asdf:component-pathname (asdf:find-system '#:claw-raylib))))
+      :bindings-path #.(merge-pathnames "rlgl/" (asdf:component-pathname (asdf:find-system '#:claw-raylib))))
      (:include-definitions ".*")
      (:exclude-definitions "_t$" "^__(?!claw)"))
   :in-package :rlgl
