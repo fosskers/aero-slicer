@@ -3,6 +3,16 @@
 ;; Force ASDF to only look here for systems.
 (asdf:initialize-source-registry `(:source-registry (:tree ,(uiop:getcwd)) :ignore-inherited-configuration))
 
+#++
+(eval-when (:load-toplevel :execute)
+  (asdf:load-system :cffi))
+
+#++
+(progn
+  (format t "--- ECL CFFI Settings ---~%")
+  (setf cffi-sys:*cffi-ecl-method* :c/c++)
+  (format t "~a~%" cffi-sys:*cffi-ecl-method*))
+
 ;; Load and compile the binary.
 (format t "--- LOADING SYSTEM ---~%")
 (asdf:load-system :aero-fighter)
@@ -14,10 +24,10 @@
                  :move-here #p"./"
                  :prologue-code
                  '(progn
-                   (format t "--- LOADING ---~%")
+                   (format t "--- ASDF WORKAROUND ---~%")
                    (defpackage :asdf/operate)
                    (defpackage :asdf/lisp-action)
-                   (format t "--- LOADED ---~%"))
+                   (format t "--- LOADING SYSTEMS ---~%"))
                  :epilogue-code
                  '(progn
                    (format t "--- RUNNING ---~%")

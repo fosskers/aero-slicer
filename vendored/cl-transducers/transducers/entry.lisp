@@ -183,12 +183,14 @@ streamed as-is as cons cells."
 (declaim (ftype (function (t t cl:hash-table) *) hash-table-transduce))
 (defun hash-table-transduce (xform f coll)
   "Transduce over the contents of a given Hash Table."
+  (declare (optimize (speed 3) (safety 1)))
   (let* ((init   (funcall f))
          (xf     (funcall xform f))
          (result (hash-table-reduce xf init coll)))
     (funcall xf result)))
 
 (defun hash-table-reduce (f identity ht)
+  (declare (optimize (speed 3) (safety 1)))
   (with-hash-table-iterator (iter ht)
     (labels ((recurse (acc)
                (multiple-value-bind (entry-p key value) (iter)

@@ -8,7 +8,8 @@
  cffi:*foreign-library-directories* :test #'string=)
 
 (cffi:define-foreign-library libraylib
-  (:unix "libraylib.so")
+  ;; (:unix "libraylib.so")
+  (:unix "/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
   (t (:default "libraylib")))
 
 (cffi:use-foreign-library libraylib)

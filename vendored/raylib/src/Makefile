@@ -78,7 +78,7 @@ RAYLIB_SRC_PATH      ?= ../src
 RAYLIB_RELEASE_PATH  ?= $(RAYLIB_SRC_PATH)
 
 # Library type used for raylib: STATIC (.a) or SHARED (.so/.dll)
-RAYLIB_LIBTYPE       ?= STATIC
+RAYLIB_LIBTYPE       ?= SHARED
 
 # Build mode for library: DEBUG or RELEASE
 RAYLIB_BUILD_MODE    ?= RELEASE
@@ -111,8 +111,8 @@ USE_EXTERNAL_GLFW     ?= FALSE
 
 # Enable support for X11 by default on Linux when using GLFW
 # NOTE: Wayland is disabled by default, only enable if you are sure
-GLFW_LINUX_ENABLE_WAYLAND  ?= FALSE
-GLFW_LINUX_ENABLE_X11      ?= TRUE
+GLFW_LINUX_ENABLE_WAYLAND  ?= TRUE
+GLFW_LINUX_ENABLE_X11      ?= FALSE
 
 # PLATFORM_DESKTOP_SDL: It requires SDL library to be provided externally
 # WARNING: Library is not included in raylib, it MUST be configured by users
@@ -126,8 +126,8 @@ SDL_LIBRARIES         ?= -lSDL2 -lSDL2main
 ROOT = $(shell whoami)
 
 # By default we suppose we are working on Windows
-HOST_PLATFORM_OS ?= WINDOWS
-PLATFORM_OS ?= WINDOWS
+HOST_PLATFORM_OS ?= LINUX
+PLATFORM_OS ?= LINUX
 
 # Determine PLATFORM_OS when required
 ifeq ($(TARGET_PLATFORM),$(filter $(TARGET_PLATFORM),PLATFORM_DESKTOP_GLFW PLATFORM_DESKTOP_SDL PLATFORM_DESKTOP_RGFW PLATFORM_WEB PLATFORM_ANDROID))
