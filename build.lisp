@@ -15,7 +15,8 @@
                  :prologue-code
                  '(progn
                    (format t "--- LOADING ---~%")
-                   (require :asdf)
+                   (defpackage :asdf/operate)
+                   (defpackage :asdf/lisp-action)
                    (format t "--- LOADED ---~%"))
                  :epilogue-code
                  '(progn
