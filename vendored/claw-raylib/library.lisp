@@ -4,8 +4,7 @@
 (in-package #:claw-raylib.library)
 
 (pushnew
- (namestring
-  (merge-pathnames #P"lib/" (asdf:component-pathname (asdf:find-system '#:claw-raylib))))
+ "/home/colin/code/common-lisp/aero-fighter/vendored/claw-raylib/lib/"
  cffi:*foreign-library-directories* :test #'string=)
 
 (cffi:define-foreign-library libraylib
