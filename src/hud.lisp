@@ -20,7 +20,7 @@
          (cool?   (not (can-bomb? (game-fighter game) (game-frame game)))))
     (draw-top-bar (sprites-hud sprites))
     (draw-lives f-icon lives)
-    (draw-bombs b-icon (->> game game-colours colours-bomb-fade) bombs cool?)
+    (draw-bombs b-icon +very-faded-white+ bombs cool?)
     (draw-beams p-icon beams)
     (draw-score game)
     (draw-levels l-icon (game-level game))))

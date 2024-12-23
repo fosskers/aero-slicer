@@ -24,8 +24,7 @@
   ;; The frame on which the shot was started.
   (shot-fc   0   :type fixnum)
   ;; The total duration, in frames, that the shot should be active for.
-  (shot-dur  0   :type fixnum :read-only t)
-  (colour    nil :type raylib:color))
+  (shot-dur  0   :type fixnum :read-only t))
 
 (defun @beam (sprite parent-pos parent-width y-offset)
   "Construct a beam."
@@ -42,8 +41,7 @@
                                             :width (raylib:rectangle-width rect)
                                             :height (raylib:rectangle-height rect))
                :x-offset x-offset
-               :shot-dur (sprite-duration (animated-sprite animated))
-               :colour (faded-white))))
+               :shot-dur (sprite-duration (animated-sprite animated)))))
 
 ;; --- Status --- ;;
 
@@ -66,7 +64,7 @@
          (setf (beam-shooting? beam) nil))))
 
 (defmethod draw ((beam beam) fc)
-  (draw-animated (beam-animated beam) (beam-pos beam) fc :colour (beam-colour beam)))
+  (draw-animated (beam-animated beam) (beam-pos beam) fc :colour +faded-white+))
 
 (defmethod pos ((beam beam))
   (beam-pos beam))

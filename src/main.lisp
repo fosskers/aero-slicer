@@ -457,14 +457,16 @@ the player is pressing."
 
 ;; --- Colours --- ;;
 
-(defun set-colours (game)
+(defun set-colours ()
   "Set certain global veriables with `raylib:color' values that I have allocated
 manually. This avoids weird memory errors at runtime that occur in prebuilt
 executables."
-  (let ((colours (game-colours game)))
-    (setf +white+ (colours-white colours))
-    (setf +black+ (colours-black colours))
-    (setf +red+   (colours-red colours))))
+  (setf +white+ (white))
+  (setf +black+ (black))
+  (setf +red+   (red))
+  (setf +faded-white+ (faded-white))
+  (setf +very-faded-white+ (very-faded-white))
+  (setf +very-faded-blue+ (very-faded-blue)))
 
 ;; --- Top-level --- ;;
 
@@ -480,8 +482,8 @@ executables."
   (raylib:init-window +screen-width+ +screen-height+ "Aero Fighter")
   (raylib:init-audio-device)
   (raylib:set-target-fps +frame-rate+)
+  (set-colours)
   (let ((game (@game)))
-    (set-colours game)
     (->> game game-track raylib:play-music-stream)
     (event-loop game)
     (ungame game))

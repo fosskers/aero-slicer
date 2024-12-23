@@ -69,15 +69,6 @@
   (intro (raylib:load-music-stream "assets/sound/BossIntro.ogg"))
   (main  (raylib:load-music-stream "assets/sound/BossMain.ogg")))
 
-(defstruct (colours (:constructor @colours))
-  "Colour structs are usual stored directly in the entities that need them, but
-there are some exceptions where a colour is needed but there is no parent
-struct. For such cases, we store the colour here."
-  (white (white) :type raylib:color)
-  (black (black) :type raylib:color)
-  (red   (red)   :type raylib:color)
-  (bomb-fade (very-faded-white) :type raylib:color))
-
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?
 ;;
 ;; 2024-11-21 Probably yes, because it can still be useful to handle them
@@ -90,7 +81,6 @@ struct. For such cases, we store the colour here."
   (sounds  nil :type sounds)
   (music   nil :type music)
   (track   nil :type raylib:music)
-  (colours (@colours) :type colours)
   (logo    nil :type logo)
   (fighter nil :type fighter)
   (warp-ghost nil :type ghost)

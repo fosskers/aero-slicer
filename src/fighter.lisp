@@ -50,8 +50,7 @@
   "A shadow rendered offset to the fighter / evil ship that gives a sense of depth."
   (texture nil :type raylib:texture)
   (pos     nil :type raylib:vector2)
-  (rect    nil :type raylib:rectangle)
-  (colour  nil :type raylib:color))
+  (rect    nil :type raylib:rectangle))
 
 (defun @shadow (texture f-pos &key (flip? nil) (x-offset +shadow-offset+) (y-offset +shadow-offset+))
   "Construct a `shadow' based on the position of the fighter."
@@ -61,26 +60,23 @@
     (make-shadow :texture texture
                  :pos (raylib:make-vector2 :x (+ x-offset (raylib:vector2-x f-pos))
                                            :y (+ y-offset (raylib:vector2-y f-pos)))
-                 :rect (raylib:make-rectangle :x 0.0 :y 0.0 :height height :width (float (raylib:texture-width texture)))
-                 :colour (very-faded-white))))
+                 :rect (raylib:make-rectangle :x 0.0 :y 0.0 :height height :width (float (raylib:texture-width texture))))))
 
 (defun draw-shadow (shadow)
   "Special variant of `draw' to support texture flipping."
   (let ((texture (shadow-texture shadow))
         (pos     (shadow-pos shadow)))
-    (raylib:draw-texture-rec texture (shadow-rect shadow) pos (shadow-colour shadow))))
+    (raylib:draw-texture-rec texture (shadow-rect shadow) pos +very-faded-white+)))
 
 (defstruct ghost
   "A warp ghost."
   (animated nil :type animated)
-  (pos      nil :type raylib:vector2)
-  (colour   nil :type raylib:color))
+  (pos      nil :type raylib:vector2))
 
 (defun @ghost (sprite)
   "Construct a warp `ghost'."
   (make-ghost :animated (make-animated :sprite sprite)
-              :pos (raylib:make-vector2 :x 0.0 :y 0.0)
-              :colour (very-faded-blue)))
+              :pos (raylib:make-vector2 :x 0.0 :y 0.0)))
 
 (defun draw-ghost (ghost dir f-pos fc)
   "Draw a spoooky warp ghost."
@@ -99,7 +95,7 @@
     (draw-animated (ghost-animated ghost)
                    (ghost-pos ghost)
                    fc
-                   :colour (ghost-colour ghost))))
+                   :colour +very-faded-blue+)))
 
 (defstruct aura
   "The sheild aura of a fighter."
