@@ -278,7 +278,7 @@ schedule."
 (defun render (game)
   "Following TEA, render the updated state of a game."
   (with-drawing
-    (raylib:clear-background raylib:+raywhite+)
+    (raylib:clear-background +white+)
     (with-2d-camera (game-camera game)
       #++ (debugging-dots)
       (case (game-mode game)
@@ -293,7 +293,7 @@ schedule."
 
 (defun render-booting (game)
   "The initial boot-up animation."
-  (raylib:clear-background raylib:+black+)
+  (raylib:clear-background +black+)
   (draw-sa-logo (->> game game-sprites sprites-sa-logo) (game-frame game)))
 
 (defun render-waiting (game)
@@ -306,7 +306,7 @@ schedule."
     (when (< (mod (game-frame game) +frame-rate+)
              30)
       (raylib:draw-text (format nil "PRESS START")
-                        (- 0 37) 40 10 raylib:+white+))))
+                        (- 0 37) 40 10 +white+))))
 
 (defun draw-controller (game)
   "Draw a little controller in the corner, with button highlights depending on what
@@ -314,50 +314,50 @@ the player is pressing."
   (raylib:draw-texture (->> game game-sprites sprites-controller)
                        (- +world-max-x+ 32)
                        (- +world-max-y+ 16)
-                       raylib:+white+)
+                       +white+)
   (when (or (raylib:is-key-down +key-space+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-a+))
     (raylib:draw-circle (- +world-max-x+ 5)
                         (- +world-max-y+ 8)
-                        2.0 raylib:+red+)
-    (raylib:draw-text "SHOOT" (- +world-max-x+ 35) (- +world-max-y+ 25) 10 raylib:+white+))
+                        2.0 +red+)
+    (raylib:draw-text "SHOOT" (- +world-max-x+ 35) (- +world-max-y+ 25) 10 +white+))
   (when (or (raylib:is-key-down +key-enter+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-b+))
     (raylib:draw-circle (- +world-max-x+ 12)
                         (- +world-max-y+ 7)
-                        2.0 raylib:+red+)
-    (raylib:draw-text "BOMB" (- +world-max-x+ 30) (- +world-max-y+ 25) 10 raylib:+white+))
+                        2.0 +red+)
+    (raylib:draw-text "BOMB" (- +world-max-x+ 30) (- +world-max-y+ 25) 10 +white+))
   (when (or (raylib:is-key-down +key-up+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-up+))
     (raylib:draw-rectangle (- +world-max-x+ 25)
                            (- +world-max-y+ 10)
-                           2 2 raylib:+red+))
+                           2 2 +red+))
   (when (or (raylib:is-key-down +key-down+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-down+))
     (raylib:draw-rectangle (- +world-max-x+ 25)
                            (- +world-max-y+ 6)
-                           2 2 raylib:+red+))
+                           2 2 +red+))
   (when (or (raylib:is-key-down +key-left+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-left+))
     (raylib:draw-rectangle (- +world-max-x+ 27)
                            (- +world-max-y+ 8)
-                           2 2 raylib:+red+))
+                           2 2 +red+))
   (when (or (raylib:is-key-down +key-right+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-right+))
     (raylib:draw-rectangle (- +world-max-x+ 23)
                            (- +world-max-y+ 8)
-                           2 2 raylib:+red+))
+                           2 2 +red+))
   ;; TODO: 2024-12-12 Warp button for keyboard.
   (when (or (raylib:is-gamepad-button-down +gamepad+ +gamepad-left-shoulder+))
     (raylib:draw-rectangle (- +world-max-x+ 26)
                            (- +world-max-y+ 15)
-                           6 1 raylib:+red+)
-    (raylib:draw-text "WARP" (- +world-max-x+ 30) (- +world-max-y+ 25) 10 raylib:+white+))
+                           6 1 +red+)
+    (raylib:draw-text "WARP" (- +world-max-x+ 30) (- +world-max-y+ 25) 10 +white+))
   (when (or (raylib:is-gamepad-button-down +gamepad+ +gamepad-right-shoulder+))
     (raylib:draw-rectangle (- +world-max-x+ 12)
                            (- +world-max-y+ 15)
-                           6 1 raylib:+red+)
-    (raylib:draw-text "WARP" (- +world-max-x+ 30) (- +world-max-y+ 25) 10 raylib:+white+)))
+                           6 1 +red+)
+    (raylib:draw-text "WARP" (- +world-max-x+ 30) (- +world-max-y+ 25) 10 +white+)))
 
 (defun render-enemies (game)
   "Render all enemies."
@@ -391,17 +391,17 @@ the player is pressing."
   (render-enemies game)
   (draw-hud game)
   (raylib:draw-text (format nil "GAME OVER, DUDE")
-                    (- 0 72) 0 16 raylib:+white+)
+                    (- 0 72) 0 16 +white+)
   (raylib:draw-text (format nil "(Press Start)")
-                    (- 0 36) 16 10 raylib:+white+)
+                    (- 0 36) 16 10 +white+)
   (raylib:draw-text (format nil "AERO FIGHTER by Colin W")
                     (- +world-max-x+ 136)
                     (- +world-max-y+ 20)
-                    10 raylib:+white+)
+                    10 +white+)
   (raylib:draw-text (format nil "Concept by JPJ")
                     (- +world-max-x+ 82)
                     (- +world-max-y+ 10)
-                    10 raylib:+white+))
+                    10 +white+))
 
 #++
 (defun draw-hud (game)
@@ -455,6 +455,17 @@ the player is pressing."
     (->> game game-track raylib:play-music-stream))
   (->> game game-track raylib:update-music-stream))
 
+;; --- Colours --- ;;
+
+(defun set-colours (game)
+  "Set certain global veriables with `raylib:color' values that I have allocated
+manually. This avoids weird memory errors at runtime that occur in prebuilt
+executables."
+  (let ((colours (game-colours game)))
+    (setf +white+ (colours-white colours))
+    (setf +black+ (colours-black colours))
+    (setf +red+   (colours-red colours))))
+
 ;; --- Top-level --- ;;
 
 (defun event-loop (game)
@@ -470,6 +481,7 @@ the player is pressing."
   (raylib:init-audio-device)
   (raylib:set-target-fps +frame-rate+)
   (let ((game (@game)))
+    (set-colours game)
     (->> game game-track raylib:play-music-stream)
     (event-loop game)
     (ungame game))

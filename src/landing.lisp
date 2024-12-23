@@ -9,9 +9,9 @@
 
 (defun draw-sa-logo (texture fc)
   "Draw the Second Universe Logo with fade-in, fade-out."
-  (let ((colour (if (< fc +frame-rate+)
-                    (raylib:color-alpha raylib:+white+ (/ 1.0 (- (1+ +frame-rate+) fc)))
-                    raylib:+white+)))
+  (let* ((colour (if (< fc +frame-rate+)
+                     (raylib:color-alpha +white+ (/ 1.0 (- (1+ +frame-rate+) fc)))
+                     +white+)))
     (raylib:draw-texture texture -16 -16 colour)))
 
 ;; --- Logo --- ;;
@@ -34,4 +34,4 @@
 (defmethod draw ((logo logo) fc)
   (raylib:draw-texture-v (logo-texture logo)
                          (logo-pos logo)
-                         raylib:+white+))
+                         +white+))

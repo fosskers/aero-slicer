@@ -37,7 +37,7 @@
 
 (defmethod draw ((road road) fc)
   (declare (ignore fc))
-  (raylib:draw-texture-v (road-texture road) (road-pos road) raylib:+white+))
+  (raylib:draw-texture-v (road-texture road) (road-pos road) +white+))
 
 (defmethod pos ((road road))
   (road-pos road))
@@ -77,6 +77,6 @@
   (dotimes (n 16)
     (raylib:draw-texture-v (ground-texture ground)
                            (ground-pos ground)
-                           raylib:+white+)
+                           +white+)
     (incf (->> ground ground-pos raylib:vector2-x) 16))
   (setf (->> ground ground-pos raylib:vector2-x) (float +world-min-x+)))

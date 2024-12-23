@@ -59,7 +59,7 @@
     (draw-icon sprite +life-1-x+ +icon-y+)))
 
 (defun draw-bombs (sprite colour bombs cool?)
-  (let ((colour (if cool? colour raylib:+white+)))
+  (let ((colour (if cool? colour +white+)))
     (when (> bombs 2)
       (draw-icon sprite +ammo-3-x+ +icon-y+ :colour colour))
     (when (> bombs 1)
@@ -87,8 +87,8 @@
 
 (defun draw-top-bar (sprite)
   "Draw the top bar. This isn't a defmethod on `draw' because it doesn't need to be."
-  (raylib:draw-texture (sprite-texture sprite) +world-min-x+ +world-min-y+ raylib:+white+))
+  (raylib:draw-texture (sprite-texture sprite) +world-min-x+ +world-min-y+ +white+))
 
-(defun draw-icon (sprite x y &key (colour raylib:+white+))
+(defun draw-icon (sprite x y &key (colour +white+))
   "Representing the number of player lives or bombs remaining."
   (raylib:draw-texture (sprite-texture sprite) x y colour))

@@ -121,7 +121,7 @@ the width of the widest one."
     (aref <> 0)
     (frame-rect)))
 
-(defun draw-at-frame (texture animation pos frame &key (colour raylib:+white+) (flip? nil))
+(defun draw-at-frame (texture animation pos frame &key (colour +white+) (flip? nil))
   "Draw a specific frame from a specific texture."
   (let* ((frames (animation-frames animation))
          (rect   (frame-rect (aref frames frame))))
@@ -130,7 +130,7 @@ the width of the widest one."
           (raylib:draw-texture-rec texture rect pos colour))
         (raylib:draw-texture-rec texture rect pos colour))))
 
-(defun draw-animated (animated pos fc &key (colour raylib:+white+) (flip? nil))
+(defun draw-animated (animated pos fc &key (colour +white+) (flip? nil))
   "Draw the given `animated' sprite at a certain position, using the current frame
 count to determine how much time has passed. Each frame has a known max duration
 which is used to calculate the time difference."

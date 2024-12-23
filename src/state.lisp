@@ -73,6 +73,9 @@
   "Colour structs are usual stored directly in the entities that need them, but
 there are some exceptions where a colour is needed but there is no parent
 struct. For such cases, we store the colour here."
+  (white (white) :type raylib:color)
+  (black (black) :type raylib:color)
+  (red   (red)   :type raylib:color)
   (bomb-fade (very-faded-white) :type raylib:color))
 
 ;; FIXME: 2024-11-07 Can the hash tables for the blobs and tanks be merged?

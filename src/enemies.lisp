@@ -41,7 +41,7 @@
   (draw-shadow (building-shadow building))
   (raylib:draw-texture-v (->> building building-animated animated-sprite sprite-texture)
                          (building-pos building)
-                         raylib:+white+))
+                         +white+))
 
 ;; --- Cannons --- ;;
 
@@ -540,7 +540,7 @@ perpendicular course instead if he detects he's too close to some object."
   (draw-shadow (blob-shadow blob))
   (raylib:draw-texture-v (->> blob blob-animated animated-sprite sprite-texture)
                          (blob-pos blob)
-                         raylib:+white+))
+                         +white+))
 
 (defmethod health ((blob blob))
   (blob-health blob))

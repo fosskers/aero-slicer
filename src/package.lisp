@@ -91,18 +91,39 @@ single beam shot will never damage the same enemy twice.")
 
 ;; --- Colours --- ;;
 
-;; NOTE: 2024-12-21 These can't be global variables, and they store a `cobject',
+;; NOTE: 2024-12-21 These can't be global variables, as they store a `cobject',
 ;; which can't be saved into the Lisp image's heap when creating an
 ;; "executable".
+;;
+;; 2024-12-23 Furthermore, even referencing preallocated `cobject's like
+;; `raylib:+blue+' was causing a memory error within a built Lisp image
+;; executable under SBCL.
+;;
+;; 2024-12-23 (later) Actually, I did discover a little trick. If I set these to
+;; `nil' initially, I can set them properly in `launch', then reference them
+;; globally as usual.
+
+(defparameter +white+ nil)
+(defparameter +black+ nil)
+(defparameter +red+   nil)
+
+(defun white ()
+  (raylib:make-color :r 255 :g 255 :b 255 :a 255))
+
+(defun black ()
+  (raylib:make-color :r 0 :g 0 :b 0 :a 255))
+
+(defun red ()
+  (raylib:make-color :r 230 :g 41 :b 55 :a 255))
 
 (defun faded-white ()
-  (raylib:color-alpha raylib:+white+ 0.85))
+  (raylib:make-color :r 255 :g 255 :b 255 :a 216))
 
 (defun very-faded-white ()
-  (raylib:color-alpha raylib:+white+ 0.5))
+  (raylib:make-color :r 255 :g 255 :b 255 :a 127))
 
 (defun very-faded-blue ()
-  (raylib:color-alpha raylib:+blue+ 0.35))
+  (raylib:make-color :r 0 :g 121 :b 241 :a 89))
 
 ;; --- Keys --- ;;
 
