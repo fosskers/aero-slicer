@@ -144,123 +144,123 @@
 
 ;; --- Functions --- ;;
 
-(cffi:defcfun "InitWindow" :void
+(cffi:defcfun ("InitWindow" init-window) :void
   (width  :int)
   (height :int)
   (title  :string))
 
-(cffi:defcfun "CloseWindow" :void)
+(cffi:defcfun ("CloseWindow" close-window) :void)
 
-(cffi:defcfun "InitAudioDevice" :void)
+(cffi:defcfun ("InitAudioDevice" init-audio-device) :void)
 
-(cffi:defcfun "CloseAudioDevice" :void)
+(cffi:defcfun ("CloseAudioDevice" close-audio-device) :void)
 
-(cffi:defcfun "SetTargetFPS" :void
+(cffi:defcfun ("SetTargetFPS" set-target-fps) :void
   (fps :int))
 
-(cffi:defcfun "WindowShouldClose" :bool)
+(cffi:defcfun ("WindowShouldClose" window-should-close) :bool)
 
-(cffi:defcfun "BeginDrawing" :void)
+(cffi:defcfun ("BeginDrawing" begin-drawing) :void)
 
-(cffi:defcfun "EndDrawing" :void)
+(cffi:defcfun ("EndDrawing" end-drawing) :void)
 
-(cffi:defcfun "BeginMode2D" :void
+(cffi:defcfun ("BeginMode2D" begin-mode-2d) :void
   (camera (:pointer (:struct camera-2d))))
 
-(cffi:defcfun "EndMode2D" :void)
+(cffi:defcfun ("EndMode2D" end-mode-2d) :void)
 
-(cffi:defcfun "ClearBackground" :void
+(cffi:defcfun ("ClearBackground" clear-background) :void
   (color (:pointer (:struct color))))
 
-(cffi:defcfun "DrawFPS" :void
+(cffi:defcfun ("DrawFPS" draw-fps) :void
   (pos-x :int)
   (pos-y :int))
 
-(cffi:defcfun "DrawText" :void
+(cffi:defcfun ("DrawText" draw-text) :void
   (text      :string)
   (pos-x     :int)
   (pos-y     :int)
   (font-size :int)
   (color     (:pointer (:struct color))))
 
-(cffi:defcfun "DrawCircle" :void
+(cffi:defcfun ("DrawCircle" draw-circle) :void
   (center-x :int)
   (center-y :int)
   (radius   :int)
   (color    (:pointer (:struct color))))
 
-(cffi:defcfun "DrawRectangle" :void
+(cffi:defcfun ("DrawRectangle" draw-rectangle) :void
   (pos-x  :int)
   (pos-y  :int)
   (width  :int)
   (height :int)
   (color  (:pointer (:struct color))))
 
-(cffi:defcfun "LoadTexture" (:pointer (:struct texture))
+(cffi:defcfun ("LoadTexture" load-texture) (:pointer (:struct texture))
   (file-name :string))
 
-(cffi:defcfun "UnloadTexture" :void
+(cffi:defcfun ("UnloadTexture" unload-texture) :void
   (texture (:pointer (:struct texture))))
 
-(cffi:defcfun "DrawTexture" :void
+(cffi:defcfun ("DrawTexture" draw-texture) :void
   (texture (:pointer (:struct texture)))
   (pos-x   :int)
   (pos-y   :int)
   (tint    (:pointer (:struct color))))
 
-(cffi:defcfun "DrawTextureV" :void
+(cffi:defcfun ("DrawTextureV" draw-texture-v) :void
   (texture  (:pointer (:struct texture)))
   (position (:pointer (:struct vector2)))
   (tint     (:pointer (:struct color))))
 
-(cffi:defcfun "DrawTextureRec" :void
+(cffi:defcfun ("DrawTextureRec" draw-texture-rec) :void
   (texture   (:pointer (:struct texture)))
   (rectangle (:pointer (:struct rectangle)))
   (position  (:pointer (:struct vector2)))
   (tint      (:pointer (:struct color))))
 
-(cffi:defcfun "ColorAlpha" (:pointer (:struct color))
+(cffi:defcfun ("ColorAlpha" color-alpha) (:pointer (:struct color))
   (color (:pointer (:struct color)))
   (alpha :float))
 
-(cffi:defcfun "LoadSound" (:pointer (:struct sound))
+(cffi:defcfun ("LoadSound" load-sound) (:pointer (:struct sound))
   (file-name :string))
 
-(cffi:defcfun "UnloadSound" :void
+(cffi:defcfun ("UnloadSound" unload-sound) :void
   (sound (:pointer (:struct sound))))
 
-(cffi:defcfun "PlaySound" :void
+(cffi:defcfun ("PlaySound" play-sound) :void
   (sound (:pointer (:struct sound))))
 
-(cffi:defcfun "LoadMusicStream" (:pointer (:struct music))
+(cffi:defcfun ("LoadMusicStream" load-music-stream) (:pointer (:struct music))
   (file-name :string))
 
-(cffi:defcfun "UnloadMusicStream" :void
+(cffi:defcfun ("UnloadMusicStream" unload-music-stream) :void
   (music (:pointer (:struct music))))
 
-(cffi:defcfun "PlayMusicStream" :void
+(cffi:defcfun ("PlayMusicStream" play-music-stream) :void
   (music (:pointer (:struct music))))
 
-(cffi:defcfun "IsMusicStreamPlaying" :bool
+(cffi:defcfun ("IsMusicStreamPlaying" is-music-stream-playing) :bool
   (music (:pointer (:struct music))))
 
-(cffi:defcfun "UpdateMusicStream" :void
+(cffi:defcfun ("UpdateMusicStream" update-music-stream) :void
   (music (:pointer (:struct music))))
 
-(cffi:defcfun "IsKeyPressed" :bool
+(cffi:defcfun ("IsKeyPressed" is-key-pressed) :bool
   (key :int))
 
-(cffi:defcfun "IsKeyDown" :bool
+(cffi:defcfun ("IsKeyDown" is-key-down) :bool
   (key :int))
 
-(cffi:defcfun "IsGamepadButtonDown" :bool
+(cffi:defcfun ("IsGamepadButtonDown" is-gamepad-button-down) :bool
   (gamepad :int)
   (button  :int))
 
-(cffi:defcfun "IsGamepadButtonPressed" :bool
+(cffi:defcfun ("IsGamepadButtonPressed" is-gamepad-button-pressed) :bool
   (gamepad :int)
   (button  :int))
 
-(cffi:defcfun "CheckCollisionRecs" :bool
+(cffi:defcfun ("CheckCollisionRecs" check-collision-recs) :bool
   (rec1 (:pointer (:struct rectangle)))
   (rec2 (:pointer (:struct rectangle))))
