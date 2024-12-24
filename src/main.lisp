@@ -423,6 +423,7 @@ the player is pressing."
                     (+ +world-min-y+ 35)
                     10 raylib:+gray+))
 
+#++
 (defun debugging-dots ()
   "For confirmation of certain coordinates in the game world."
   (raylib:draw-pixel 0 0 raylib:+red+)
@@ -431,6 +432,7 @@ the player is pressing."
   (raylib:draw-pixel +world-max-x+ +world-max-y+ raylib:+red+)
   (raylib:draw-pixel +world-max-x+ +world-min-y+ raylib:+red+))
 
+#++
 (defun debugging-nearness (fighter blobs)
   "Testing whether nearness detection is sufficient."
   (t:transduce (t:comp (t:map #'cdr)

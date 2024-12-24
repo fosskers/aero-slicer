@@ -37,7 +37,7 @@ context has been initialised via `raylib:init-window'."
          (frames (gethash "frames" json))
          (tags   (gethash "frameTags" meta))
          (anims  (t:transduce (t:map (lambda (tag) (json->animation frames tag))) #'t:hash-table tags)))
-    (assert (raylib:is-texture-valid texture) nil "Failed to load texture from: ~a" path)
+    ;; (assert (raylib:is-texture-valid texture) nil "Failed to load texture from: ~a" path)
     (make-sprite :texture texture
                  :animations anims)))
 

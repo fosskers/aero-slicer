@@ -4,9 +4,9 @@
   :license "MPL-2.0"
   :homepage "https://github.com/fosskers/aero-fighter"
   :depends-on (:arrow-macros
-               :claw-raylib
                :com.inuoe.jzon
                :filepaths
+               :raylib
                :transducers)
   :build-operation "program-op"
   :build-pathname "aero-fighter"
@@ -28,4 +28,3 @@
                              (:file "input")
                              (:file "main"))))
   :description "JP's shooter from the past.")
-
