@@ -16,7 +16,7 @@
            #:begin-drawing #:end-drawing
            #:begin-mode-2d #:end-mode-2d
            #:clear-background #:draw-fps #:draw-text #:draw-circle #:draw-rectangle
-           #:load-texture #:unload-texture #:draw-texture #:draw-texture-v #:draw-texture-rec
+           #:load-texture #:unload-texture #:is-texture-valid #:draw-texture #:draw-texture-v #:draw-texture-rec
            #:load-sound #:unload-sound #:play-sound
            #:load-music-stream #:unload-music-stream #:is-music-stream-playing #:play-music-stream #:update-music-stream
            #:is-key-pressed #:is-key-down #:is-gamepad-button-pressed #:is-gamepad-button-down
@@ -196,11 +196,28 @@
   (height :int)
   (color  (:pointer (:struct color))))
 
-(cffi:defcfun ("LoadTexture" load-texture) (:pointer (:struct texture))
+(cffi:defcfun ("LoadTexture" load-texture-sys) (:pointer (:struct texture))
   (file-name :string))
+
+(defun load-texture (file-name)
+  (cobj:pointer-cobject (load-texture-sys file-name) 'texture))
+
+#++
+(let* ((raw-ptr (load-texture-sys "assets/logo.png"))
+       (width (cffi:foreign-slot-value raw-ptr '(:struct texture) 'width)))
+  width)
+
+#++
+(load-texture "assets/logo.png")
 
 (cffi:defcfun ("UnloadTexture" unload-texture) :void
   (texture (:pointer (:struct texture))))
+
+(cffi:defcfun ("IsTextureValid" is-texture-valid-sys) :bool
+  (texture (:pointer (:struct texture))))
+
+(defun is-texture-valid (texture)
+  (is-texture-valid-sys (cobj:cobject-pointer texture)))
 
 (cffi:defcfun ("DrawTexture" draw-texture) :void
   (texture (:pointer (:struct texture)))

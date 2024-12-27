@@ -12,7 +12,7 @@
   :build-pathname "aero-fighter"
   :entry-point "aero-fighter:launch"
   :serial t
-  :components ((:module "src"
+  :components ((:module "lisp"
                 :components ((:file "package")
                              (:file "math")
                              (:file "background")
