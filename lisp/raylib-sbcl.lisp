@@ -1,5 +1,6 @@
 (defpackage raylib-sbcl
-  (:use :cl :sb-alien))
+  (:use :cl :sb-alien)
+  (:local-nicknames (#:tg #:trivial-garbage)))
 
 (in-package :raylib-sbcl)
 
@@ -32,10 +33,9 @@
   (pointer nil :type alien))
 
 (defun make-vector2 (&key x y)
-  (@vector2 :pointer (make-vector2-raw x y)))
-
-#++
-(make-vector2 :x 1.0 :y 2.0)
+  (let* ((ptr (make-vector2-raw x y))
+         (v   (@vector2 :pointer ptr)))
+    (tg:finalize v (lambda () (free-alien ptr)))))
 
 (defmacro vector2-x (v)
   "The X slot of a `Vector2'."
@@ -50,6 +50,9 @@
   (setf (vector2-x v) 1000.0)
   (vector2-x v))
 
+#++
+(tg:gc :full t :verbose t)
+
 ;; --- Textures --- ;;
 
 (define-alien-type nil
@@ -59,10 +62,26 @@
             (mipmaps int)
             (format int)))
 
-(define-alien-routine ("_LoadTexture" takeo) (* (struct texture-2d))
+(define-alien-routine ("_LoadTexture" load-texture-raw) (* (struct texture-2d))
   (file-name c-string))
 
 #++
 (takeo "assets/logo.png")
 
+#++
+(progn
+  (init-window 300 300 "hello!")
+  (let ((p (load-texture-raw "assets/logo.png")))
+    (format t "~a~%" (slot p 'width)))
+  (close-window))
+
 ;; Duh! Can't load a Texture until I have an OpenGL context!
+
+;; --- Window --- ;;
+
+(define-alien-routine ("InitWindow" init-window) void
+  (width int)
+  (height int)
+  (title c-string))
+
+(define-alien-routine ("CloseWindow" close-window) void)
