@@ -1,6 +1,28 @@
 (defpackage raylib
   (:use :cl :sb-alien)
-  (:local-nicknames (#:tg #:trivial-garbage)))
+  (:local-nicknames (#:tg #:trivial-garbage))
+  ;; --- Types --- ;;
+  (:export #:vector2 #:make-vector2 #:vector2-x #:vector2-y
+           #:rectangle #:make-rectangle #:rectangle-x #:rectangle-y #:rectangle-width #:rectangle-height
+           #:color #:make-color #:color-alpha
+           #:texture #:texture-width #:texture-height
+           #:audio-stream #:sound
+           #:music #:music-looping
+           #:camera-2d #:make-camera-2d
+           #:keyboard-key #:gamepad-button)
+  ;; --- Functions --- ;;
+  (:export #:init-window #:close-window
+           #:init-audio-device #:close-audio-device
+           #:set-target-fps #:window-should-close
+           #:begin-drawing #:end-drawing
+           #:begin-mode-2d #:end-mode-2d
+           #:clear-background #:draw-fps #:draw-text #:draw-circle #:draw-rectangle
+           #:load-texture #:unload-texture #:is-texture-valid #:draw-texture #:draw-texture-v #:draw-texture-rec
+           #:load-sound #:unload-sound #:play-sound
+           #:load-music-stream #:unload-music-stream #:is-music-stream-playing #:play-music-stream #:update-music-stream
+           #:is-key-pressed #:is-key-down #:is-gamepad-button-pressed #:is-gamepad-button-down
+           #:check-collision-recs)
+  (:documentation "A light wrapping of necessary Raylib types and functions; SBCL-specific."))
 
 (in-package :raylib)
 
@@ -53,6 +75,41 @@
 #++
 (tg:gc :full t :verbose t)
 
+;; --- Rectangles --- ;;
+
+(define-alien-type nil
+    (struct rectangle-raw
+            (x float)
+            (y float)
+            (width float)
+            (height float)))
+
+(define-alien-routine ("_MakeRectangle" make-rectangle-raw) (* (struct rectangle-raw))
+  (x float)
+  (y float)
+  (width float)
+  (height float))
+
+(defstruct (rectangle (:constructor @rectangle))
+  (pointer nil :type alien))
+
+(defun make-rectangle (&key x y width height)
+  (let* ((pointer (make-rectangle-raw x y width height))
+         (rect    (@rectangle :pointer pointer)))
+    (tg:finalize rect (lambda () (free-alien pointer)))))
+
+(defmacro rectangle-x (r)
+  `(sb-alien:slot (rectangle-pointer ,r) 'x))
+
+(defmacro rectangle-y (r)
+  `(sb-alien:slot (rectangle-pointer ,r) 'y))
+
+(defmacro rectangle-width (r)
+  `(sb-alien:slot (rectangle-pointer ,r) 'width))
+
+(defmacro rectangle-height (r)
+  `(sb-alien:slot (rectangle-pointer ,r) 'height))
+
 ;; --- Colour --- ;;
 
 (define-alien-type nil
@@ -75,6 +132,15 @@
   (let* ((pointer (make-color-raw r g b a))
          (color   (@color :pointer pointer)))
     (tg:finalize color (lambda () (free-alien pointer)))))
+
+(define-alien-routine ("_ColorAlpha" color-alpha-raw) (* (struct color-raw))
+  (color (* (struct color-raw)))
+  (alpha float))
+
+(defun color-alpha (color alpha)
+  (let* ((ptr (color-alpha-raw (color-pointer color) alpha))
+         (new (@color :pointer ptr)))
+    (tg:finalize new (lambda () (free-alien ptr)))))
 
 ;; --- Textures --- ;;
 
