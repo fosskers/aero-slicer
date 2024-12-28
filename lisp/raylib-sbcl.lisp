@@ -1,8 +1,8 @@
-(defpackage raylib-sbcl
+(defpackage raylib
   (:use :cl :sb-alien)
   (:local-nicknames (#:tg #:trivial-garbage)))
 
-(in-package :raylib-sbcl)
+(in-package :raylib)
 
 ;; TODO: 2024-12-25 Probably need an `eval-when' here.
 (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
@@ -53,29 +53,58 @@
 #++
 (tg:gc :full t :verbose t)
 
+;; --- Colour --- ;;
+
+(define-alien-type nil
+    (struct color-raw
+            (r unsigned-char)
+            (g unsigned-char)
+            (b unsigned-char)
+            (a unsigned-char)))
+
+(define-alien-routine ("_MakeColor" make-color-raw) (* (struct color-raw))
+  (r unsigned-char)
+  (g unsigned-char)
+  (b unsigned-char)
+  (a unsigned-char))
+
+(defstruct (color (:constructor @color))
+  (pointer nil :type alien))
+
+(defun make-color (&key r g b a)
+  (let* ((pointer (make-color-raw r g b a))
+         (color   (@color :pointer pointer)))
+    (tg:finalize color (lambda () (free-alien pointer)))))
+
 ;; --- Textures --- ;;
 
 (define-alien-type nil
-    (struct texture-2d
+    (struct texture-2d-raw
+            (id unsigned-int)
             (width int)
             (height int)
             (mipmaps int)
             (format int)))
 
-(define-alien-routine ("_LoadTexture" load-texture-raw) (* (struct texture-2d))
+(defstruct (texture-2d (:constructor @texture-2d))
+  (pointer nil :type alien))
+
+(define-alien-routine ("_LoadTexture" load-texture-raw) (* (struct texture-2d-raw))
   (file-name c-string))
 
-#++
-(takeo "assets/logo.png")
+(defun load-texture (file-name)
+  (let* ((pointer (load-texture-raw file-name))
+         (texture (@texture-2d :pointer pointer)))
+    (tg:finalize texture (lambda () (free-alien pointer)))))
 
 #++
 (progn
   (init-window 300 300 "hello!")
   (let ((p (load-texture-raw "assets/logo.png")))
-    (format t "~a~%" (slot p 'width)))
+    (format t "~a~%" (slot p 'id))
+    (format t "~a~%" (slot p 'width))
+    (format t "~a~%" (slot p 'height)))
   (close-window))
-
-;; Duh! Can't load a Texture until I have an OpenGL context!
 
 ;; --- Window --- ;;
 
@@ -85,3 +114,34 @@
   (title c-string))
 
 (define-alien-routine ("CloseWindow" close-window) void)
+
+(define-alien-routine ("SetTargetFPS" set-target-fps) void
+  (fps int))
+
+(define-alien-routine ("WindowShouldClose" window-should-close) boolean)
+
+(define-alien-routine ("BeginDrawing" begin-drawing) void)
+
+(define-alien-routine ("EndDrawing" end-drawing) void)
+
+(define-alien-routine ("DrawFPS" draw-fps) void
+  (pos-x int)
+  (pos-y int))
+
+(define-alien-routine ("_ClearBackground" clear-background-raw) void
+  (color (* (struct color-raw))))
+
+(defun clear-background (color)
+  (clear-background-raw (color-pointer color)))
+
+#++
+(progn
+  (let ((colour (make-color :r 255 :g 255 :b 255 :a 255)))
+    (init-window 300 300 "hello!")
+    (set-target-fps 60)
+    (loop while (not (window-should-close))
+          do (progn (begin-drawing)
+                    (clear-background colour)
+                    (draw-fps 0 0)
+                    (end-drawing)))
+    (close-window)))

@@ -12,6 +12,20 @@ Vector2 *_MakeVector2(float x, float y) {
   return v;
 }
 
+// --- Colours --- //
+
+Color *_MakeColor(unsigned char r, unsigned char g, unsigned char b,
+                  unsigned char a) {
+  Color *c = malloc(sizeof(Color));
+
+  c->r = r;
+  c->g = g;
+  c->b = b;
+  c->a = a;
+
+  return c;
+}
+
 // --- Textures --- //
 
 Texture2D *_LoadTexture(const char *fileName) {
@@ -21,4 +35,12 @@ Texture2D *_LoadTexture(const char *fileName) {
   *heap = stack;
 
   return heap;
+}
+
+// --- Window --- //
+
+void _ClearBackground(Color *color) {
+  Color stack;
+  stack = *color;
+  ClearBackground(stack);
 }

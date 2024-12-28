@@ -1,5 +1,4 @@
 (defsystem "raylib"
-  :depends-on (:cffi :cffi-object :trivial-garbage)
+  :depends-on (:trivial-garbage)
   :components ((:module "lisp"
-                :components ((:file "raylib")
-                             (:file "raylib-sbcl" :if-feature :sbcl)))))
+                :components ((:file "raylib-sbcl" :if-feature :sbcl)))))
