@@ -210,6 +210,31 @@
 (defmacro music-looping (m)
   `(sb-alien:slot (music-pointer ,m) 'looping))
 
+;; --- Camera --- ;;
+
+(define-alien-type nil
+    (struct camera-2d-raw
+            (offset (struct vector2-raw))
+            (target (struct vector2-raw))
+            (rotation float)
+            (zoom float)))
+
+(defstruct (camera-2d (:constructor @camera-2d))
+  (pointer nil :type alien))
+
+(define-alien-routine ("_MakeCamera2D" make-camera-2d-raw) (* (struct camera-2d-raw))
+  (offset (* (struct vector2-raw)))
+  (target (* (struct vector2-raw)))
+  (rotation float)
+  (zoom float))
+
+(defun make-camera-2d (&key offset target rotation zoom)
+  (let* ((pointer (make-camera-2d-raw (vector2-pointer offset)
+                                      (vector2-pointer target)
+                                      rotation zoom))
+         (camera (@camera-2d :pointer pointer)))
+    (tg:finalize camera (lambda () (free-alien pointer)))))
+
 ;; --- Window --- ;;
 
 (define-alien-routine ("InitWindow" init-window) void

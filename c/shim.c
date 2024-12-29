@@ -60,6 +60,22 @@ Texture2D *_LoadTexture(const char *fileName) {
   return heap;
 }
 
+// --- Camera --- //
+
+Camera2D *_MakeCamera2D(Vector2 *offset, Vector2 *target, float rotation,
+                        float zoom) {
+  Camera2D *camera = malloc(sizeof(Camera2D));
+  Vector2 o = *offset;
+  Vector2 t = *target;
+
+  camera->offset = o;
+  camera->target = t;
+  camera->rotation = rotation;
+  camera->zoom = zoom;
+
+  return camera;
+}
+
 // --- Window --- //
 
 void _ClearBackground(Color *color) {
