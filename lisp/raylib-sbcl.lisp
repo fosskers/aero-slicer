@@ -172,6 +172,44 @@
     (format t "~a~%" (slot p 'height)))
   (close-window))
 
+(defmacro texture-width (r)
+  `(sb-alien:slot (texture-pointer ,r) 'width))
+
+(defmacro texture-height (r)
+  `(sb-alien:slot (texture-pointer ,r) 'height))
+
+;; --- Sounds and Music --- ;;
+
+(define-alien-type nil
+    (struct audio-stream
+            (buffer (* t))
+            (processor (* t))
+            (sample-rate unsigned-int)
+            (sample-size unsigned-int)
+            (channels unsigned-int)))
+
+(define-alien-type nil
+    (struct sound-raw
+            (stream (struct audio-stream))
+            (frame-count unsigned-int)))
+
+(defstruct (sound (:constructor @sound))
+  (pointer nil :type alien))
+
+(define-alien-type nil
+    (struct music-raw
+            (stream (struct audio-stream))
+            (frame-count unsigned-int)
+            (looping boolean)
+            (ctx-type int)
+            (ctx-data (* t))))
+
+(defstruct (music (:constructor @music))
+  (pointer nil :type alien))
+
+(defmacro music-looping (m)
+  `(sb-alien:slot (music-pointer ,m) 'looping))
+
 ;; --- Window --- ;;
 
 (define-alien-routine ("InitWindow" init-window) void
