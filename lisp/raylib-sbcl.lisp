@@ -283,6 +283,10 @@
 
 (define-alien-routine ("CloseWindow" close-window) void)
 
+(define-alien-routine ("InitAudioDevice" init-audio-device) void)
+
+(define-alien-routine ("CloseAudioDevice" close-audio-device) void)
+
 (define-alien-routine ("SetTargetFPS" set-target-fps) void
   (fps int))
 
@@ -292,15 +296,52 @@
 
 (define-alien-routine ("EndDrawing" end-drawing) void)
 
-(define-alien-routine ("DrawFPS" draw-fps) void
-  (pos-x int)
-  (pos-y int))
+(define-alien-routine ("_BeginMode2D" begin-mode-2d-raw) void
+  (camera (* (struct camera-2d-raw))))
+
+(defun begin-mode-2d (camera)
+  (begin-mode-2d-raw (camera-2d-pointer camera)))
+
+(define-alien-routine ("EndMode2D" end-mode-2d) void)
 
 (define-alien-routine ("_ClearBackground" clear-background-raw) void
   (color (* (struct color-raw))))
 
 (defun clear-background (color)
   (clear-background-raw (color-pointer color)))
+
+(define-alien-routine ("DrawFPS" draw-fps) void
+  (pos-x int)
+  (pos-y int))
+
+(define-alien-routine ("_DrawText" draw-text-raw) void
+  (text c-string)
+  (pos-x int)
+  (pos-y int)
+  (font-size int)
+  (color (* (struct color-raw))))
+
+(defun draw-text (text pos-x pos-y font-size color)
+  (draw-text-raw text pos-x pos-y font-size (color-pointer color)))
+
+(define-alien-routine ("_DrawCircle" draw-circle-raw) void
+  (center-x int)
+  (center-y int)
+  (radius int)
+  (color (* (struct color-raw))))
+
+(defun draw-circle (center-x center-y radius color)
+  (draw-circle-raw center-x center-y radius (color-pointer color)))
+
+(define-alien-routine ("_DrawRectangle" draw-rectangle-raw) void
+  (pos-x int)
+  (pos-y int)
+  (width int)
+  (height int)
+  (color (* (struct color-raw))))
+
+(defun draw-rectangle (pos-x pos-y width height color)
+  (draw-rectangle-raw pos-x pos-y width height (color-pointer color)))
 
 #++
 (progn

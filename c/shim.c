@@ -83,3 +83,28 @@ void _ClearBackground(Color *color) {
   stack = *color;
   ClearBackground(stack);
 }
+
+void _BeginMode2D(Camera2D *camera) {
+  Camera2D stack;
+  stack = *camera;
+  BeginMode2D(stack);
+}
+
+void _DrawText(const char *text, int posX, int posY, int fontSize,
+               Color *color) {
+  Color stack;
+  stack = *color;
+  DrawText(text, posX, posY, fontSize, stack);
+}
+
+void _DrawCircle(int centerX, int centerY, int radius, Color *color) {
+  Color stack;
+  stack = *color;
+  DrawCircle(centerX, centerY, radius, stack);
+}
+
+void _DrawRectangle(int posX, int posY, int width, int height, Color *color) {
+  Color stack;
+  stack = *color;
+  DrawRectangle(posX, posY, width, height, stack);
+}
