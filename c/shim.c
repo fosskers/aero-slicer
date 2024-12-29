@@ -60,6 +60,43 @@ Texture2D *_LoadTexture(const char *fileName) {
   return heap;
 }
 
+bool _IsTextureValid(Texture2D *texture) {
+  Texture2D stack;
+  stack = *texture;
+  return IsTextureValid(stack);
+}
+
+void _DrawTexture(Texture2D *texture, int posX, int posY, Color *tint) {
+  Texture2D t;
+  Color c;
+  t = *texture;
+  c = *tint;
+  DrawTexture(t, posX, posY, c);
+}
+
+void _DrawTextureV(Texture2D *texture, Vector2 *position, Color *tint) {
+  Texture2D t;
+  Vector2 v;
+  Color c;
+  t = *texture;
+  v = *position;
+  c = *tint;
+  DrawTextureV(t, v, c);
+}
+
+void _DrawTextureRec(Texture2D *texture, Rectangle *source, Vector2 *position,
+                     Color *tint) {
+  Texture2D t;
+  Rectangle r;
+  Vector2 v;
+  Color c;
+  t = *texture;
+  r = *source;
+  v = *position;
+  c = *tint;
+  DrawTextureRec(t, r, v, c);
+}
+
 // --- Camera --- //
 
 Camera2D *_MakeCamera2D(Vector2 *offset, Vector2 *target, float rotation,

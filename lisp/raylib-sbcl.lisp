@@ -178,6 +178,45 @@
 (defmacro texture-height (r)
   `(sb-alien:slot (texture-pointer ,r) 'height))
 
+(define-alien-routine ("_IsTextureValid" is-texture-valid-raw) boolean
+  (texture (* (struct texture-2d-raw))))
+
+(defun is-texture-valid (texture)
+  (is-texture-valid-raw (texture-2d-pointer texture)))
+
+(define-alien-routine ("_DrawTexture" draw-texture-raw) void
+  (texture (* (struct texture-2d-raw)))
+  (pos-x int)
+  (pos-y int)
+  (tint (* (struct color-raw))))
+
+(defun draw-texture (texture pos-x pos-y tint)
+  (draw-texture-raw (texture-2d-pointer texture)
+                    pos-x pos-y
+                    (color-pointer tint)))
+
+(define-alien-routine ("_DrawTextureV" draw-texture-v-raw) void
+  (texture  (* (struct texture-2d-raw)))
+  (position (* (struct vector2-raw)))
+  (tint     (* (struct color-raw))))
+
+(defun draw-texture-v (texture position tint)
+  (draw-texture-v-raw (texture-2d-pointer texture)
+                      (vector2-pointer position)
+                      (color-pointer tint)))
+
+(define-alien-routine ("_DrawTextureRec" draw-texture-rec-raw) void
+  (texture  (* (struct texture-2d-raw)))
+  (source   (* (struct rectangle-raw)))
+  (position (* (struct vector2-raw)))
+  (tint     (* (struct color-raw))))
+
+(defun draw-texture-rec (texture source position tint)
+  (draw-texture-rec-raw (texture-2d-pointer texture)
+                        (rectangle-pointer source)
+                        (vector2-pointer position)
+                        (color-pointer tint)))
+
 ;; --- Sounds and Music --- ;;
 
 (define-alien-type nil
