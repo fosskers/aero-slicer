@@ -97,6 +97,52 @@ void _DrawTextureRec(Texture2D *texture, Rectangle *source, Vector2 *position,
   DrawTextureRec(t, r, v, c);
 }
 
+// --- Sounds and Music --- //
+
+Sound *_LoadSound(const char *fileName) {
+  Sound stack = LoadSound(fileName);
+  Sound *heap = malloc(sizeof(Sound));
+  *heap = stack;
+  return heap;
+}
+
+void _UnloadSound(Sound *sound) {
+  Sound stack;
+  stack = *sound;
+  UnloadSound(stack);
+}
+
+Music *_LoadMusicStream(const char *fileName) {
+  Music stack = LoadMusicStream(fileName);
+  Music *heap = malloc(sizeof(Music));
+  *heap = stack;
+  return heap;
+}
+
+void _UnloadMusicStream(Music *music) {
+  Music stack;
+  stack = *music;
+  UnloadMusicStream(stack);
+}
+
+bool _IsMusicStreamPlaying(Music *music) {
+  Music stack;
+  stack = *music;
+  return IsMusicStreamPlaying(stack);
+}
+
+void _PlayMusicStream(Music *music) {
+  Music stack;
+  stack = *music;
+  PlayMusicStream(stack);
+}
+
+void _UpdateMusicStream(Music *music) {
+  Music stack;
+  stack = *music;
+  UpdateMusicStream(stack);
+}
+
 // --- Camera --- //
 
 Camera2D *_MakeCamera2D(Vector2 *offset, Vector2 *target, float rotation,

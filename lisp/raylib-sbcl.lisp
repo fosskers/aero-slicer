@@ -235,6 +235,20 @@
 (defstruct (sound (:constructor @sound))
   (pointer nil :type alien))
 
+(define-alien-routine ("_LoadSound" load-sound-raw) (* (struct sound-raw))
+  (file-name c-string))
+
+(defun load-sound (file-name)
+  (let* ((pointer (load-sound-raw file-name))
+         (sound   (@sound :pointer pointer)))
+    (tg:finalize sound (lambda () (free-alien pointer)))))
+
+(define-alien-routine ("_UnloadSound" unload-sound-raw) void
+  (sound (* (struct sound-raw))))
+
+(defun unload-sound (sound)
+  (unload-sound-raw (sound-pointer sound)))
+
 (define-alien-type nil
     (struct music-raw
             (stream (struct audio-stream))
@@ -248,6 +262,38 @@
 
 (defmacro music-looping (m)
   `(sb-alien:slot (music-pointer ,m) 'looping))
+
+(define-alien-routine ("_LoadMusicStream" load-music-stream-raw) (* (struct music-raw))
+  (file-name c-string))
+
+(defun load-music-stream (file-name)
+  (let* ((pointer (load-music-stream-raw file-name))
+         (music   (@music :pointer pointer)))
+    (tg:finalize music (lambda () (free-alien pointer)))))
+
+(define-alien-routine ("_UnloadMusicStream" unload-music-stream-raw) void
+  (music (* (struct music-raw))))
+
+(defun unload-music-stream (music)
+  (unload-music-stream-raw (music-pointer music)))
+
+(define-alien-routine ("_IsMusicStreamPlaying" is-music-stream-playing-raw) boolean
+  (music (* (struct music-raw))))
+
+(defun is-music-stream-playing (music)
+  (is-music-stream-playing-raw (music-pointer music)))
+
+(define-alien-routine ("_PlayMusicStream" play-music-stream-raw) void
+  (music (* (struct music-raw))))
+
+(defun play-music-stream (music)
+  (play-music-stream-raw (music-pointer music)))
+
+(define-alien-routine ("_UpdateMusicStream" update-music-stream-raw) void
+  (music (* (struct music-raw))))
+
+(defun update-music-stream (music)
+  (update-music-stream-raw (music-pointer music)))
 
 ;; --- Camera --- ;;
 
