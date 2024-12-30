@@ -61,11 +61,11 @@
 
 (defmacro vector2-x (v)
   "The X slot of a `Vector2'."
-  `(sb-alien:slot (vector2-pointer ,v) 'x))
+  `(slot (vector2-pointer ,v) 'x))
 
 (defmacro vector2-y (v)
   "The Y slot of a `Vector2'."
-  `(sb-alien:slot (vector2-pointer ,v) 'y))
+  `(slot (vector2-pointer ,v) 'y))
 
 #++
 (let ((v (make-vector2 :x 1.0 :y 2.0)))
@@ -99,16 +99,16 @@
     (tg:finalize rect (lambda () (free-alien pointer)))))
 
 (defmacro rectangle-x (r)
-  `(sb-alien:slot (rectangle-pointer ,r) 'x))
+  `(slot (rectangle-pointer ,r) 'x))
 
 (defmacro rectangle-y (r)
-  `(sb-alien:slot (rectangle-pointer ,r) 'y))
+  `(slot (rectangle-pointer ,r) 'y))
 
 (defmacro rectangle-width (r)
-  `(sb-alien:slot (rectangle-pointer ,r) 'width))
+  `(slot (rectangle-pointer ,r) 'width))
 
 (defmacro rectangle-height (r)
-  `(sb-alien:slot (rectangle-pointer ,r) 'height))
+  `(slot (rectangle-pointer ,r) 'height))
 
 ;; --- Colour --- ;;
 
@@ -145,23 +145,29 @@
 ;; --- Textures --- ;;
 
 (define-alien-type nil
-    (struct texture-2d-raw
+    (struct texture-raw
             (id unsigned-int)
             (width int)
             (height int)
             (mipmaps int)
             (format int)))
 
-(defstruct (texture-2d (:constructor @texture-2d))
+(defstruct (texture (:constructor @texture))
   (pointer nil :type alien))
 
-(define-alien-routine ("_LoadTexture" load-texture-raw) (* (struct texture-2d-raw))
+(define-alien-routine ("_LoadTexture" load-texture-raw) (* (struct texture-raw))
   (file-name c-string))
 
 (defun load-texture (file-name)
   (let* ((pointer (load-texture-raw file-name))
-         (texture (@texture-2d :pointer pointer)))
+         (texture (@texture :pointer pointer)))
     (tg:finalize texture (lambda () (free-alien pointer)))))
+
+(define-alien-routine ("_UnloadTexture" unload-texture-raw) void
+  (texture (* (struct texture-raw))))
+
+(defun unload-texture (texture)
+  (unload-texture-raw (texture-pointer texture)))
 
 #++
 (progn
@@ -173,46 +179,46 @@
   (close-window))
 
 (defmacro texture-width (r)
-  `(sb-alien:slot (texture-pointer ,r) 'width))
+  `(slot (texture-pointer ,r) 'width))
 
 (defmacro texture-height (r)
-  `(sb-alien:slot (texture-pointer ,r) 'height))
+  `(slot (texture-pointer ,r) 'height))
 
 (define-alien-routine ("_IsTextureValid" is-texture-valid-raw) boolean
-  (texture (* (struct texture-2d-raw))))
+  (texture (* (struct texture-raw))))
 
 (defun is-texture-valid (texture)
-  (is-texture-valid-raw (texture-2d-pointer texture)))
+  (is-texture-valid-raw (texture-pointer texture)))
 
 (define-alien-routine ("_DrawTexture" draw-texture-raw) void
-  (texture (* (struct texture-2d-raw)))
+  (texture (* (struct texture-raw)))
   (pos-x int)
   (pos-y int)
   (tint (* (struct color-raw))))
 
 (defun draw-texture (texture pos-x pos-y tint)
-  (draw-texture-raw (texture-2d-pointer texture)
+  (draw-texture-raw (texture-pointer texture)
                     pos-x pos-y
                     (color-pointer tint)))
 
 (define-alien-routine ("_DrawTextureV" draw-texture-v-raw) void
-  (texture  (* (struct texture-2d-raw)))
+  (texture  (* (struct texture-raw)))
   (position (* (struct vector2-raw)))
   (tint     (* (struct color-raw))))
 
 (defun draw-texture-v (texture position tint)
-  (draw-texture-v-raw (texture-2d-pointer texture)
+  (draw-texture-v-raw (texture-pointer texture)
                       (vector2-pointer position)
                       (color-pointer tint)))
 
 (define-alien-routine ("_DrawTextureRec" draw-texture-rec-raw) void
-  (texture  (* (struct texture-2d-raw)))
+  (texture  (* (struct texture-raw)))
   (source   (* (struct rectangle-raw)))
   (position (* (struct vector2-raw)))
   (tint     (* (struct color-raw))))
 
 (defun draw-texture-rec (texture source position tint)
-  (draw-texture-rec-raw (texture-2d-pointer texture)
+  (draw-texture-rec-raw (texture-pointer texture)
                         (rectangle-pointer source)
                         (vector2-pointer position)
                         (color-pointer tint)))
@@ -249,6 +255,12 @@
 (defun unload-sound (sound)
   (unload-sound-raw (sound-pointer sound)))
 
+(define-alien-routine ("_PlaySound" play-sound-raw) void
+  (sound (* (struct sound-raw))))
+
+(defun play-sound (sound)
+  (play-sound-raw (sound-pointer sound)))
+
 (define-alien-type nil
     (struct music-raw
             (stream (struct audio-stream))
@@ -261,7 +273,7 @@
   (pointer nil :type alien))
 
 (defmacro music-looping (m)
-  `(sb-alien:slot (music-pointer ,m) 'looping))
+  `(slot (music-pointer ,m) 'looping))
 
 (define-alien-routine ("_LoadMusicStream" load-music-stream-raw) (* (struct music-raw))
   (file-name c-string))
@@ -412,7 +424,7 @@
 (define-alien-routine ("_DrawCircle" draw-circle-raw) void
   (center-x int)
   (center-y int)
-  (radius int)
+  (radius float)
   (color (* (struct color-raw))))
 
 (defun draw-circle (center-x center-y radius color)
@@ -437,9 +449,11 @@
   (key int))
 
 (define-alien-routine ("IsGamepadButtonPressed" is-gamepad-button-pressed) boolean
+  (gamepad int)
   (key int))
 
 (define-alien-routine ("IsGamepadButtonDown" is-gamepad-button-down) boolean
+  (gamepad int)
   (key int))
 
 ;; --- Collision --- ;;

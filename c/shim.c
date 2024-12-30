@@ -60,6 +60,12 @@ Texture2D *_LoadTexture(const char *fileName) {
   return heap;
 }
 
+void _UnloadTexture(Texture2D *texture) {
+  Texture2D stack;
+  stack = *texture;
+  UnloadTexture(stack);
+}
+
 bool _IsTextureValid(Texture2D *texture) {
   Texture2D stack;
   stack = *texture;
@@ -110,6 +116,12 @@ void _UnloadSound(Sound *sound) {
   Sound stack;
   stack = *sound;
   UnloadSound(stack);
+}
+
+void _PlaySound(Sound *sound) {
+  Sound stack;
+  stack = *sound;
+  PlaySound(stack);
 }
 
 Music *_LoadMusicStream(const char *fileName) {
@@ -180,7 +192,7 @@ void _DrawText(const char *text, int posX, int posY, int fontSize,
   DrawText(text, posX, posY, fontSize, stack);
 }
 
-void _DrawCircle(int centerX, int centerY, int radius, Color *color) {
+void _DrawCircle(int centerX, int centerY, float radius, Color *color) {
   Color stack;
   stack = *color;
   DrawCircle(centerX, centerY, radius, stack);

@@ -130,13 +130,13 @@ single beam shot will never damage the same enemy twice.")
 
 ;; --- Keys --- ;;
 
-(defparameter +key-right+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :right))
-(defparameter +key-left+  #.(cffi:foreign-enum-value 'raylib:keyboard-key :left))
-(defparameter +key-down+  #.(cffi:foreign-enum-value 'raylib:keyboard-key :down))
-(defparameter +key-up+    #.(cffi:foreign-enum-value 'raylib:keyboard-key :up))
-(defparameter +key-space+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :space))
-(defparameter +key-tab+   #.(cffi:foreign-enum-value 'raylib:keyboard-key :tab))
-(defparameter +key-enter+ #.(cffi:foreign-enum-value 'raylib:keyboard-key :enter))
+(defparameter +key-right+ #.(raylib:keyboard-key :right))
+(defparameter +key-left+  #.(raylib:keyboard-key :left))
+(defparameter +key-down+  #.(raylib:keyboard-key :down))
+(defparameter +key-up+    #.(raylib:keyboard-key :up))
+(defparameter +key-space+ #.(raylib:keyboard-key :space))
+(defparameter +key-tab+   #.(raylib:keyboard-key :tab))
+(defparameter +key-enter+ #.(raylib:keyboard-key :enter))
 
 ;; --- Gamepad --- ;;
 
@@ -151,15 +151,15 @@ single beam shot will never damage the same enemy twice.")
 
 ;; NOTE: See also `debugging-gamepad' in `input.lisp'.
 (defparameter +gamepad+ 2)
-(defparameter +gamepad-a+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-right))
-(defparameter +gamepad-b+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-face-down))
-(defparameter +gamepad-up+    #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-up))
-(defparameter +gamepad-down+  #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-down))
-(defparameter +gamepad-left+  #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-left))
-(defparameter +gamepad-right+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-face-right))
-(defparameter +gamepad-start+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :middle-right))
-(defparameter +gamepad-left-shoulder+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :left-trigger-1))
-(defparameter +gamepad-right-shoulder+ #.(cffi:foreign-enum-value 'raylib:gamepad-button :right-trigger-1))
+(defparameter +gamepad-a+ #.(raylib:gamepad-button :right-face-right))
+(defparameter +gamepad-b+ #.(raylib:gamepad-button :right-face-down))
+(defparameter +gamepad-up+    #.(raylib:gamepad-button :left-face-up))
+(defparameter +gamepad-down+  #.(raylib:gamepad-button :left-face-down))
+(defparameter +gamepad-left+  #.(raylib:gamepad-button :left-face-left))
+(defparameter +gamepad-right+ #.(raylib:gamepad-button :left-face-right))
+(defparameter +gamepad-start+ #.(raylib:gamepad-button :middle-right))
+(defparameter +gamepad-left-shoulder+ #.(raylib:gamepad-button :left-trigger-1))
+(defparameter +gamepad-right-shoulder+ #.(raylib:gamepad-button :right-trigger-1))
 
 ;; --- Macros --- ;;
 

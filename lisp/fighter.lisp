@@ -222,7 +222,7 @@
     (setf (raylib:rectangle-x f-bbox) new)
     (setf (raylib:vector2-x b-pos) (+ new (beam-x-offset beam)))
     (setf (raylib:rectangle-x b-bbox) (+ new (beam-x-offset beam)))
-    (setf (raylib:rectangle-x a-pos) (- new 2))
+    (setf (raylib:vector2-x a-pos) (- new 2))
     (setf (raylib:vector2-x s-pos) (+ new +shadow-offset+))))
 
 (defun set-y! (fighter new)
@@ -237,7 +237,7 @@
     (setf (raylib:rectangle-y f-bbox) new)
     (setf (raylib:vector2-y b-pos) (+ new +beam-y-offset+))
     (setf (raylib:rectangle-y b-bbox) (+ new +beam-y-offset+))
-    (setf (raylib:rectangle-y a-pos) (- new 2))
+    (setf (raylib:vector2-y a-pos) (- new 2))
     (setf (raylib:vector2-y s-pos) (+ new +shadow-offset+))))
 
 (defmethod move! ((fighter fighter))
