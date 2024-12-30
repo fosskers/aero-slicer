@@ -428,6 +428,30 @@
 (defun draw-rectangle (pos-x pos-y width height color)
   (draw-rectangle-raw pos-x pos-y width height (color-pointer color)))
 
+;; --- Input --- ;;
+
+(define-alien-routine ("IsKeyPressed" is-key-pressed) boolean
+  (key int))
+
+(define-alien-routine ("IsKeyDown" is-key-down) boolean
+  (key int))
+
+(define-alien-routine ("IsGamepadButtonPressed" is-gamepad-button-pressed) boolean
+  (key int))
+
+(define-alien-routine ("IsGamepadButtonDown" is-gamepad-button-down) boolean
+  (key int))
+
+;; --- Collision --- ;;
+
+(define-alien-routine ("_CheckCollisionRecs" check-collision-recs-raw) boolean
+  (rec1 (* (struct rectangle-raw)))
+  (rec2 (* (struct rectangle-raw))))
+
+(defun check-collision-recs (rec1 rec2)
+  (check-collision-recs-raw (rectangle-pointer rec1)
+                            (rectangle-pointer rec2)))
+
 #++
 (progn
   (let ((colour (make-color :r 255 :g 255 :b 255 :a 255)))

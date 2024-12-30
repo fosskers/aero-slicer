@@ -191,3 +191,14 @@ void _DrawRectangle(int posX, int posY, int width, int height, Color *color) {
   stack = *color;
   DrawRectangle(posX, posY, width, height, stack);
 }
+
+// --- Collision --- //
+
+bool _CheckCollisionRecs(Rectangle *rec1, Rectangle *rec2) {
+  Rectangle a;
+  Rectangle b;
+  a = *rec1;
+  b = *rec2;
+
+  return CheckCollisionRecs(a, b);
+}
