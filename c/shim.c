@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <stdbool.h>
 #include <stdlib.h>
 
 // --- Vectors --- //
