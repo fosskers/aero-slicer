@@ -184,7 +184,7 @@
 (defmacro texture-height (r)
   `(slot (texture-pointer ,r) 'height))
 
-(define-alien-routine ("_IsTextureValid" is-texture-valid-raw) boolean
+(define-alien-routine ("_IsTextureValid" is-texture-valid-raw) (boolean 8)
   (texture (* (struct texture-raw))))
 
 (defun is-texture-valid (texture)
@@ -265,7 +265,7 @@
     (struct music-raw
             (stream (struct audio-stream))
             (frame-count unsigned-int)
-            (looping boolean)
+            (looping (boolean 8))
             (ctx-type int)
             (ctx-data (* t))))
 
@@ -289,7 +289,7 @@
 (defun unload-music-stream (music)
   (unload-music-stream-raw (music-pointer music)))
 
-(define-alien-routine ("_IsMusicStreamPlaying" is-music-stream-playing-raw) boolean
+(define-alien-routine ("_IsMusicStreamPlaying" is-music-stream-playing-raw) (boolean 8)
   (music (* (struct music-raw))))
 
 (defun is-music-stream-playing (music)
@@ -387,7 +387,7 @@
 (define-alien-routine ("SetTargetFPS" set-target-fps) void
   (fps int))
 
-(define-alien-routine ("WindowShouldClose" window-should-close) boolean)
+(define-alien-routine ("WindowShouldClose" window-should-close) (boolean 8))
 
 (define-alien-routine ("BeginDrawing" begin-drawing) void)
 
@@ -442,23 +442,23 @@
 
 ;; --- Input --- ;;
 
-(define-alien-routine ("IsKeyPressed" is-key-pressed) boolean
+(define-alien-routine ("IsKeyPressed" is-key-pressed) (boolean 8)
   (key int))
 
-(define-alien-routine ("IsKeyDown" is-key-down) boolean
+(define-alien-routine ("IsKeyDown" is-key-down) (boolean 8)
   (key int))
 
-(define-alien-routine ("IsGamepadButtonPressed" is-gamepad-button-pressed) boolean
+(define-alien-routine ("IsGamepadButtonPressed" is-gamepad-button-pressed) (boolean 8)
   (gamepad int)
   (key int))
 
-(define-alien-routine ("IsGamepadButtonDown" is-gamepad-button-down) boolean
+(define-alien-routine ("IsGamepadButtonDown" is-gamepad-button-down) (boolean 8)
   (gamepad int)
   (key int))
 
 ;; --- Collision --- ;;
 
-(define-alien-routine ("_CheckCollisionRecs" check-collision-recs-raw) boolean
+(define-alien-routine ("_CheckCollisionRecs" check-collision-recs-raw) (boolean 8)
   (rec1 (* (struct rectangle-raw)))
   (rec2 (* (struct rectangle-raw))))
 
