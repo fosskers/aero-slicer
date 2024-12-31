@@ -20,7 +20,8 @@
            #:load-texture #:unload-texture #:is-texture-valid #:draw-texture #:draw-texture-v #:draw-texture-rec
            #:load-sound #:unload-sound #:play-sound
            #:load-music-stream #:unload-music-stream #:is-music-stream-playing #:play-music-stream #:update-music-stream
-           #:is-key-pressed #:is-key-down #:is-gamepad-button-pressed #:is-gamepad-button-down
+           #:is-key-pressed #:is-key-down
+           #:is-gamepad-button-pressed #:is-gamepad-button-down #:get-gamepad-name #:is-gamepad-available
            #:check-collision-recs)
   (:documentation "A light wrapping of necessary Raylib types and functions; SBCL-specific."))
 
@@ -369,7 +370,14 @@
     (:middle 14)
     (:middle-right 15)
     (:left-thumb 16)
-    (:right-thumb 17)))
+    (:right-thumb 17)
+    (t (error "Unknown gamepad button: ~a" kw))))
+
+(define-alien-routine ("GetGamepadName" get-gamepad-name) c-string
+  (gamepad int))
+
+(define-alien-routine ("IsGamepadAvailable" is-gamepad-available) (boolean 8)
+  (gamepad int))
 
 ;; --- Window --- ;;
 
