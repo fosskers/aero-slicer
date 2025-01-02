@@ -1,5 +1,5 @@
 (defpackage raylib
-  (:use :cl)
+  (:use :cl #+sbcl :sb-alien)
   (:local-nicknames (#:tg #:trivial-garbage))
   ;; --- Types --- ;;
   (:export #:vector2 #:make-vector2 #:vector2-x #:vector2-y
@@ -23,11 +23,19 @@
            #:is-key-pressed #:is-key-down
            #:is-gamepad-button-pressed #:is-gamepad-button-down #:get-gamepad-name #:is-gamepad-available
            #:check-collision-recs)
-  (:documentation "A light wrapping of necessary Raylib types and functions; ECL-specific."))
+  (:documentation "A light wrapping of necessary Raylib types and functions."))
 
 (in-package :raylib)
 
 ;; TODO: 2024-12-25 Probably need an `eval-when' here.
-(ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
-(ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/c/shim.so")
+#+sbcl
+(progn
+  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
+  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/raylib/shim.so"))
 
+;; NOTE: 2025-01-03 We preload the shared libraries here to ensure that all functions
+;; are already visible when we start to reference them in other files.
+#+ecl
+(progn
+  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
+  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/raylib/shim.so"))
