@@ -304,44 +304,6 @@
 
 ;; --- Keyboard and Gamepad --- ;;
 
-;; HACK: 2024-12-29 Hacked manually as I couldn't figure out a first-class way
-;; to reference enum values.
-(defun keyboard-key (kw)
-  (case kw
-    (:right 262)
-    (:left  263)
-    (:down  264)
-    (:up    265)
-    (:space 32)
-    (:tab   258)
-    (:enter 257)
-    (t (error "Unknown keyboard key: ~a" kw))))
-
-#++
-(keyboard-key :kim)
-
-(defun gamepad-button (kw)
-  (case kw
-    (:unknown 0)
-    (:left-face-up 1)
-    (:left-face-right 2)
-    (:left-face-down 3)
-    (:left-face-left 4)
-    (:right-face-up 5)
-    (:right-face-right 6)
-    (:right-face-down 7)
-    (:right-face-left 8)
-    (:left-trigger-1 9)
-    (:left-trigger-2 10)
-    (:right-trigger-1 11)
-    (:right-trigger-2 12)
-    (:middle-left 13)
-    (:middle 14)
-    (:middle-right 15)
-    (:left-thumb 16)
-    (:right-thumb 17)
-    (t (error "Unknown gamepad button: ~a" kw))))
-
 (define-alien-routine ("GetGamepadName" get-gamepad-name) c-string
   (gamepad int))
 
@@ -443,14 +405,3 @@
   (check-collision-recs-raw (rectangle-pointer rec1)
                             (rectangle-pointer rec2)))
 
-#++
-(progn
-  (let ((colour (make-color :r 255 :g 255 :b 255 :a 255)))
-    (init-window 300 300 "hello!")
-    (set-target-fps 60)
-    (loop while (not (window-should-close))
-          do (progn (begin-drawing)
-                    (clear-background colour)
-                    (draw-fps 0 0)
-                    (end-drawing)))
-    (close-window)))
