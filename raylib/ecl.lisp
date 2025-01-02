@@ -425,16 +425,16 @@
   ;; HACK: 2025-01-03 Bool.
   :returning :unsigned-byte)
 
-(defun is-key-pressed ()
-  (= 1 (is-key-pressed-raw)))
+(defun is-key-pressed (key)
+  (= 1 (is-key-pressed-raw key)))
 
 (ffi:def-function ("IsKeyDown" is-key-down-raw)
     ((key :int))
   ;; HACK: 2025-01-03 Bool.
   :returning :unsigned-byte)
 
-(defun is-key-down ()
-  (= 1 (is-key-down-raw)))
+(defun is-key-down (key)
+  (= 1 (is-key-down-raw key)))
 
 (ffi:def-function ("IsGamepadButtonPressed" is-gamepad-button-pressed-raw)
     ((gamepad :int)
@@ -442,8 +442,8 @@
   ;; HACK: 2025-01-03 Bool.
   :returning :unsigned-byte)
 
-(defun is-gamepad-button-pressed ()
-  (= 1 (is-gamepad-button-pressed-raw)))
+(defun is-gamepad-button-pressed (gamepad key)
+  (= 1 (is-gamepad-button-pressed-raw gamepad key)))
 
 (ffi:def-function ("IsGamepadButtonDown" is-gamepad-button-down-raw)
     ((gamepad :int)
@@ -451,8 +451,8 @@
   ;; HACK: 2025-01-03 Bool.
   :returning :unsigned-byte)
 
-(defun is-gamepad-button-down ()
-  (= 1 (is-gamepad-button-down-raw)))
+(defun is-gamepad-button-down (gamepad key)
+  (= 1 (is-gamepad-button-down-raw gamepad key)))
 
 ;; --- Collision --- ;;
 

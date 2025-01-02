@@ -111,7 +111,11 @@
   "Initialise the various game resources."
   (let ((sprites (@sprites))
         (music   (@music)))
+    #+sbcl
     (setf (->> music music-intro raylib:music-looping) nil)
+    ;; HACK: 2025-01-03 Need better bool handling.
+    #+ecl
+    (setf (->> music music-intro raylib:music-looping) 0)
     (make-game :sprites sprites
                :sounds (@sounds)
                :music music

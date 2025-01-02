@@ -150,7 +150,7 @@ single beam shot will never damage the same enemy twice.")
 (raylib:get-gamepad-name 0)
 
 ;; NOTE: See also `debugging-gamepad' in `input.lisp'.
-(defparameter +gamepad+ 0)
+(defparameter +gamepad+ 2)
 (defparameter +gamepad-a+ #.(raylib:gamepad-button :right-face-right))
 (defparameter +gamepad-b+ #.(raylib:gamepad-button :right-face-down))
 (defparameter +gamepad-up+    #.(raylib:gamepad-button :left-face-up))
