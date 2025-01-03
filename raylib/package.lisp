@@ -27,6 +27,9 @@
 
 (in-package :raylib)
 
+#+ecl
+(declaim (optimize (speed 3) (debug 1) (safety 1)))
+
 ;; TODO: 2024-12-25 Probably need an `eval-when' here.
 #+sbcl
 (progn
@@ -37,8 +40,8 @@
 ;; are already visible when we start to reference them in other files.
 #+ecl
 (progn
-  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
-  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/raylib/shim.so"))
+  (assert (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so"))
+  (assert (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/raylib/shim.so")))
 
 ;; --- Keyboard and Gamepad --- ;;
 

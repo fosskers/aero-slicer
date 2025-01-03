@@ -5,6 +5,7 @@
 ;; For access to `free'.
 (ffi:clines "#include <stdlib.h>")
 
+;; NOTE: 2025-01-03 This is highly bespoke and comes directly from the maintainer of ECL.
 (defun free! (ptr)
   "A custom call to C's `free' that ensures everything is properly reset."
   (ffi:c-inline (ptr) (:object) :void
