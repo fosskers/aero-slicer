@@ -40,8 +40,8 @@
 ;; are already visible when we start to reference them in other files.
 #+ecl
 (progn
-  (assert (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so"))
-  (assert (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/raylib/shim.so")))
+  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
+  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/raylib/shim.so"))
 
 ;; --- Keyboard and Gamepad --- ;;
 

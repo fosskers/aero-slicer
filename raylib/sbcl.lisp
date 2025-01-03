@@ -21,8 +21,13 @@
   (x float)
   (y float))
 
+#++
+(type-of (make-vector2-raw 1.0 2.0))
+
 (defstruct (vector2 (:constructor @vector2))
-  (pointer nil :type alien))
+  (pointer nil :type (alien (* (struct vector2-raw
+                                       (x single-float :offset 0)
+                                       (y single-float :offset 32))))))
 
 (defun make-vector2 (&key x y)
   (let* ((ptr (make-vector2-raw x y))
@@ -60,8 +65,15 @@
   (width float)
   (height float))
 
+#++
+(type-of (make-rectangle-raw 1.0 2.0 16.0 16.0))
+
 (defstruct (rectangle (:constructor @rectangle))
-  (pointer nil :type alien))
+  (pointer nil :type (alien (* (struct rectangle-raw
+                                       (x      single-float :offset 0)
+                                       (y      single-float :offset 32)
+                                       (width  single-float :offset 64)
+                                       (height single-float :offset 96))))))
 
 (defun make-rectangle (&key x y width height)
   (let* ((pointer (make-rectangle-raw x y width height))
@@ -404,4 +416,3 @@
 (defun check-collision-recs (rec1 rec2)
   (check-collision-recs-raw (rectangle-pointer rec1)
                             (rectangle-pointer rec2)))
-

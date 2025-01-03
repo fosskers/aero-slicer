@@ -4,8 +4,10 @@
 (launch)
 
 #++
+(declaim (optimize (speed 1) (debug 3) (safety 1)))
+#++
 (flamegraph:save-flame-graph ("sbcl.fg")
-                             (launch))
+  (launch))
 
 ;; --- Dependency Graph --- ;;
 
