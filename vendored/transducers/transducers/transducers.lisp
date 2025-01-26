@@ -324,16 +324,33 @@ input than N, then this yields nothing.
   "Transducer: Only allow values to pass through the transduction once each.
 Stateful; this uses a Hash Table internally so could get quite heavy if you're
 not careful."
-  (let ((seen (make-hash-table :test #'equal)))
-    (lambda (result &optional (input nil i-p))
-      (if i-p (if (gethash input seen)
-                  result
-                  (progn (setf (gethash input seen) t)
-                         (funcall reducer result input)))
-          (funcall reducer result)))))
+  (funcall (unique-by #'identity) reducer))
 
 #+nil
 (transduce #'unique #'cons '(1 2 1 3 2 1 2 "abc"))
+
+(defun unique-by (f)
+  "Transducer: Only allow values to pass through the transduction once each,
+determined by some key-mapping function. The function is only used to map the
+values to something they should be compared to; the original values themselves
+are what is passed through.
+
+Stateful; this uses a Hash Table internally so could get quite heavy if you're
+not careful."
+  (lambda (reducer)
+    (let ((seen (make-hash-table :test #'equal)))
+      (lambda (result &optional (input nil i-p))
+        (if i-p (let ((mapped (funcall f input)))
+                  (if (gethash mapped seen)
+                      result
+                      (progn (setf (gethash mapped seen) t)
+                             (funcall reducer result input))))
+            (funcall reducer result))))))
+
+#++
+(transduce (unique-by #'identity) #'cons '(1 2 1 3 2 1 2 "abc"))
+#++
+(transduce (unique-by #'cdr) #'cons '(("a" . 1) ("b" . 2) ("c" . 1) ("d" . 3)))
 
 (defun dedup (reducer)
   "Transducer: Remove adjacent duplicates from the transduction."
@@ -409,22 +426,34 @@ applications of a given function F.
 (defun once (item)
   "Transducer: Inject some ITEM onto the front of the transduction."
   (lambda (reducer)
-    (let ((item item))
+    (let ((unused? t))
       (lambda (result &optional (input nil i-p))
-        (if i-p (if item
-                    (let ((res (funcall reducer result item)))
-                      (if (reduced-p res)
-                          res
-                          (progn (setf item nil)
-                                 (funcall reducer res input))))
-                    (funcall reducer result input))
-            (funcall reducer result))))))
+        (cond ((and i-p unused?)
+               (let ((res (funcall reducer result item)))
+                 (if (reduced-p res)
+                     res
+                     (progn (setf unused? nil)
+                            (funcall reducer res input)))))
+              (i-p (funcall reducer result input))
+              ;; A weird case where they specified `once', but the original
+              ;; Source itself was empty.
+              ((and (not i-p) unused?)
+               (let ((res (funcall reducer result item)))
+                 (if (reduced-p res)
+                     (funcall reducer (reduced-val res))
+                     (funcall reducer res))))
+              (t (funcall reducer result)))))))
 
 #+nil
 (transduce (comp (filter (lambda (n) (> n 10)))
                  (once 'hi)
                  (take 3))
            #'cons (ints 1))
+
+#++
+(transduce (once nil) #'cons '(0))
+#++
+(transduce (once nil) #'cons '())
 
 (defun from-csv (reducer)
   "Transducer: Interpret the data stream as CSV data.
@@ -457,7 +486,7 @@ need for the caller to manually pass a REDUCER."
 
 This removes any extra whitespace that might be hanging around between elements."
   (mapcar (lambda (s) (string-trim " " s))
-          (uiop:split-string line :separator ",")))
+          (string-split line :separator #\,)))
 
 (defun into-csv (headers)
   "Transducer: Given a sequence of HEADERS, rerender each item in the data stream
@@ -468,7 +497,9 @@ table whose keys are strings that match the values found in HEADERS.
 
 - `empty-argument': when an empty HEADERS sequence is given.
 "
-  (if (uiop:emptyp headers)
+  (if (etypecase headers
+        (list      (null headers))
+        (cl:vector (zerop (length headers))))
       (restart-case (error 'empty-argument :fn "headers")
         (use-value (value)
           :report "Supply a default value and reattempt the transduction."
@@ -488,10 +519,10 @@ table whose keys are strings that match the values found in HEADERS.
 
 #+nil
 (transduce (comp #'from-csv (into-csv '("Name" "Age")))
-           #'cons '("Name,Age,Hair" "Colin,35,Blond" "Tamayo,26,Black"))
+           #'cons '("Name,Age,Hair" "Colin,35,Blond" "Jack,26,Black"))
 #+nil
 (transduce (comp #'from-csv (into-csv '()))
-           #'cons '("Name,Age,Hair" "Colin,35,Blond" "Tamayo,26,Black"))
+           #'cons '("Name,Age,Hair" "Colin,35,Blond" "Jack,26,Black"))
 
 (defun table-vals->csv (headers table)
   "Given some HEADERS to compare to, convert a hash TABLE to a rendered CSV string

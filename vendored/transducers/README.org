@@ -36,17 +36,26 @@ evenly-lengthed lines./
 #+end_src
 
 #+RESULTS:
-: 7026
-
-_This library has been confirmed to work with SBCL, CCL, ECL, Clasp and LispWorks 8._
-
-#+begin_quote
-⚠ ABCL cannot be used due to lack of support for tail-call elimination within ~labels~.
-
-⚠ Allegro support is partial for the same reason; large sources blow the stack.
-#+end_quote
+: 10696
 
 Looking for Transducers in other Lisps? Check out the [[https://codeberg.org/fosskers/transducers.el][Emacs Lisp]] and [[https://git.sr.ht/~fosskers/transducers.fnl][Fennel]] implementations!
+
+* Compatibility
+
+- Compiles: does =(asdf:load-system :transducers)= succeed?
+- Tests: does =(asdf:test-system :transducers)= succeed?
+
+| Compiler  | Compiles? | Tests? | Notes                      |
+|-----------+-----------+--------+----------------------------|
+| SBCL      | ✅       | ✅    |                            |
+| ECL       | ✅       | ✅    |                            |
+| Clasp     | ✅       | -      |                            |
+| ABCL      | ✅       | ❌    | No [[https://en.wikipedia.org/wiki/Tail_call][TCO]] in recursive =labels= |
+| CCL       | ✅       | ✅    |                            |
+| Allegro   | ✅       | -      |                            |
+| LispWorks | ✅       | -      |                            |
+
+[[https://wiki.archlinux.org/title/Common_Lisp#Historical][Historical implementations]] are not considered.
 
 * History and Motivation
 
@@ -244,7 +253,7 @@ Apply a function F to all elements of the transduction.
 #+RESULTS:
 : (2 3 4)
 
-*** filter, filter-map, unique, dedup
+*** filter, filter-map, unique, unique-by, dedup
 
 Only keep elements from the transduction that satisfy PRED.
 
@@ -277,6 +286,20 @@ uses a set internally so could get quite heavy if you're not careful.
 
 #+RESULTS:
 : (1 2 3 "abc")
+
+Only allow values to pass through the transduction once each, determined by some
+key-mapping function. The function is only used to map the values to something
+they should be compared to; the original values themselves are what is passed
+through. Stateful; this uses a Hash Table internally so could get quite heavy if
+you're not careful.
+
+#+begin_src lisp :results verbatim :exports both
+(in-package :transducers)
+(transduce (unique-by #'cdr) #'cons '((:a . 1) (:b . 2) (:c . 1) (:d . 3)))
+#+end_src
+
+#+RESULTS:
+: ((:A . 1) (:B . 2) (:D . 3))
 
 Remove adjacent duplicates from the transduction.
 

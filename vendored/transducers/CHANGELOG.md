@@ -4,7 +4,19 @@
 
 #### Added
 
+- `unique-by` for more control over how uniqueness is determined.
+
+### 1.3.1 (2025-01-13)
+
+#### Added
+
 - `reduced` as a better wrapper than calling the constructor `make-reduced` manually.
+
+#### Fixed
+
+- Purged usage of `uiop` which was causing problems downstream.
+- `once` handles a `nil` argument better.
+- Apply `(optimize (speed 3))` on all `*-reduce` functions.
 
 ### 1.3.0 (2024-11-02)
 
