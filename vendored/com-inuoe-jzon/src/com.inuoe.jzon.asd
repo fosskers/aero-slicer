@@ -6,8 +6,7 @@
   :depends-on (#:closer-mop
                #:flexi-streams
                (:feature (:not :ecl) #:float-features)
-               #:trivial-gray-streams
-               #:uiop)
+               #:trivial-gray-streams)
   :in-order-to ((test-op (test-op "com.inuoe.jzon-tests")))
   :components ((:file "eisel-lemire")
                (:file "ratio-to-double")
