@@ -76,14 +76,6 @@ Make sure to start Sly from the project root.
 
 *** SBCL
 
-If =raylib= has not yet been built:
-
-#+begin_example
-sbcl --dynamic-space-size 4GB --load build.lisp
-#+end_example
-
-Otherwise:
-
 #+begin_example
 sbcl --load build.lisp
 #+end_example
@@ -94,10 +86,3 @@ sbcl --load build.lisp
 ecl --load build.lisp
 #+end_example
 
-** Updating Raylib
-
-1. Reclone [[https://github.com/bohonghuang/cffi-object]] and
-   [[https://github.com/bohonghuang/cffi-ops]] if they've changed.
-2. Reclone https://github.com/bohonghuang/claw-raylib and move to its =prebuilt= branch.
-3. Delete all references to =raygui=. The git diff helps here.
-4. Run =raylib.sh= to generate the "adapter" =.so= files.
