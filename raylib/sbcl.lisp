@@ -107,6 +107,7 @@
   (b unsigned-char)
   (a unsigned-char))
 
+;; FIXME: 2025-01-27 Offsets here too?
 (defstruct (color (:constructor @color))
   (pointer nil :type alien))
 
@@ -134,6 +135,7 @@
             (mipmaps int)
             (format int)))
 
+;; FIXME: 2025-01-27 Offsets here too?
 (defstruct (texture (:constructor @texture))
   (pointer nil :type alien))
 
@@ -220,6 +222,7 @@
             (stream (struct audio-stream))
             (frame-count unsigned-int)))
 
+;; FIXME: 2025-01-27 Offsets here too?
 (defstruct (sound (:constructor @sound))
   (pointer nil :type alien))
 
@@ -251,6 +254,7 @@
             (ctx-type int)
             (ctx-data (* t))))
 
+;; FIXME: 2025-01-27 Offsets here too?
 (defstruct (music (:constructor @music))
   (pointer nil :type alien))
 
@@ -298,6 +302,7 @@
             (rotation float)
             (zoom float)))
 
+;; FIXME: 2025-01-27 Offsets here too?
 (defstruct (camera-2d (:constructor @camera-2d))
   (pointer nil :type alien))
 

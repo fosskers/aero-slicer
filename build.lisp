@@ -9,13 +9,16 @@
 (format t "--- COMPILING EXECUTABLE ---~%")
 
 #+ecl
-(asdf:make-build :aero-fighter
-                 :type :program
-                 :move-here #p"./"
-                 :epilogue-code
-                 '(progn
-                   (aero-fighter:launch)
-                   (si:exit)))
+(progn
+  (setf c:*user-linker-flags* "-Wl,-rpath,/home/colin/code/common-lisp/aero-fighter/lib/ -L/home/colin/code/common-lisp/aero-fighter/lib/")
+  (setf c:*user-linker-libs*  "-lraylib -lshim")
+  (asdf:make-build :aero-fighter
+                   :type :program
+                   :move-here #p"./"
+                   :epilogue-code
+                   '(progn
+                     (aero-fighter:launch)
+                     (si:exit))))
 
 #+sbcl
 (progn

@@ -33,15 +33,15 @@
 ;; TODO: 2024-12-25 Probably need an `eval-when' here.
 #+sbcl
 (progn
-  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
-  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/raylib/shim.so"))
+  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/lib/libraylib.so")
+  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/lib/libshim.so"))
 
 ;; NOTE: 2025-01-03 We preload the shared libraries here to ensure that all functions
 ;; are already visible when we start to reference them in other files.
 #+ecl
 (progn
-  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
-  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/raylib/shim.so"))
+  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/lib/libraylib.so")
+  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/lib/libshim.so"))
 
 ;; --- Keyboard and Gamepad --- ;;
 
