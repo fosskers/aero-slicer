@@ -8,9 +8,6 @@
 
 (in-package :aero-fighter)
 
-#+ecl
-(declaim (optimize (speed 3) (debug 1) (safety 1)))
-
 #-(or sbcl ecl)
 (error "Aero Fighter can only be compiled with SBCL or ECL.")
 

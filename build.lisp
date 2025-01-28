@@ -6,7 +6,8 @@
 #+ecl
 (progn
   (setf c:*user-linker-flags* "-Wl,-rpath,/home/colin/code/common-lisp/aero-fighter/lib/ -L/home/colin/code/common-lisp/aero-fighter/lib/")
-  (setf c:*user-linker-libs*  "-lraylib -lshim"))
+  (setf c:*user-linker-libs*  "-lraylib -lshim")
+  (declaim (optimize (speed 3) (debug 1) (safety 1))))
 
 (format t "--- COMPILING SYSTEM ---~%")
 (asdf:compile-system :aero-fighter)
