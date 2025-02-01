@@ -13,6 +13,8 @@
 (defun warp-button-down? ()
   "Is the warp trigger being held down?"
   (or (raylib:is-key-down +key-tab+)
+      (raylib:is-gamepad-button-down +gamepad+ +gamepad-y+)
+      (raylib:is-gamepad-button-down +gamepad+ +gamepad-x+)
       (raylib:is-gamepad-button-down +gamepad+ +gamepad-left-shoulder+)
       (raylib:is-gamepad-button-down +gamepad+ +gamepad-right-shoulder+)))
 
