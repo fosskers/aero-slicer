@@ -377,15 +377,6 @@
 (defun draw-text (text pos-x pos-y font-size color)
   (draw-text-raw text pos-x pos-y font-size (color-pointer color)))
 
-(define-alien-routine ("_DrawCircle" draw-circle-raw) void
-  (center-x int)
-  (center-y int)
-  (radius float)
-  (color (* (struct color-raw))))
-
-(defun draw-circle (center-x center-y radius color)
-  (draw-circle-raw center-x center-y radius (color-pointer color)))
-
 (define-alien-routine ("_DrawRectangle" draw-rectangle-raw) void
   (pos-x int)
   (pos-y int)

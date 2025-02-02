@@ -66,8 +66,6 @@ void _BeginMode2D(Camera2D *camera);
 void _DrawText(const char *text, int posX, int posY, int fontSize,
                Color *color);
 
-void _DrawCircle(int centerX, int centerY, float radius, Color *color);
-
 void _DrawRectangle(int posX, int posY, int width, int height, Color *color);
 
 // --- Collision --- //

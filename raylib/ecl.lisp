@@ -398,16 +398,6 @@
 (defun draw-text (text pos-x pos-y font-size color)
   (draw-text-raw text pos-x pos-y font-size (color-pointer color)))
 
-(ffi:def-function ("_DrawCircle" draw-circle-raw)
-    ((center-x :int)
-     (center-y :int)
-     (radius :float)
-     (color (* color-raw)))
-  :returning :void)
-
-(defun draw-circle (center-x center-y radius color)
-  (draw-circle-raw center-x center-y radius (color-pointer color)))
-
 (ffi:def-function ("_DrawRectangle" draw-rectangle-raw)
     ((pos-x :int)
      (pos-y :int)

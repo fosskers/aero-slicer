@@ -193,12 +193,6 @@ void _DrawText(const char *text, int posX, int posY, int fontSize,
   DrawText(text, posX, posY, fontSize, stack);
 }
 
-void _DrawCircle(int centerX, int centerY, float radius, Color *color) {
-  Color stack;
-  stack = *color;
-  DrawCircle(centerX, centerY, radius, stack);
-}
-
 void _DrawRectangle(int posX, int posY, int width, int height, Color *color) {
   Color stack;
   stack = *color;
