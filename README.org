@@ -51,23 +51,23 @@ etc. The rest of the game logic is in pure Common Lisp.
 
 * Minutia
 
+/This is not yet generally available for building by others./
+
 ** REPL Loading
 
-All dependencies are vendored, so we need to help ASDF by telling it to only
-look in this project folder when searching for systems:
+As all dependencies are vendored, [[https://github.com/fosskers/vend][vend]] is recommended for accessing these from a
+REPL.
 
-#+begin_src lisp
-(require :asdf)
-(asdf:initialize-source-registry `(:source-registry (:tree ,(uiop:getcwd)) :ignore-inherited-configuration))
-#+end_src
+#+begin_example
+vend repl
+#+end_example
 
-The =load.lisp= file provides this. Within Emacs, you can then define an alternate
-connection scheme for Sly:
+Within Emacs, you can then define an alternate connection scheme for Sly:
 
 #+begin_src emacs-lisp
-(setq sly-lisp-implementations
-      '((sbcl-vendored ("sbcl" "--dynamic-space-size" "4GB" "--load" "load.lisp") :coding-system utf-8-unix)
-        (ecl-vendored  ("ecl" "--load" "load.lisp") :coding-system utf-8-unix)))
+(setq sly-default-lisp 'sbcl
+      sly-lisp-implementations '((sbcl ("vend" "repl" "sbcl") :coding-system utf-8-unix)
+                                 (ecl  ("vend" "repl" "ecl")  :coding-system utf-8-unix)))
 #+end_src
 
 Make sure to start Sly from the project root.
