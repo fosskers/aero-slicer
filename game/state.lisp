@@ -42,10 +42,11 @@
   (cannon-bulb (@sprite #p"assets/cannon-bulb.json"))
   (cannon-beam (@sprite #p"assets/cannon-beam.json"))
   (logo      (raylib:load-texture "assets/logo.png"))
-  (sa-logo   (raylib:load-texture "assets/sa-logo.png"))
-  (ground    (raylib:load-texture "assets/lighter-ground.png"))
   (road      (raylib:load-texture "assets/road.png"))
+  (test      (raylib:load-texture "assets/test.png"))
+  (ground    (raylib:load-texture "assets/lighter-ground.png"))
   (shadow    (raylib:load-texture "assets/shadow.png"))
+  (su-logo   (raylib:load-texture "assets/su-logo.png"))
   (controller (raylib:load-texture "assets/controller.png"))
   (blob-shadow (raylib:load-texture "assets/blob-shadow.png"))
   (missile-shadow (raylib:load-texture "assets/missile-shadow.png"))
@@ -105,7 +106,10 @@
   (mode  :booting :type symbol)
   (level 1 :type fixnum)
   ;; The point after which the level should increase.
-  (level-thresh +level-progression-interval+ :type fixnum))
+  (level-thresh +level-progression-interval+ :type fixnum)
+  ;; On the landing screen, has the user pressed any button? We use this to make
+  ;; the word "test" disappear.
+  (anything-pressed? nil :type symbol))
 
 (defun @game ()
   "Initialise the various game resources."
@@ -266,7 +270,8 @@
   (raylib:unload-texture (sprites-building-shadow sprites))
   (raylib:unload-texture (sprites-missile-shadow sprites))
   (raylib:unload-texture (sprites-logo sprites))
-  (raylib:unload-texture (sprites-sa-logo sprites)))
+  (raylib:unload-texture (sprites-su-logo sprites))
+  (raylib:unload-texture (sprites-test sprites)))
 
 (defun unload-sounds (sounds)
   (raylib:unload-sound (sounds-beam-collect sounds))

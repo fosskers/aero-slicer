@@ -7,7 +7,7 @@
 
 ;; --- Second Universe Logo --- ;;
 
-(defun draw-sa-logo (texture fc)
+(defun draw-su-logo (texture fc)
   "Draw the Second Universe Logo with fade-in, fade-out."
   (let* ((colour (if (< fc +frame-rate+)
                      (raylib:color-alpha +white+ (/ 1.0 (- (1+ +frame-rate+) fc)))
