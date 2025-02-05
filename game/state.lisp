@@ -109,7 +109,9 @@
   (level-thresh +level-progression-interval+ :type fixnum)
   ;; On the landing screen, has the user pressed any button? We use this to make
   ;; the word "test" disappear.
-  (anything-pressed? nil :type symbol))
+  (anything-pressed? nil :type symbol)
+  ;; The frame upon which the user pressed Start.
+  (frame-started 0 :type fixnum))
 
 (defun @game ()
   "Initialise the various game resources."
@@ -146,6 +148,7 @@
   (setf (game-mode game) :playing)
   (setf (game-powerup-threshold game) +powerup-spawn-interval+)
   (setf (game-level-thresh game) +level-progression-interval+)
+  (setf (game-frame-started game) (game-frame game))
   (let ((fighter (game-fighter game)))
     (setf (fighter-bombs fighter) 3)
     (setf (fighter-shielded? fighter) nil)

@@ -26,7 +26,8 @@
   (move! (game-logo game))
   (when (or (raylib:is-key-down +key-space+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+))
-    (setf (game-mode game) :playing)))
+    (setf (game-mode game) :playing)
+    (setf (game-frame-started game) (game-frame game))))
 
 (defun update-dead! (game)
   "The player is dead, and they might restart the game."
@@ -399,7 +400,8 @@ the player is pressing."
 
 (defun render-playing (game)
   "Render a running game."
-  (let ((fc (game-frame game)))
+  (let* ((fc (game-frame game))
+         (diff (- fc (game-frame-started game))))
     (draw (game-ground game) fc)
     (draw (game-road game) (game-frame game))
     (render-enemies game)
@@ -409,6 +411,9 @@ the player is pressing."
     (when-let* ((fighter (game-fighter game))
                 (dir     (fighter-warp-dir fighter)))
       (draw-ghost (game-warp-ghost game) dir (fighter-pos fighter) (game-frame game)))
+    (when (and (< diff (* 1.5 +frame-rate+))
+               (< (mod diff #.(/ +frame-rate+ 2)) 15))
+      (raylib:draw-text "REACH GOD MODE!" -47 0 10 +white+))
     #++ (debugging-nearness (game-fighter game) (game-blobs game))))
 
 (defun render-dead (game)
