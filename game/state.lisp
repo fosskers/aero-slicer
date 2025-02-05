@@ -64,7 +64,8 @@
   (bomb-use     (raylib:load-sound "assets/sound/Hit 7.wav"))
   (shield-down  (raylib:load-sound "assets/sound/Hit 3.wav"))
   (god-mode     (raylib:load-sound "assets/sound/Power Up 2.wav"))
-  (cannon       (raylib:load-sound "assets/sound/playerLaser.wav")))
+  (cannon       (raylib:load-sound "assets/sound/playerLaser.wav"))
+  (warp         (raylib:load-sound "assets/sound/Teleport.ogg")))
 
 (defstruct (music (:constructor @music))
   (intro (raylib:load-music-stream "assets/sound/BossIntro.ogg"))
@@ -287,7 +288,8 @@
   (raylib:unload-sound (sounds-get-ammo sounds))
   (raylib:unload-sound (sounds-bomb-use sounds))
   (raylib:unload-sound (sounds-god-mode sounds))
-  (raylib:unload-sound (sounds-cannon sounds)))
+  (raylib:unload-sound (sounds-cannon sounds))
+  (raylib:unload-sound (sounds-warp sounds)))
 
 (defun unload-music (music)
   (raylib:unload-music-stream (music-intro music))

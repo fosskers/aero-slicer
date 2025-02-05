@@ -245,7 +245,8 @@
   (let ((warp-pressed? (warp-button-down?)))
     (cond ((and (fighter-warp-dir fighter)
                 (not warp-pressed?))
-           (move-by-warp! fighter))
+           (move-by-warp! fighter)
+           :warped)
           (warp-pressed? nil)
           (t (move-by-press! fighter)))))
 
