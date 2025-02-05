@@ -18,6 +18,12 @@
 (defun update-booting! (game)
   (when (> (game-frame game)
            (* 2 +frame-rate+))
+    ;; NOTE: 2025-02-06 If we attempt to set the controller value too quickly
+    ;; (say, in `launch'), Raylib might not be ready yet and report that it
+    ;; can't find any controllers. By doing it here instead, the system has had
+    ;; 2 seconds to warm up, and at least experimentally the controllers can be
+    ;; detected by this point.
+    (set-controller)
     (setf (game-mode game) :waiting)))
 
 (defun update-waiting! (game)
@@ -511,6 +517,11 @@ executables."
     (update! game)
     (render game)
     (event-loop game)))
+
+(defun set-controller ()
+  (setf +gamepad+
+        (t:transduce (t:take-while #'raylib:is-gamepad-available)
+                     (t:fold (lambda (acc n) (declare (ignore acc)) n) 0) (t:ints 0))))
 
 (defun launch ()
   "Launch the game."
