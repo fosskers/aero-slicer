@@ -9,14 +9,11 @@
   (setf c:*user-linker-libs*  "-lraylib -lshim")
   (declaim (optimize (speed 3) (debug 1) (safety 1))))
 
-;; Compiling as a separate step ensures that FFI-related systems are properly
-;; compiled and linked. Otherwise, under ECL, just naively loading can result in
-;; missing C symbols. Once we've compiled like this at least once, subsequent
-;; `load-system' calls, including in the REPL, "just work".
-(format t "--- COMPILING SYSTEM ---~%")
-(asdf:compile-system :aero-fighter)
 (format t "--- LOADING SYSTEM ---~%")
-(asdf:load-system :aero-fighter)
+;; NOTE: 2025-02-07 The `:force' is to ensure that an ECL-based build properly
+;; compiles and loads all its files. This is critical to ensure that no C-level
+;; symbols are missing, say from shared objects.
+(asdf:load-system :aero-fighter :force t)
 
 #+ecl
 (progn
