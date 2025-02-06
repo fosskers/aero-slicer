@@ -332,10 +332,13 @@
   ;; (3) Use a custom wrapper struct whose finalizer I control.
   :returning :cstring)
 
-(ffi:def-function ("IsGamepadAvailable" is-gamepad-available)
+(ffi:def-function ("IsGamepadAvailable" is-gamepad-available-raw)
     ((gamepad :int))
   ;; HACK: 2025-01-03 Bools again.
   :returning :unsigned-byte)
+
+(defun is-gamepad-available (n)
+  (= 1 (is-gamepad-available-raw n)))
 
 ;; --- Window --- ;;
 

@@ -419,7 +419,7 @@ the player is pressing."
                 (dir     (fighter-warp-dir fighter)))
       (draw-ghost (game-warp-ghost game) dir (fighter-pos fighter) (game-frame game)))
     (when (and (< diff (* 1.5 +frame-rate+))
-               (< (mod diff #.(/ +frame-rate+ 2)) 15))
+               (< (mod diff (/ +frame-rate+ 2)) 15))
       (raylib:draw-text "REACH GOD MODE!" -47 0 10 +white+))
     #++ (debugging-nearness (game-fighter game) (game-blobs game))))
 
