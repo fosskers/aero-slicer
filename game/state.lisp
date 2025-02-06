@@ -112,7 +112,9 @@
   ;; the word "test" disappear.
   (anything-pressed? nil :type symbol)
   ;; The frame upon which the user pressed Start.
-  (frame-started 0 :type fixnum))
+  (frame-started 0 :type fixnum)
+  (gamepads nil :type list)
+  (curr-pad-pos (raylib:make-vector2 :x +curr-pad-x+ :y +curr-pad-y+) :type raylib:vector2))
 
 (defun @game ()
   "Initialise the various game resources."

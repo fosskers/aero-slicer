@@ -23,13 +23,17 @@
     ;; can't find any controllers. By doing it here instead, the system has had
     ;; 2 seconds to warm up, and at least experimentally the controllers can be
     ;; detected by this point.
-    (set-controller)
+    (find-gamepads! game)
+    (auto-set-gamepad! game)
     (setf (game-mode game) :waiting)))
 
 (defun update-waiting! (game)
   "We're waiting for the player to start the game."
   (update-environment! game)
   (move! (game-logo game))
+  (when (switch-gamepad? game)
+    (setf (game-anything-pressed? game) t)
+    (set-gamepad! (mod (1+ +gamepad+) (length (game-gamepads game)))))
   (when (or (raylib:is-key-down +key-space+)
             (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+))
     (setf (game-mode game) :playing)
@@ -310,7 +314,7 @@ schedule."
     (draw (game-ground game) fc)
     (draw (game-road game) fc)
     (draw (game-logo game) fc)
-    (draw-controller game)
+    (draw-controller! game)
     (when (< (mod fc +frame-rate+) 30)
       (raylib:draw-text (format nil "PRESS START")
                         (- 0 37) 40 10 +white+))
@@ -319,9 +323,16 @@ schedule."
       (raylib:draw-texture (->> game game-sprites sprites-test)
                            (- +world-max-x+ 50)
                            (- +world-max-y+ 10)
-                           +white+))))
+                           +white+))
+    (when (game-anything-pressed? game)
+      (let* ((sprite    (->> game game-sprites sprites-numbers))
+             (texture   (sprite-texture sprite))
+             (animation (gethash :numbers (sprite-animations sprite))))
+        (draw-at-frame texture animation
+                       (game-curr-pad-pos game)
+                       +gamepad+)))))
 
-(defun draw-controller (game)
+(defun draw-controller! (game)
   "Draw a little controller in the corner, with button highlights depending on what
 the player is pressing."
   (raylib:draw-texture (->> game game-sprites sprites-controller)
@@ -517,11 +528,6 @@ executables."
     (update! game)
     (render game)
     (event-loop game)))
-
-(defun set-controller ()
-  (setf +gamepad+
-        (t:transduce (t:take-while #'raylib:is-gamepad-available)
-                     (t:fold (lambda (acc n) (declare (ignore acc)) n) 0) (t:ints 0))))
 
 (defun launch ()
   "Launch the game."

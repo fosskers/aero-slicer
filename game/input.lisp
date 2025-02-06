@@ -42,24 +42,31 @@
 
 ;; --- Gamepads --- ;;
 
-#++
-(defun set-gamepad! ()
-  "Set the global gamepad number to a known, good value."
-  (let ((gamepad (->> (gamepads) car car)))
-    (if gamepad
-        (setf +gamepad+ gamepad)
-        (setf +gamepad+ 0))))
-
-#++
 (defun gamepads ()
   "The current gamepads detected by the system."
-  (t:transduce (t:comp (t:take-while #'raylib:is-gamepad-available)
-                       (t:map #'raylib:get-gamepad-name)
-                       #'t:enumerate)
-               #'t:snoc (t:ints 0)))
+  (t:transduce (t:take-while #'raylib:is-gamepad-available)
+               #'t:cons (t:ints 0)))
 
 #++
 (gamepads)
+
+(defun find-gamepads! (game)
+  "Keep track of all available gamepads."
+  (setf (game-gamepads game) (gamepads)))
+
+(defun switch-gamepad? (game)
+  "Is the user requesting a gamepad switch?"
+  (t:transduce #'t:pass
+               (t:anyp (lambda (pad) (raylib:is-gamepad-button-pressed pad +gamepad-select+)))
+               (game-gamepads game)))
+
+(defun set-gamepad! (n)
+  "Set the current in-use gamepad."
+  (setf +gamepad+ n))
+
+(defun auto-set-gamepad! (game)
+  "Just pick one."
+  (set-gamepad! (or (car (last (game-gamepads game))) 0)))
 
 ;; --- Debugging --- ;;
 

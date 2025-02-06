@@ -88,6 +88,8 @@ single beam shot will never damage the same enemy twice.")
 (defparameter +level-x+  (+ 100 +world-min-x+))
 (defparameter +level-y+  (+ 2 +world-min-y+))
 (defparameter +logo-lower-bound+ (+ +world-min-y+ 32))
+(defparameter +curr-pad-x+ (float (- +world-max-x+ 38)))
+(defparameter +curr-pad-y+ (float (- +world-max-y+ 9)))
 
 ;; --- Colours --- ;;
 
@@ -156,6 +158,7 @@ single beam shot will never damage the same enemy twice.")
 (defparameter +gamepad-left+  #.(raylib:gamepad-button :left-face-left))
 (defparameter +gamepad-right+ #.(raylib:gamepad-button :left-face-right))
 (defparameter +gamepad-start+ #.(raylib:gamepad-button :middle-right))
+(defparameter +gamepad-select+ #.(raylib:gamepad-button :middle-left))
 (defparameter +gamepad-left-shoulder+ #.(raylib:gamepad-button :left-trigger-1))
 (defparameter +gamepad-right-shoulder+ #.(raylib:gamepad-button :right-trigger-1))
 
