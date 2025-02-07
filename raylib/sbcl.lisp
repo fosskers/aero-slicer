@@ -1,15 +1,5 @@
 (in-package :raylib)
 
-#++
-(progn
-  (unload-shared-object #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so")
-  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/vendored/raylib/src/libraylib.so"))
-
-#++
-(progn
-  (unload-shared-object #p"/home/colin/code/common-lisp/aero-fighter/c/shim.so")
-  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/c/shim.so"))
-
 ;; --- Vectors --- ;;
 
 (define-alien-type nil

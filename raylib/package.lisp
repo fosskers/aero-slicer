@@ -27,14 +27,11 @@
 
 (in-package :raylib)
 
-#+ecl
-(declaim (optimize (speed 3) (debug 1) (safety 1)))
-
 ;; TODO: 2024-12-25 Probably need an `eval-when' here.
 #+sbcl
 (progn
-  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/lib/libraylib.so")
-  (load-shared-object #p"/home/colin/code/common-lisp/aero-fighter/lib/libshim.so"))
+  (load-shared-object #p"lib/libraylib.so")
+  (load-shared-object #p"lib/libshim.so"))
 
 ;; NOTE: 2025-01-03 We preload the shared libraries here to ensure that all functions
 ;; are already visible when we start to reference them in other files.
