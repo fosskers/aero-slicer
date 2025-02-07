@@ -1,5 +1,89 @@
 #+title: Aero Fighter
 
+* Table of Contents :TOC_5_gh:noexport:
+- [[#building][Building]]
+  - [[#library-preparation][Library Preparation]]
+  - [[#repl-loading][REPL Loading]]
+  - [[#compiling-executables][Compiling Executables]]
+    - [[#sbcl][SBCL]]
+    - [[#ecl][ECL]]
+- [[#controls][Controls]]
+- [[#game-mechanics][Game Mechanics]]
+  - [[#spawn-schedule][Spawn Schedule]]
+- [[#coding-conventions][Coding Conventions]]
+- [[#credits][Credits]]
+
+* Building
+
+Aero Fighter can only be built with SBCL and ECL.
+
+** Library Preparation
+
+Before attempting to build Aero Fighter in any way, we must prep its C
+dependencies.
+
+#+begin_example
+./prep.sh
+#+end_example
+
+This will compile Raylib, move =.so= files to their expected locations, and create
+certain symlinks. Now you can load Aero Fighter in your REPL, or build
+standalone executables.
+
+** REPL Loading
+
+As all dependencies are vendored, [[https://github.com/fosskers/vend][vend]] is recommended for accessing these from a
+REPL.
+
+#+begin_example
+vend repl
+#+end_example
+
+Within Emacs, you can then define an alternate connection scheme for Sly:
+
+#+begin_src emacs-lisp
+(setq sly-default-lisp 'sbcl
+      sly-lisp-implementations '((sbcl ("vend" "repl" "sbcl") :coding-system utf-8-unix)
+                                 (ecl  ("vend" "repl" "ecl")  :coding-system utf-8-unix)))
+#+end_src
+
+Make sure to start Sly from the project root.
+
+** Compiling Executables
+
+*** SBCL
+
+#+begin_example
+sbcl --load build.lisp
+#+end_example
+
+*** ECL
+
+#+begin_example
+ecl --load build.lisp
+#+end_example
+* Controls
+
+Given any SNES-like or Xbox 360-like controller:
+
+| Button  | Action                 |
+|---------+------------------------|
+| D-Pad   | Movement               |
+| Start   | Start the Game         |
+| Select  | Switch main controller |
+| A       | Laser                  |
+| B       | Bomb                   |
+| X/Y/L/R | Warp                   |
+
+Keyboards:
+
+| Key    | Action                 |
+|--------+------------------------|
+| Arrows | Movement               |
+| Space  | Start the Game / Laser |
+| Enter  | Bomb                   |
+| Tab    | Warp                   |
+
 * Game Mechanics
 
 ** Spawn Schedule
@@ -48,41 +132,4 @@ etc. The rest of the game logic is in pure Common Lisp.
 | Gumichan01   | [[https://opengameart.org/content/laser-shot][Sound Effects]]  |
 | Joel Burford | [[https://joelfrancisburford.itch.io/jrpg-8-bitchiptune-sfx-pack][Sound Effects]]  |
 | SketchyLogic | [[https://opengameart.org/content/nes-shooter-music-5-tracks-3-jingles][Music]]          |
-
-* Minutia
-
-/This is not yet generally available for building by others./
-
-** REPL Loading
-
-As all dependencies are vendored, [[https://github.com/fosskers/vend][vend]] is recommended for accessing these from a
-REPL.
-
-#+begin_example
-vend repl
-#+end_example
-
-Within Emacs, you can then define an alternate connection scheme for Sly:
-
-#+begin_src emacs-lisp
-(setq sly-default-lisp 'sbcl
-      sly-lisp-implementations '((sbcl ("vend" "repl" "sbcl") :coding-system utf-8-unix)
-                                 (ecl  ("vend" "repl" "ecl")  :coding-system utf-8-unix)))
-#+end_src
-
-Make sure to start Sly from the project root.
-
-** Compiling Executables
-
-*** SBCL
-
-#+begin_example
-sbcl --load build.lisp
-#+end_example
-
-*** ECL
-
-#+begin_example
-ecl --load build.lisp
-#+end_example
 
