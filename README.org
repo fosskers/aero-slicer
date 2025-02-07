@@ -1,6 +1,7 @@
 #+title: Aero Fighter
 
 * Table of Contents :TOC_5_gh:noexport:
+- [[#history][History]]
 - [[#building][Building]]
   - [[#library-preparation][Library Preparation]]
   - [[#repl-loading][REPL Loading]]
@@ -12,6 +13,20 @@
   - [[#spawn-schedule][Spawn Schedule]]
 - [[#coding-conventions][Coding Conventions]]
 - [[#credits][Credits]]
+
+* History
+
+Aero Fighter was a game originally created by a friend of mine over 20 years ago
+in [[https://en.wikipedia.org/wiki/Turbo_Pascal][Turbo Pascal]]. For years he has told me how he'd love to dig out its old
+floppy disk and somehow get it working again.
+
+In an effort to test the feasability of developing with [[https://github.com/raysan5/raylib/][Raylib]] in Common Lisp, I
+have recreated Aero Fighter with many enhancements. It is a simple top-down
+shooter game in NES-style. The goal is simple:
+
+#+begin_quote
+Reach God Mode.
+#+end_quote
 
 * Building
 
