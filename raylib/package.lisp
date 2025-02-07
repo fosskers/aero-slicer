@@ -37,8 +37,8 @@
 ;; are already visible when we start to reference them in other files.
 #+ecl
 (progn
-  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/lib/libraylib.so")
-  (ffi:load-foreign-library #p"/home/colin/code/common-lisp/aero-fighter/lib/libshim.so"))
+  (ffi:load-foreign-library #p"lib/libraylib.so")
+  (ffi:load-foreign-library #p"lib/libshim.so"))
 
 ;; --- Keyboard and Gamepad --- ;;
 
