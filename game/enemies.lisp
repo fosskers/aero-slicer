@@ -558,12 +558,13 @@ perpendicular course instead if he detects he's too close to some object."
 
 ;; --- General --- ;;
 
-(defun random-spawn-position ()
-  "A useful spawn position for enemies."
+(defun random-spawn-position (&key (offset 0))
+  "A useful spawn position for enemies. Can supply an `offset' that will cause the
+entity to be spawned that much further back in the Y direction."
   (let ((rand-x (- (random +world-pixels-x+)
                    +world-max-x+
                    8)))
-    (raylib:make-vector2 :y (float (- +world-min-y+ 36))
+    (raylib:make-vector2 :y (float (- +world-min-y+ 36 offset))
                          :x (float (max +world-min-x+ rand-x)))))
 
 (defun offscreen-vert? (guy)
@@ -587,12 +588,13 @@ despawn them."
 (defun random-off-road (rect buildings road)
   "Find a random spawn position for a building, such that it isn't on the road, nor
 is it overlapping with any existing buildings."
-  (let* ((pos  (random-spawn-position))
+  (let* ((pos  (random-spawn-position :offset 22))
          (pair (make-rect-pos :pos pos :rect rect)))
     (setf (raylib:rectangle-x rect) (raylib:vector2-x pos))
     (setf (raylib:rectangle-y rect) (raylib:vector2-y pos))
     (if (or (any-entity-collision? pair buildings)
-            (any-entity-collision? pair road))
+            (x-overlapping? pos (raylib:rectangle-width rect)
+                            (t:transduce (t:map #'cdr) #'t:first road)))
         (random-off-road rect buildings road)
         pos)))
 
