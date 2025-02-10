@@ -29,6 +29,8 @@
 
 (in-package :raylib)
 
+;; --- Shared Object Loading --- ;;
+
 #+sbcl
 (defun load-shared-objects (&key (target nil))
   "Dynamically load the necessary `.so' files. This is wrapped as a function so that
