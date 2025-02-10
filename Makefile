@@ -1,7 +1,7 @@
-all: aero-fighter
-
-aero-fighter: lib/libraylib.so.550 lib/libshim.so raylib.h shim.h
+aero-fighter: dev
 	sbcl --load build.lisp
+
+dev: lib/libraylib.so.550 lib/libshim.so raylib.h shim.h
 
 lib/:
 	mkdir lib/

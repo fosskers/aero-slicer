@@ -46,7 +46,7 @@ Before attempting to build Aero Fighter in any way, we must prep its C
 dependencies.
 
 #+begin_example
-./prep.sh
+make dev
 #+end_example
 
 This will compile Raylib, move =.so= files to their expected locations, and create
@@ -73,6 +73,8 @@ Within Emacs, you can then define an alternate connection scheme for Sly:
 Make sure to start Sly from the project root.
 
 ** Compiling Executables
+
+You can just run =make=, or use a specific compiler like so:
 
 *** SBCL
 
