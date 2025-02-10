@@ -15,7 +15,8 @@
 ;; NOTE: 2025-02-07 The `:force' is to ensure that an ECL-based build properly
 ;; compiles and loads all its files. This is critical to ensure that no C-level
 ;; symbols are missing, say from shared objects.
-#+ecl (asdf:load-system :raylib :force t)
+#++ (pushnew :release *features*)
+(asdf:load-system :raylib :force t)
 (asdf:load-system :aero-fighter :force t)
 
 #+ecl

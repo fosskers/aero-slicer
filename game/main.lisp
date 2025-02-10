@@ -531,6 +531,8 @@ executables."
 
 (defun launch ()
   "Launch the game."
+  #+(and sbcl release linux) (raylib:load-shared-objects :target :linux)
+  #+sbcl (raylib:load-shared-objects)
   (raylib:init-window +screen-width+ +screen-height+ "Aero Fighter")
   (raylib:init-audio-device)
   (raylib:set-target-fps +frame-rate+)

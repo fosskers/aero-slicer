@@ -23,15 +23,26 @@
            #:is-key-pressed #:is-key-down
            #:is-gamepad-button-pressed #:is-gamepad-button-down #:get-gamepad-name #:is-gamepad-available
            #:check-collision-recs)
+  ;; --- Library Loading --- ;;
+  (:export #+sbcl #:load-shared-objects)
   (:documentation "A light wrapping of necessary Raylib types and functions."))
 
 (in-package :raylib)
 
-;; TODO: 2024-12-25 Probably need an `eval-when' here.
 #+sbcl
-(progn
-  (load-shared-object #p"lib/libraylib.so")
-  (load-shared-object #p"lib/libshim.so"))
+(defun load-shared-objects (&key (target nil))
+  "Dynamically load the necessary `.so' files. This is wrapped as a function so that
+downstream callers can call it again as necessary when the Lisp Image is being
+restarted. Note the use of `:dont-save' below. This is to allow the package to
+be compiled with `.so' files found in one location, but run with ones from another."
+  (let ((dir (case target
+               (:linux "/usr/lib/")
+               (t "lib/"))))
+    (load-shared-object (merge-pathnames "libraylib.so" dir) :dont-save t)
+    (load-shared-object (merge-pathnames "libshim.so" dir)   :dont-save t)))
+
+#+sbcl
+(load-shared-objects)
 
 ;; NOTE: 2025-01-03 We preload the shared libraries here to ensure that all functions
 ;; are already visible when we start to reference them in other files.
