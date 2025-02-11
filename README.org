@@ -10,6 +10,7 @@ Reach God Mode!
 - [[#history][History]]
 - [[#building][Building]]
   - [[#library-preparation][Library Preparation]]
+    - [[#sdl-backend][SDL Backend]]
   - [[#repl-loading][REPL Loading]]
   - [[#compiling-executables][Compiling Executables]]
     - [[#sbcl][SBCL]]
@@ -52,6 +53,18 @@ make dev
 This will compile Raylib, move =.so= files to their expected locations, and create
 certain symlinks. Now you can load Aero Fighter in your REPL, or build
 standalone executables.
+
+*** SDL Backend
+
+By default, Raylib is compiled in GLFW-mode. To use SDL instead, run:
+
+#+begin_example
+make dev PLATFORM=PLATFORM_DESKTOP_SDL
+#+end_example
+
+The value of =PLATFORM= matches that of Raylib itself. Technically you can put
+whatever value you want here, but only GLFW and SDL are guaranteed to work with
+Aero Fighter.
 
 ** REPL Loading
 

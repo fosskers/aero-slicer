@@ -1,3 +1,5 @@
+PLATFORM ?= PLATFORM_DESKTOP_GLFW
+
 aero-fighter: dev
 	sbcl --load build.lisp
 
@@ -10,7 +12,7 @@ lib/libraylib.so.550: lib/libraylib.so
 	ln -s libraylib.so lib/libraylib.so.550
 
 lib/libraylib.so:
-	cd vendored/raylib/src/ && $(MAKE)
+	cd vendored/raylib/src/ && $(MAKE) PLATFORM=$(PLATFORM)
 	mv vendored/raylib/src/libraylib.so.5.5.0 lib/libraylib.so
 
 lib/libshim.so: raylib/shim.c raylib/raylib.h

@@ -116,8 +116,8 @@ GLFW_LINUX_ENABLE_X11      ?= TRUE
 
 # PLATFORM_DESKTOP_SDL: It requires SDL library to be provided externally
 # WARNING: Library is not included in raylib, it MUST be configured by users
-SDL_INCLUDE_PATH      ?= $(RAYLIB_SRC_PATH)/external/SDL2/include
-SDL_LIBRARY_PATH      ?= $(RAYLIB_SRC_PATH)/external/SDL2/lib
+SDL_INCLUDE_PATH      ?= /usr/include/SDL2
+SDL_LIBRARY_PATH      ?= /usr/lib
 SDL_LIBRARIES         ?= -lSDL2 -lSDL2main
 
 
