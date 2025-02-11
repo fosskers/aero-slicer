@@ -1,19 +1,19 @@
 aero-fighter: dev
 	sbcl --load build.lisp
 
-dev: lib/libraylib.so.550 lib/libshim.so raylib.h shim.h
+dev: lib/ lib/libraylib.so.550 lib/libshim.so raylib.h shim.h
 
 lib/:
 	mkdir lib/
 
-lib/libraylib.so: lib/
-	cd vendored/raylib/src/ && $(MAKE)
-	mv vendored/raylib/src/libraylib.so.5.5.0 lib/libraylib.so
-
 lib/libraylib.so.550: lib/libraylib.so
 	ln -s libraylib.so lib/libraylib.so.550
 
-lib/libshim.so: lib/ raylib/shim.c raylib/raylib.h
+lib/libraylib.so:
+	cd vendored/raylib/src/ && $(MAKE)
+	mv vendored/raylib/src/libraylib.so.5.5.0 lib/libraylib.so
+
+lib/libshim.so: raylib/shim.c raylib/raylib.h
 	cd raylib && gcc -O3 -fPIC -shared -o libshim.so shim.c
 	mv raylib/libshim.so lib/
 
