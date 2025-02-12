@@ -133,7 +133,7 @@
   (file-name c-string))
 
 (defun load-texture (file-name)
-  (let* ((pointer (load-texture-raw file-name))
+  (let* ((pointer (load-texture-raw (namestring file-name)))
          (texture (@texture :pointer pointer)))
     (tg:finalize texture (lambda () (free-alien pointer)))))
 
@@ -220,7 +220,7 @@
   (file-name c-string))
 
 (defun load-sound (file-name)
-  (let* ((pointer (load-sound-raw file-name))
+  (let* ((pointer (load-sound-raw (namestring file-name)))
          (sound   (@sound :pointer pointer)))
     (tg:finalize sound (lambda () (free-alien pointer)))))
 
@@ -255,7 +255,7 @@
   (file-name c-string))
 
 (defun load-music-stream (file-name)
-  (let* ((pointer (load-music-stream-raw file-name))
+  (let* ((pointer (load-music-stream-raw (namestring file-name)))
          (music   (@music :pointer pointer)))
     (tg:finalize music (lambda () (free-alien pointer)))))
 
