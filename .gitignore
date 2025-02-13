@@ -3,3 +3,4 @@
 *.zip
 *.so
 **.fas
+lib/*

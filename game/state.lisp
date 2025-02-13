@@ -52,7 +52,7 @@
   (missile-shadow nil :type raylib:texture)
   (building-shadow nil :type raylib:texture))
 
-(defun @sprites (&key (dir "assets"))
+(defun @sprites (&key (dir "assets/graphics"))
   "Construct a `sprites' bank based on some fixed assets location."
   (make-sprites
    :fighter   (@sprite (p:join dir "fighter.json"))
