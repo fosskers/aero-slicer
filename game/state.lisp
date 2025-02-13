@@ -113,17 +113,17 @@
 
 (defun @sounds (&key (dir "assets/sound"))
   (make-sounds
-   :beam-collect (raylib:load-sound (p:join dir "Power Up 6.wav"))
-   :bomb-use     (raylib:load-sound (p:join dir "Hit 7.wav"))
-   :cannon       (raylib:load-sound (p:join dir "playerLaser.wav"))
-   :explosion-1  (raylib:load-sound (p:join dir "Enemy Kill 4.wav"))
-   :explosion-2  (raylib:load-sound (p:join dir "Enemy Kill 5.wav"))
-   :explosion-3  (raylib:load-sound (p:join dir "Enemy Kill 6.wav"))
-   :explosion-4  (raylib:load-sound (p:join dir "Enemy Kill 1.wav"))
-   :get-ammo     (raylib:load-sound (p:join dir "GUI 3.wav"))
-   :god-mode     (raylib:load-sound (p:join dir "Power Up 2.wav"))
-   :shield-down  (raylib:load-sound (p:join dir "Hit 3.wav"))
-   :shield-up    (raylib:load-sound (p:join dir "Power Up 3.wav"))
+   :beam-collect (raylib:load-sound (p:join dir "Power Up 6.ogg"))
+   :bomb-use     (raylib:load-sound (p:join dir "Hit 7.ogg"))
+   :cannon       (raylib:load-sound (p:join dir "playerLaser.ogg"))
+   :explosion-1  (raylib:load-sound (p:join dir "Enemy Kill 4.ogg"))
+   :explosion-2  (raylib:load-sound (p:join dir "Enemy Kill 5.ogg"))
+   :explosion-3  (raylib:load-sound (p:join dir "Enemy Kill 6.ogg"))
+   :explosion-4  (raylib:load-sound (p:join dir "Enemy Kill 1.ogg"))
+   :get-ammo     (raylib:load-sound (p:join dir "GUI 3.ogg"))
+   :god-mode     (raylib:load-sound (p:join dir "Power Up 2.ogg"))
+   :shield-down  (raylib:load-sound (p:join dir "Hit 3.ogg"))
+   :shield-up    (raylib:load-sound (p:join dir "Power Up 3.ogg"))
    :warp         (raylib:load-sound (p:join dir "Teleport.ogg"))))
 
 (defstruct music
