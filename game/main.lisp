@@ -522,6 +522,12 @@ executables."
 
 ;; --- Top-level --- ;;
 
+(defun assets-path ()
+  (cond ((and (member :release *features*)
+              (member :linux *features*))
+         #p"/usr/share/aero-fighter/assets/")
+        (t #p"assets/")))
+
 (defun event-loop (game)
   "Loop until a signal to quit has been received."
   (unless (raylib:window-should-close)
@@ -537,9 +543,11 @@ executables."
   (raylib:init-audio-device)
   (raylib:set-target-fps +frame-rate+)
   (set-colours)
-  (let ((game (@game)))
+  (let ((game (@game :assets (assets-path))))
     (->> game game-track raylib:play-music-stream)
     (event-loop game)
     (ungame game))
   (raylib:close-audio-device)
   (raylib:close-window))
+
+*features*

@@ -180,17 +180,17 @@
   (gamepads nil :type list)
   (curr-pad-pos (raylib:make-vector2 :x +curr-pad-x+ :y +curr-pad-y+) :type raylib:vector2))
 
-(defun @game ()
+(defun @game (&key (assets "assets"))
   "Initialise the various game resources."
-  (let ((sprites (@sprites))
-        (music   (@music)))
+  (let ((sprites (@sprites :root assets))
+        (music   (@music :root assets)))
     #+sbcl
     (setf (->> music music-intro raylib:music-looping) nil)
     ;; HACK: 2025-01-03 Need better bool handling.
     #+ecl
     (setf (->> music music-intro raylib:music-looping) 0)
     (make-game :sprites sprites
-               :sounds (@sounds)
+               :sounds (@sounds :root assets)
                :music music
                :track (music-intro music)
                :logo (@logo (sprites-logo sprites))
