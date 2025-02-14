@@ -523,10 +523,20 @@ executables."
 ;; --- Top-level --- ;;
 
 (defun assets-path ()
-  (cond ((and (member :release *features*)
-              (member :linux *features*))
-         #p"/usr/share/aero-fighter/assets/")
-        (t #p"assets/")))
+  "Assets are installed to difficult locations depending on the platform."
+  (or #+(and :release :linux) #p"/usr/share/aero-fighter/assets/"
+      #p"assets/"))
+
+(defun maybe-load-shared-objects ()
+  "Under SBCL, loaded `.so' files are automatically unloaded when an Image is
+created via `save-lisp-and-die'. Further, since the Image might be built with an
+`.so' in one place but run with one from another, we need to be clever about
+reloading. Hence this function.
+
+In general, if an `.so' has been loaded once, doing so again causes no harm.
+This helps the local development use-case."
+  (or #+(and sbcl release linux) (raylib:load-shared-objects :target :linux)
+      #+sbcl (raylib:load-shared-objects)))
 
 (defun event-loop (game)
   "Loop until a signal to quit has been received."
@@ -537,8 +547,7 @@ executables."
 
 (defun launch ()
   "Launch the game."
-  #+(and sbcl release linux) (raylib:load-shared-objects :target :linux)
-  #+sbcl (raylib:load-shared-objects)
+  (maybe-load-shared-objects)
   (raylib:init-window +screen-width+ +screen-height+ "Aero Fighter")
   (raylib:init-audio-device)
   (raylib:set-target-fps +frame-rate+)
@@ -549,5 +558,3 @@ executables."
     (ungame game))
   (raylib:close-audio-device)
   (raylib:close-window))
-
-*features*
