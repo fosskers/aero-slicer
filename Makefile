@@ -1,10 +1,11 @@
 PLATFORM ?= PLATFORM_DESKTOP_GLFW
+CL_MODE  ?= DEV
 
 aero-fighter: dev
-	sbcl --load build.lisp
+	CL_MODE=$(CL_MODE) sbcl --load build.lisp
 
 ecl: dev lib/libaero-fighter-raylib.so.550
-	ecl --load build.lisp
+	CL_MODE=$(CL_MODE) ecl --load build.lisp
 
 dev: lib/ lib/libaero-fighter-raylib.so lib/libaero-fighter-shim.so raylib.h shim.h
 
