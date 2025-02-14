@@ -40,7 +40,7 @@ be compiled with `.so' files found in one location, but run with ones from anoth
   (let ((dir (case target
                (:linux "/usr/lib/")
                (t "lib/"))))
-    (load-shared-object (merge-pathnames "libraylib.so" dir) :dont-save t)
+    (load-shared-object (merge-pathnames "libaero-fighter-raylib.so" dir) :dont-save t)
     (load-shared-object (merge-pathnames "libaero-fighter-shim.so" dir) :dont-save t)))
 
 #+sbcl
@@ -50,7 +50,7 @@ be compiled with `.so' files found in one location, but run with ones from anoth
 ;; are already visible when we start to reference them in other files.
 #+ecl
 (progn
-  (ffi:load-foreign-library #p"lib/libraylib.so")
+  (ffi:load-foreign-library #p"lib/libaero-fighter-raylib.so")
   (ffi:load-foreign-library #p"lib/libaero-fighter-shim.so"))
 
 ;; --- Keyboard and Gamepad --- ;;

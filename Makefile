@@ -3,17 +3,20 @@ PLATFORM ?= PLATFORM_DESKTOP_GLFW
 aero-fighter: dev
 	sbcl --load build.lisp
 
-dev: lib/ lib/libraylib.so.550 lib/libaero-fighter-shim.so raylib.h shim.h
+ecl: dev lib/libaero-fighter-raylib.so.550
+	ecl --load build.lisp
+
+dev: lib/ lib/libaero-fighter-raylib.so lib/libaero-fighter-shim.so raylib.h shim.h
 
 lib/:
 	mkdir lib/
 
-lib/libraylib.so.550: lib/libraylib.so
-	ln -s libraylib.so lib/libraylib.so.550
+lib/libaero-fighter-raylib.so.550:
+	ln -s libaero-fighter-raylib.so lib/libaero-fighter-raylib.so.550
 
-lib/libraylib.so:
+lib/libaero-fighter-raylib.so:
 	cd vendored/raylib/src/ && $(MAKE) PLATFORM=$(PLATFORM)
-	mv vendored/raylib/src/libraylib.so.5.5.0 lib/libraylib.so
+	mv vendored/raylib/src/libaero-fighter-raylib.so lib/libaero-fighter-raylib.so
 
 lib/libaero-fighter-shim.so: raylib/shim.c raylib/raylib.h
 	cd raylib && gcc -O3 -fPIC -shared -o libaero-fighter-shim.so shim.c
