@@ -8,7 +8,7 @@
   (let* ((path (merge-pathnames "lib/" (ext:getcwd)))
          (args (format nil "-Wl,-rpath,~a -L~a" path path)))
     (setf c:*user-linker-flags* args)
-    (setf c:*user-linker-libs*  "-lraylib -lshim"))
+    (setf c:*user-linker-libs*  "-lraylib -laero-fighter-shim"))
   (declaim (optimize (speed 3) (debug 1) (safety 1))))
 
 (format t "--- LOADING SYSTEM ---~%")

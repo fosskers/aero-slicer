@@ -41,7 +41,7 @@ be compiled with `.so' files found in one location, but run with ones from anoth
                (:linux "/usr/lib/")
                (t "lib/"))))
     (load-shared-object (merge-pathnames "libraylib.so" dir) :dont-save t)
-    (load-shared-object (merge-pathnames "libshim.so" dir)   :dont-save t)))
+    (load-shared-object (merge-pathnames "libaero-fighter-shim.so" dir) :dont-save t)))
 
 #+sbcl
 (load-shared-objects)
@@ -51,7 +51,7 @@ be compiled with `.so' files found in one location, but run with ones from anoth
 #+ecl
 (progn
   (ffi:load-foreign-library #p"lib/libraylib.so")
-  (ffi:load-foreign-library #p"lib/libshim.so"))
+  (ffi:load-foreign-library #p"lib/libaero-fighter-shim.so"))
 
 ;; --- Keyboard and Gamepad --- ;;
 
