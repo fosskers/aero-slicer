@@ -160,8 +160,8 @@ All dependencies are vendored.
 
 * Credits
 
-Aero Fighter uses [[https://github.com/bohonghuang/claw-raylib][bindings]] for [[https://github.com/raysan5/raylib/][Raylib]] for windowing, sound effects, collision,
-etc. The rest of the game logic is in pure Common Lisp.
+Aero Fighter uses hand-written bindings to [[https://github.com/raysan5/raylib/][Raylib]] for windowing, sound effects,
+collision, etc. The rest of the game logic is in pure Common Lisp.
 
 | Person       | Role           |
 |--------------+----------------|
