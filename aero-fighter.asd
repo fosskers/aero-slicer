@@ -1,5 +1,5 @@
 (defsystem "aero-fighter"
-  :version "0.0.1"
+  :version "25.2.16"
   :author "Colin Woodbury <colin@fosskers.ca>"
   :license "MPL-2.0"
   :homepage "https://github.com/fosskers/aero-fighter"
@@ -8,9 +8,6 @@
                :filepaths
                :raylib
                :transducers)
-  :build-operation "program-op"
-  :build-pathname "aero-fighter"
-  :entry-point "aero-fighter:launch"
   :serial t
   :components ((:module "game"
                 :components ((:file "package")
