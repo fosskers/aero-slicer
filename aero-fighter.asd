@@ -4,8 +4,8 @@
   :license "MPL-2.0"
   :homepage "https://github.com/fosskers/aero-fighter"
   :depends-on (:arrow-macros
-               :com.inuoe.jzon
                :filepaths
+               :parcom/json
                :raylib
                :transducers)
   :serial t

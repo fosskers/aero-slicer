@@ -1,0 +1,7 @@
+*.fasl
+*.fas
+repl.lisp
+turnip.lisp
+vendored/*
+tests/test/*
+tests/data/large-file.json

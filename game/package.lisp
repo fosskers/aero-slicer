@@ -1,7 +1,7 @@
 (defpackage aero-fighter
   (:use :cl :arrow-macros)
   (:shadow #:shadow)
-  (:local-nicknames (#:jzon #:com.inuoe.jzon)
+  (:local-nicknames (#:json #:parcom/json)
                     (#:p #:filepaths)
                     (#:t #:transducers))
   (:export #:launch))
@@ -289,3 +289,14 @@ powerups."
 
 #+nil
 (random-position)
+
+(defun path->string (path)
+  "Read the contents of a file into a string."
+  (with-open-file (stream path :direction :input)
+    (let ((data (make-string (file-length stream))))
+      (read-sequence data stream)
+      data)))
+
+#+nil
+(->> (path->string #p"assets/graphics/beam-2.json")
+     (json:parse))

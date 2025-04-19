@@ -31,7 +31,7 @@ around multiple instances of an `animated'."
 (defun @sprite (path)
   "Read animated sprite data from the given JSON file. Must be called after a GL
 context has been initialised via `raylib:init-window'."
-  (let* ((json   (jzon:parse path))
+  (let* ((json   (->> path path->string json:parse))
          (meta   (gethash "meta" json))
          (texture (->> meta (gethash "image") (p:with-name path) p:to-string raylib:load-texture))
          (frames (gethash "frames" json))
@@ -94,10 +94,10 @@ and stopping at unexpected frames."
 (defun animation-duration (sprite tag)
   "The duration in frame-count of a particular animation within a sprite."
   (->> sprite
-    (sprite-animations)
-    (gethash tag)
-    (animation-frames)
-    (t:transduce (t:map #'frame-duration-fs) #'+)))
+       (sprite-animations)
+       (gethash tag)
+       (animation-frames)
+       (t:transduce (t:map #'frame-duration-fs) #'+)))
 
 (defun sprite-duration (sprite)
   "The duration of the sprite animation in terms of frame-count. Works best for
@@ -115,11 +115,11 @@ is assumed to be sufficient as a bounding box for collisions.
 Note that Aseprite does not over-trim individual frames - each frame is given
 the width of the widest one."
   (-<>> (animated-sprite animated)
-    (sprite-animations)
-    (gethash (animated-default animated))
-    (animation-frames)
-    (aref <> 0)
-    (frame-rect)))
+        (sprite-animations)
+        (gethash (animated-default animated))
+        (animation-frames)
+        (aref <> 0)
+        (frame-rect)))
 
 (defun draw-at-frame (texture animation pos frame &key (colour +white+) (flip? nil))
   "Draw a specific frame from a specific texture."

@@ -164,11 +164,11 @@
             (t (explode! game (fighter-pos fighter))
                ;; Kill the fighter.
                (-<>> fighter
-                 (fighter-beam)
-                 (beam-animated)
-                 (animated-sprite)
-                 (downgrade-beam (game-sprites game))
-                 (kill-fighter! fighter <> (->> game game-sounds sounds-explosion-4) fc))
+                     (fighter-beam)
+                     (beam-animated)
+                     (animated-sprite)
+                     (downgrade-beam (game-sprites game))
+                     (kill-fighter! fighter <> (->> game game-sounds sounds-explosion-4) fc))
                (decf (game-lives game))
                (when (<= (game-lives game) 0)
                  (setf (game-mode game) :dead)))))))
