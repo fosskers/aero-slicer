@@ -14,7 +14,7 @@
 
 (defun parse (input)
   "Attempt to parse any JSON value."
-  (let ((res (json input)))
+  (let ((res (json (p:in input))))
     (etypecase res
       (p:parser (p:parser-value res))
       (p:failure (error "Parsing json failed. Expected: ~a, but got: ~a"
@@ -23,6 +23,8 @@
 
 #+nil
 (parse "{\"x\": 1, \"y\": 2, \"z\": [1, {\"a\":true}]}")
+#+nil
+(funcall #'json (p:in "{\"x\": 1, \"y\": 2, \"z\": [1, {\"a\":true}]}"))
 
 (defun json (input)
   "Parser: Parse any JSON value."
@@ -80,7 +82,12 @@
 
 (defun compound-char (input)
   "Parser: Parse a char while being wary of escaping."
-  (funcall (p:alt #'special-char #'control-char #'unicode (p:anybut #\")) input))
+  (funcall (p:alt #'escaped-char (p:anybut #\")) input))
+
+(defun escaped-char (input)
+  (funcall (*> (p:peek (p:char #\\))
+               (p:alt #'special-char #'control-char #'unicode))
+           input))
 
 (defun special-char (input)
   "Parser: Backslashes and quotes."
@@ -155,15 +162,16 @@
   (p:fmap (lambda (s)
             (let ((*read-default-float-format* 'double-float))
               (read-from-string s)))
-          (funcall (p:recognize (p:pair #'p:float
-                                        (p:opt (*> (p:alt (p:char #\E) (p:char #\e))
-                                                   (p:opt (p:alt (p:char #\+) (p:char #\-)))
-                                                   (*> (p:skip (p:char #\0)) (p:opt #'p:unsigned))))))
+          (funcall (p:recognize (*> #'p:float
+                                    (p:opt (*> (p:alt (p:char #\E) (p:char #\e))
+                                               (p:opt (p:alt (p:char #\+) (p:char #\-)))
+                                               (*> (p:skip (p:char #\0)) (p:opt #'p:unsigned))))))
                    input)))
 
 #+nil
 (scientific "23456789012E66   ")
 
+#+nil
 (let ((*read-default-float-format* 'double-float))
   (read-from-string "1.23e4"))
 

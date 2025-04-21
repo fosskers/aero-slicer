@@ -5,32 +5,32 @@
 (declaim (ftype maybe-parse any))
 (defun any (input)
   "Accept any character."
-  (if (empty? input)
-      (fail "any char" input)
-      (ok (make-array (1- (length input))
-                      :element-type 'character
-                      :displaced-to input
-                      :displaced-index-offset 1)
-          (aref input 0))))
+  (declare (optimize (speed 3) (safety 0)))
+  (let ((s (input-str input)))
+    (if (empty? s)
+        (fail "any char" input)
+        (ok (off 1 input) (input-head input)))))
 
 #++
-(any "hello")
+(any (in "hello"))
 #++
-(any "")
+(any (in ""))
 
+(declaim (ftype (function (character) maybe-parse) anybut))
 (defun anybut (char)
   "Parser: Any character except the given one."
   (lambda (input)
     (let ((res (any input)))
       (cond ((failure-p res) res)
-            ((eql char (parser-value res)) (fail (format nil "anybut: not ~a" char) input))
+            ((eql char (parser-value res)) (fail char input))
             (t res)))))
 
 #+nil
-(funcall (anybut #\") "hi")
+(funcall (anybut #\") (in "hi"))
 #+nil
-(funcall (anybut #\") "\"hi")
+(funcall (anybut #\") (in "\"hi"))
 
+(declaim (ftype maybe-parse hex))
 (defun hex (input)
   "Parser: A hex character of any case."
   (let ((res (any input)))
@@ -44,34 +44,38 @@
 (declaim (ftype maybe-parse eof))
 (defun eof (input)
   "Recognize the end of the input."
-  (if (empty? input)
+  (if (= (input-curr input) (length (input-str input)))
       (ok input t)
       (fail "the end of the input" input)))
 
 #++
-(eof "hi")
+(eof (in "hi"))
 #++
-(eof "")
+(eof (in ""))
+#+nil
+(parse (*> (string "Mālum") #'eof) "Mālum")
+#+nil
+(parse (*> (string "Mālum") (char #\,)) "Mālum")
+#+nil
+(funcall (*> (string "Mālum") (char #\,)) (in "Mālum"))
 
 (declaim (ftype (function (character) maybe-parse) char))
 (defun char (c)
   "Parse a given character."
   (lambda (input)
-    (if (empty? input)
-        (fail (format nil "character: ~a" c) input)
-        (let ((head (aref input 0)))
+    (declare (optimize (speed 3) (safety 0))
+             (type input input))
+    (if (empty? (input-str input))
+        (fail c input)
+        (let ((head (input-head input)))
           (if (equal c head)
-              (ok (make-array (1- (length input))
-                              :element-type 'character
-                              :displaced-to input
-                              :displaced-index-offset 1)
-                  head)
-              (fail (format nil "character: ~a" c) input))))))
+              (ok (off 1 input) head)
+              (fail c input))))))
 
 #++
-(funcall (char #\H) "Hello")
+(funcall (char #\H) (in "Hello"))
 #++
-(funcall (char #\H) "ello")
+(funcall (char #\H) (in "ello"))
 #++
 (funcall (*> (char #\H) (char #\e)) "Hello")
 
@@ -80,70 +84,76 @@
   "Parse the given string."
   (lambda (input)
     (let ((lens (length s))
-          (leni (length input)))
+          (leni (- (length (input-str input))
+                   (input-curr input))))
       (if (> lens leni)
-          (fail (format nil "string: ~a" s) input)
+          (fail s input)
           (let ((subs (make-array lens
                                   :element-type 'character
-                                  :displaced-to input)))
+                                  :displaced-to (input-str input)
+                                  :displaced-index-offset (input-curr input))))
             (if (equal s subs)
-                (ok (make-array (- leni lens)
-                                :element-type 'character
-                                :displaced-to input
-                                :displaced-index-offset lens)
-                    subs)
-                (fail (format nil "string: ~a" s) input)))))))
+                (ok (off lens input) subs)
+                (fail s input)))))))
 
 #++
-(funcall (string "") "a")
+(funcall (string "") (in "a"))
 #++
-(funcall (string "Hello") "Hello yes")
+(funcall (string "Hēllo") (in "Hēllo yes"))
 #++
-(funcall (string "HellO") "Hello yes")
+(funcall (string "HellO") (in "Hello yes"))
 
 (declaim (ftype (function (fixnum) maybe-parse) take))
 (defun take (n)
   "Take `n' characters from the input."
   (lambda (input)
-    (cond ((< n 0) (error "~a must be a positive number" n))
-          ((< (length input) n) (fail (format nil "take: ~a characters" n) input))
-          (t (ok (make-array (- (length input) n)
-                             :element-type 'character
-                             :displaced-to input
-                             :displaced-index-offset n)
-                 (make-array n
-                             :element-type 'character
-                             :displaced-to input))))))
+    (let ((s (input-str input)))
+      (cond ((< n 0) (error "~a must be a positive number" n))
+            ((zerop n) (ok input ""))
+            ((< (length s) n) (fail "multiple characters" input))
+            (t (ok (off n input)
+                   (make-array n
+                               :element-type 'character
+                               :displaced-to s)))))))
 
 #+nil
-(funcall (take -5) "Arbor")
+(funcall (take -5) (in "Arbor"))
 #+nil
-(funcall (take 0) "Arbor")
+(funcall (take 0) (in "Arbor"))
 #+nil
-(funcall (take 3) "Arbor")
+(funcall (take 3) (in "Arbor"))
 
 (declaim (ftype (function ((function (character) boolean)) always-parse) take-while))
 (defun take-while (p)
   "Take characters while some predicate holds."
   (lambda (input)
-    (let ((len (length input)))
-      (labels ((recurse (n)
-                 (cond ((>= n len) len)
-                       ((funcall p (aref input n)) (recurse (1+ n)))
-                       (t n))))
-        (let ((keep (recurse 0)))
-          (ok (make-array (- len keep)
-                          :element-type 'character
-                          :displaced-to input
-                          :displaced-index-offset keep)
+    (declare (optimize (speed 3) (safety 0))
+             (type input input))
+    ;; TODO: 2025-04-21 Try to undo the call to head here, might not be needed.
+    (if (not (funcall p (input-head input)))
+        (ok input "")
+        (let* ((s    (input-str input))
+               (len  (length s))
+               (keep (loop :for i :from (1+ (input-curr input)) :below len
+                           :while (funcall p (schar s i))
+                           :finally (return (- i (input-curr input))))))
+          (ok (off keep input)
               (make-array keep
                           :element-type 'character
-                          :displaced-to input)))))))
+                          :displaced-to s
+                          :displaced-index-offset (input-curr input)))))))
 
 #+nil
-(funcall (take-while (lambda (c) (equal #\a c))) "bbb")
+(funcall (take-while (lambda (c) (equal #\a c))) (in "bbb"))
 #+nil
-(funcall (take-while (lambda (c) (equal #\a c))) "aaabbb")
+(funcall (take-while (lambda (c) (equal #\a c))) (in "aaabcd"))
+#+nil
+(funcall (*> (take-while (lambda (c) (equal #\a c)))
+             (take-while (lambda (c)
+                           (or (equal #\b c)
+                               (equal #\c c)
+                               (equal #\d c)))))
+         (in "aaabcd!"))
 
 (declaim (ftype (function ((function (character) boolean)) maybe-parse) take-while1))
 (defun take-while1 (p)
@@ -219,12 +229,13 @@
 (declaim (ftype maybe-parse unsigned))
 (defun unsigned (input)
   "Parse a positive integer."
+  (declare (optimize (speed 3) (safety 0)))
   (let ((res (funcall (take-while1 #'digit?) input)))
     (cond ((failure-p res) res)
-          ((and (char-equal #\0 (aref (parser-value res) 0))
+          ((and (char-equal #\0 (cl:char (parser-value res) 0))
                 (> (length (parser-value res)) 1))
            (fail "unsigned: an integer not starting with 0" input))
-          (t (fmap #'read-from-string res)))))
+          (t (fmap #'parse-integer res)))))
 
 #+nil
 (unsigned "0!")
@@ -236,24 +247,21 @@
 (declaim (ftype maybe-parse integer))
 (defun integer (input)
   "Parse a positive or negative integer."
-  (fmap (lambda (pair) (if (null (car pair)) (nth 1 pair) (- (nth 1 pair))))
-        (funcall (<*> (opt (char #\-)) #'unsigned) input)))
+  (fmap (lambda (pair) (if (null (car pair)) (cdr pair) (- (cdr pair))))
+        (funcall (pair (opt (char #\-)) #'unsigned) input)))
 
 #+nil
 (integer "123!")
 #+nil
 (integer "-123!")
 
-;; FIXME: 2025-04-03 Avoid reallocating a string here!
 (declaim (ftype maybe-parse float))
 (defun float (input)
   "Parse a positive or negative floating point number."
-  (fmap (lambda (two)
-          (if (null (nth 1 two))
-              (cl:float (car two) 1.0d0)
-              (let ((*read-default-float-format* 'double-float))
-                (read-from-string (format nil "~d.~a" (nth 0 two) (nth 1 two))))))
-        (funcall (<*> #'integer (opt (*> (char #\.) (take-while1 #'digit?)))) input)))
+  (fmap (lambda (s)
+          (let ((*read-default-float-format* 'double-float))
+            (read-from-string s)))
+        (funcall (recognize (*> #'integer (opt (*> (char #\.) (take-while1 #'digit?))))) input)))
 
 #+nil
 (funcall #'float "-123.0456!")
@@ -267,7 +275,14 @@
 (declaim (ftype always-parse rest))
 (defun rest (input)
   "Consume the rest of the input. Always succeeds."
-  (ok "" input))
+  (let ((len (- (length (input-str input)) (input-curr input))))
+    (ok (off len input)
+        (make-array len
+                    :element-type 'character
+                    :displaced-to (input-str input)
+                    :displaced-index-offset (input-curr input)))))
 
 #+nil
-(funcall (<*> (string "hi") (*> #'space #'rest)) "hi there")
+(rest (in "hello"))
+#+nil
+(funcall (<*> (string "hi") (*> #'space #'rest)) (in "hi there"))

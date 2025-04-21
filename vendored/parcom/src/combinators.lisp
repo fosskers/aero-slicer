@@ -25,6 +25,7 @@ kept. Good for parsing backets, parentheses, etc."
 (defun many (parser)
   "Parse 0 or more occurrences of a `parser'."
   (lambda (input)
+    (declare (optimize (speed 3)))
     (labels ((recurse (acc in)
                (let ((res (funcall parser in)))
                  (etypecase res
@@ -34,9 +35,9 @@ kept. Good for parsing backets, parentheses, etc."
       (fmap #'nreverse (recurse '() input)))))
 
 #+nil
-(funcall (many (string "ovēs")) "ovis")
+(funcall (many (string "ovēs")) (in "ovis"))
 #+nil
-(funcall (many (string "ovēs")) "ovēsovēsovēs!")
+(funcall (many (string "ovēs")) (in "ovēsovēsovēs!"))
 #+nil
 (funcall (many (alt (string "ovēs") (string "avis"))) "ovēsovēsavis!")
 
@@ -74,13 +75,13 @@ kept. Good for parsing backets, parentheses, etc."
                                              (parser-input res)))))))))
 
 #+nil
-(funcall (sep (char #\!) (string "pilum")) ".")
+(funcall (sep (char #\!) (string "pilum")) (in "."))
 #+nil
-(funcall (sep (char #\!) (string "pilum")) "pilum.")
+(funcall (sep (char #\!) (string "pilum")) (in "pilum."))
 #+nil
-(funcall (sep (char #\!) (string "pilum")) "pilum!pilum!pilum.")
+(funcall (sep (char #\!) (string "pilum")) (in "pilum!pilum!pilum."))
 #+nil
-(funcall (sep (char #\!) (string "pilum")) "pilum!pilum!pilum!")
+(funcall (sep (char #\!) (string "pilum")) (in "pilum!pilum!pilum!"))
 
 (declaim (ftype (function (maybe-parse maybe-parse) maybe-parse) sep1))
 (defun sep1 (sep parser)
@@ -159,11 +160,11 @@ even if not followed by an instance of the main parser."
       (recurse input))))
 
 #+nil
-(funcall (skip (char #\!)) "")
+(funcall (skip (char #\!)) (in ""))
 #+nil
-(funcall (skip (char #\!)) "a")
+(funcall (skip (char #\!)) (in "a"))
 #+nil
-(funcall (skip (char #\!)) "!!!hi")
+(funcall (skip (char #\!)) (in "!!!hi"))
 
 (declaim (ftype (function (maybe-parse) maybe-parse) peek))
 (defun peek (parser)
@@ -175,7 +176,7 @@ even if not followed by an instance of the main parser."
         (parser  (ok input (parser-value res)))))))
 
 #+nil
-(funcall (peek (string "he")) "hello")
+(funcall (peek (string "he")) (in "hello"))
 
 (declaim (ftype (function (fixnum maybe-parse) maybe-parse) count))
 (defun count (n parser)
@@ -193,11 +194,11 @@ even if not followed by an instance of the main parser."
       (recurse '() n input))))
 
 #+nil
-(funcall (count 3 (char #\a)) "aaaaaa")
+(funcall (count 3 (char #\a)) (in "aaaaaa"))
 #+nil
-(funcall (count 3 (char #\a)) "aa")
+(funcall (count 3 (char #\a)) (in "aa"))
 #+nil
-(funcall (count 0 (char #\a)) "aa")
+(funcall (count 0 (char #\a)) (in "aa"))
 
 (declaim (ftype (function (maybe-parse) maybe-parse) recognize))
 (defun recognize (parser)
@@ -207,14 +208,16 @@ even if not followed by an instance of the main parser."
       (etypecase res
         (failure res)
         (parser  (ok (parser-input res)
-                     (make-array (- (length input) (length (parser-input res)))
+                     (make-array (- (input-curr (parser-input res))
+                                    (input-curr input))
                                  :element-type 'character
-                                 :displaced-to input)))))))
+                                 :displaced-to (input-str input)
+                                 :displaced-index-offset (input-curr input))))))))
 
 #+nil
-(funcall (recognize (<*> (string "hi") (string "bye"))) "hibyethere")
+(funcall (recognize (<*> (string "hi") (string "bye"))) (in "hibyethere"))
 #+nil
-(funcall (recognize (<*> (string "hi") (string "bye"))) "hihi")
+(funcall (recognize (<*> (string "hi") (string "bye"))) (in "hihi"))
 
 (defun pair (p0 p1)
   "Combinator: Parse two parsers and yield the results as a cons cell."
