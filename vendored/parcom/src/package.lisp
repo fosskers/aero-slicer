@@ -20,7 +20,7 @@
   ;; --- Combinators --- ;;
   (:export #:opt #:between #:pair
            #:many #:many1 #:sep #:sep1 #:sep-end #:sep-end1
-           #:skip #:peek #:count #:recognize)
+           #:consume #:skip #:peek #:count #:recognize)
   ;; --- Conditions --- ;;
   (:export #:parse-failure)
   (:documentation "A simple parser combinator library."))
@@ -30,11 +30,11 @@
 ;; --- Conditions --- ;;
 
 (define-condition parse-failure (error)
-  ((expected :initarg expected :reader parse-failure-expected)
-   (actual   :initarg actual   :reader parse-failure-actual))
+  ((expected :initarg :expected :reader parse-failure-expected)
+   (actual   :initarg :actual   :reader parse-failure-actual))
   (:documentation "Some parsing failed, so we render why.")
   (:report (lambda (c stream)
-             (format stream "Expected:~%  ~a~%Actual:~%  ~a"
+             (format stream "Expected:~%  ~a~%Actual:~%  ~a~%"
                      (parse-failure-expected c)
                      (parse-failure-actual c)))))
 
@@ -42,7 +42,6 @@
 
 (defstruct input
   "The remaining parser input with a cached reference to its first character."
-  (head nil :type character)
   (curr 0   :type fixnum)
   (str  nil :type simple-string))
 
@@ -50,7 +49,7 @@
 (defun in (input)
   "Smart constructor for some parser input."
   (declare (optimize (speed 3) (safety 0)))
-  (make-input :head (schar input 0) :curr 0 :str input))
+  (make-input :curr 0 :str input))
 
 #+nil
 (in "hello")
@@ -59,10 +58,8 @@
 (defun off (offset input)
   "Advance the input by some offset."
   (declare (optimize (speed 3) (safety 0)))
-  (let ((curr (+ offset (input-curr input))))
-    (make-input :head (schar (input-str input) curr)
-                :curr curr
-                :str  (input-str input))))
+  (make-input :curr (+ offset (input-curr input))
+              :str  (input-str input)))
 
 #+nil
 (off 4 (in "hello there!"))

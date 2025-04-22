@@ -42,10 +42,10 @@
 (defun array (input)
   "Parser: Parse a JSON Array as a Lisp vector."
   (p:fmap (lambda (list) (coerce list 'vector))
-          (funcall (p:between (*> (p:char #\[) #'p:multispace)
-                              (p:sep (*> (p:char #\,) #'p:multispace)
-                                     (<* #'json #'p:multispace))
-                              (*> #'p:multispace (p:char #\])))
+          (funcall (p:between (*> (p:char #\[) #'skip-space)
+                              (p:sep (*> (p:char #\,) #'skip-space)
+                                     (<* #'json #'skip-space))
+                              (*> #'skip-space (p:char #\])))
                    input)))
 
 #+nil
@@ -62,13 +62,13 @@
               (dolist (pair pairs)
                 (setf (gethash (car pair) ht) (cdr pair)))
               ht))
-          (funcall (p:between (*> (p:char #\{) #'p:multispace)
-                              (p:sep (*> (p:char #\,) #'p:multispace)
-                                     (p:pair #'string (*> #'p:multispace
+          (funcall (p:between (*> (p:char #\{) #'skip-space)
+                              (p:sep (*> (p:char #\,) #'skip-space)
+                                     (p:pair #'string (*> #'skip-space
                                                           (p:char #\:)
-                                                          #'p:multispace
-                                                          (<* #'json #'p:multispace))))
-                              (*> #'p:multispace (p:char #\})))
+                                                          #'skip-space
+                                                          (<* #'json #'skip-space))))
+                              (*> #'skip-space (p:char #\})))
                    input)))
 
 #+nil
@@ -142,11 +142,11 @@
                    input)))
 
 #+nil
-(string "\"Hel\\tlo\"")
+(string (p:in "\"Hel\\tlo\""))
 #+nil
-(string "\"\\\"\"")
+(string (p:in "\"\\\"\""))
 #+nil
-(string "\"Hi \\u03B1\"")
+(string (p:in "\"Hi \\u03B1\""))
 
 (defun boolean (input)
   "Parser: Parse `true' as T and `false' as NIL."
@@ -184,3 +184,15 @@
 
 #+nil
 (array (uiop:read-file-string "tests/data/pass2.json"))
+
+(defun skip-space (input)
+  "A faster variant of `multispace' that just advances over the space chars."
+  (funcall (p:consume (lambda (c)
+                        (or (equal c #\space)
+                            (equal c #\newline)
+                            (equal c #\tab)
+                            (equal c #\return))))
+           input))
+
+#+nil
+(funcall #'skip-space (p:in "   abc"))
