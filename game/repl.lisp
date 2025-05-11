@@ -32,3 +32,12 @@
   (all-deps graph "aero-fighter")
   (with-open-file (stream #p"deps.dot" :direction :output :if-exists :supersede)
     (format stream (simple-graph:to-dot graph))))
+
+;; --- Benchmarking --- ;;
+
+#+sbcl
+(require :sb-sprof)
+
+#+nil
+(sb-sprof:with-profiling (:max-samples 100000 :sample-interval 0.0001 :report :graph :mode :alloc)
+  (launch))

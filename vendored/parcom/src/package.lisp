@@ -2,115 +2,131 @@
   (:use :cl)
   (:shadow #:char #:string #:integer #:float #:count #:rest #:space)
   ;; --- Types --- ;;
-  (:export #:parser #:parser-input #:parser-value
-           #:failure #:failure-expected #:failure-actual
-           #:input #:in
-           #:ok #:fail #:parse
-           #:empty? #:digit?)
+  (:export #:parse #:in
+           #:failure? #:fail
+           #:ok #:ok?
+           #:empty?
+           #:digit? #:hex? #:octal? #:binary?
+           #:ascii-letter? #:space?)
   ;; --- Functional Programming --- ;;
   (:export #:fmap #:const
            #:all #:right #:left #:instead
            #:*> #:<* #:<*> #:<$ #:alt)
   ;; --- Parsers --- ;;
-  (:export #:any #:anybut #:hex #:eof
+  (:export #:any #:any-but #:any-if #:hex #:unicode #:control-char #:eof
            #:char #:string
            #:unsigned #:integer #:float
            #:newline #:space #:space1 #:multispace #:multispace1
            #:take #:take-while #:take-while1 #:rest)
   ;; --- Combinators --- ;;
   (:export #:opt #:between #:pair
-           #:many #:many1 #:sep #:sep1 #:sep-end #:sep-end1
-           #:consume #:skip #:peek #:count #:recognize)
+           #:many #:many1 #:sep #:sep1 #:sep-end #:sep-end1 #:take-until
+           #:consume #:skip #:peek #:sneak #:count #:recognize)
   ;; --- Conditions --- ;;
   (:export #:parse-failure)
   (:documentation "A simple parser combinator library."))
 
 (in-package :parcom)
 
+;; --- Types --- ;;
+
+(deftype maybe-parse ()
+  "A parser that might fail."
+  '(function (fixnum) (values (or t (member :fail)) fixnum)))
+
+(deftype char-string ()
+  '(simple-array character (*)))
+
+;; --- Top-level pointer to the input --- ;;
+
+(declaim (type char-string *input*))
+(defparameter *input* ""
+  "A global pointer to the current input string.")
+(declaim (type fixnum *input-length*))
+(defparameter *input-length* 0
+  "The length of the current global input.")
+
+;; --- Lambda Caches --- ;;
+
+(defparameter *char-cache*    (make-hash-table :size 64 :test #'eql))
+(defparameter *any-but-cache* (make-hash-table :size 32 :test #'eql))
+(defparameter *sneak-cache*   (make-hash-table :size 32 :test #'eql))
+(defparameter *consume-cache* (make-hash-table :size 16 :test #'eq))
+(defparameter *between-cache* (make-hash-table :size 16 :test #'eq))
+(defparameter *sep-cache*     (make-hash-table :size 16 :test #'eq))
+
 ;; --- Conditions --- ;;
 
 (define-condition parse-failure (error)
-  ((expected :initarg :expected :reader parse-failure-expected)
-   (actual   :initarg :actual   :reader parse-failure-actual))
+  ((offset  :initarg :offset  :reader parse-failure-offset)
+   (context :initarg :context :reader parse-failure-context))
   (:documentation "Some parsing failed, so we render why.")
   (:report (lambda (c stream)
-             (format stream "Expected:~%  ~a~%Actual:~%  ~a~%"
-                     (parse-failure-expected c)
-                     (parse-failure-actual c)))))
+             (format stream "Parsing failed at location ~a~%Context:~%  ~a"
+                     (parse-failure-offset c)
+                     (parse-failure-context c)))))
 
-;; --- Types --- ;;
+;; --- Short-hands --- ;;
 
-(defstruct input
-  "The remaining parser input with a cached reference to its first character."
-  (curr 0   :type fixnum)
-  (str  nil :type simple-string))
-
-(declaim (ftype (function (simple-string) input) in))
+(declaim (ftype (function (char-string) fixnum) in))
 (defun in (input)
-  "Smart constructor for some parser input."
-  (declare (optimize (speed 3) (safety 0)))
-  (make-input :curr 0 :str input))
+  "Set the global input and yield the initial parser offset."
+  (setf *input* input)
+  (setf *input-length* (length *input*))
+  0)
 
 #+nil
 (in "hello")
 
-(declaim (ftype (function (fixnum input) input) off))
-(defun off (offset input)
+(declaim (ftype (function (fixnum fixnum) fixnum) off))
+(defun off (offset curr)
   "Advance the input by some offset."
-  (declare (optimize (speed 3) (safety 0)))
-  (make-input :curr (+ offset (input-curr input))
-              :str  (input-str input)))
+  (declare (optimize (speed 3)))
+  (+ offset curr))
 
 #+nil
-(off 4 (in "hello there!"))
+(off 4 10)
 
-(deftype maybe-parse ()
-  "A parser that might fail."
-  '(function (input) (or parser failure)))
+(defmacro ok (offset value)
+  "Parsing was successful."
+  `(values ,value ,offset))
 
-(deftype always-parse ()
-  "A parser that always succeeds."
-  '(function (input) parser))
+(defmacro ok? (x)
+  "Did parsing succeed?"
+  `(not (failure? ,x)))
 
-(defstruct parser
-  "The result of some successful parsing. Tracks the remaining input."
-  (input nil :type input)
-  value)
+(defmacro fail (offset)
+  "Fail a parse while recording while recording how far it got."
+  `(values :fail ,offset))
 
-(declaim (ftype (function (input t) parser) ok))
-(defun ok (input value)
-  "Some successful parsing!"
-  (make-parser :input input :value value))
+#+nil
+(fail 1)
 
-(defstruct failure
-  "The result of some failed parsing."
-  expected
-  (actual nil :type input))
-
-(defun fail (exp act)
-  "It's assumed that you pass back the entire remaining input as the 'actual' value.
-Error reporting code will check the length of this and truncate it if necessary."
-  (make-failure :expected exp :actual act))
+(defmacro failure? (x)
+  "Did parsing fail?"
+  `(eq :fail ,x))
 
 (defun parse (parser input)
   "Run a parser and attempt to extract its final value."
-  (let ((res (funcall parser (in input))))
-    (etypecase res
-      (parser  (parser-value res))
-      (failure (let* ((rem (failure-actual res))
-                      (diff (- (length (input-str rem)) (input-curr rem))))
-                 (error 'parse-failure
-                        :expected (failure-expected res)
-                        :actual (if (< diff 16)
-                                    (make-array diff
-                                                :element-type 'character
-                                                :displaced-to (input-str rem)
-                                                :displaced-index-offset (input-curr rem))
-                                    (format nil "~a ... (truncated)"
-                                            (make-array 16
-                                                        :element-type 'character
-                                                        :displaced-to (input-str rem)
-                                                        :displaced-index-offset (input-curr rem))))))))))
+  (multiple-value-bind (res next) (funcall parser (in input))
+    (if (ok? res)
+        res
+        (let ((diff (- *input-length* next)))
+          (error 'parse-failure
+                 :offset next
+                 :context (if (< diff 16)
+                              (make-array diff
+                                          :element-type 'character
+                                          :displaced-to *input*
+                                          :displaced-index-offset next)
+                              (format nil "~a ... (truncated)"
+                                      (make-array 16
+                                                  :element-type 'character
+                                                  :displaced-to *input*
+                                                  :displaced-index-offset next))))))))
+
+#+nil
+(parse (*> (char #\a) (char #\b)) "acb")
 
 ;; --- Utilities --- ;;
 
@@ -121,6 +137,17 @@ Error reporting code will check the length of this and truncate it if necessary.
 
 #++
 (empty? "")
+
+(declaim (ftype (function (character) boolean) ascii-letter?))
+(defun ascii-letter? (char)
+  "A-Za-z"
+  (or (char<= #\a char #\z)
+      (char<= #\A char #\Z)))
+
+#+nil
+(ascii-letter? #\h)
+#+nil
+(ascii-letter? #\1)
 
 (declaim (ftype (function (character) boolean) digit?))
 (defun digit? (char)
@@ -141,3 +168,21 @@ Error reporting code will check the length of this and truncate it if necessary.
 (hex? #\7)
 #+nil
 (hex? #\J)
+
+(declaim (ftype (function (character) boolean) octal?))
+(defun octal? (char)
+  "Is a given character an octal digit?"
+  (char<= #\0 char #\7))
+
+(declaim (ftype (function (character) boolean) binary?))
+(defun binary? (char)
+  "Is a given character a binary digit?"
+  (char<= #\0 char #\1))
+
+(declaim (ftype (function (character) boolean) space?))
+(defun space? (char)
+  "Is a given character some sort of whitespace?"
+  (or (equal char #\space)
+      (equal char #\newline)
+      (equal char #\tab)
+      (equal char #\return)))

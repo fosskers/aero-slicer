@@ -58,22 +58,22 @@ underlying `sprite' definition."
   "Read a `frame' out of some JSON."
   (let ((dim    (gethash "frame" json))
         (millis (gethash "duration" json)))
-    (make-frame :duration-ms millis
+    (make-frame :duration-ms (floor millis)
                 ;; So long as the millis count of the single animation frame is
                 ;; no less than 16ms, the `round` here will ensure that the
                 ;; result is 1 at minimum. A 0 here would likely mean that the
                 ;; frame never renders within `draw-animated'.
                 :duration-fs (round (/ millis +millis-per-frame+))
                 :rect (raylib:make-rectangle
-                       :x (float (gethash "x" dim))
-                       :y (float (gethash "y" dim))
-                       :width (float (gethash "w" dim))
-                       :height (float (gethash "h" dim))))))
+                       :x (float (gethash "x" dim) 1.0)
+                       :y (float (gethash "y" dim) 1.0)
+                       :width (float (gethash "w" dim) 1.0)
+                       :height (float (gethash "h" dim) 1.0)))))
 
 (defun json->animation (frames json)
   "Read an `animation' out of some JSON."
-  (let* ((from (gethash "from" json))
-         (to   (gethash "to" json))
+  (let* ((from (floor (gethash "from" json)))
+         (to   (floor (gethash "to" json)))
          (frs  (t:transduce (t:comp (t:drop from)
                                     (t:take (1+ (- to from)))
                                     (t:map #'json->frame))
