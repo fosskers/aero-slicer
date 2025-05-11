@@ -1,5 +1,5 @@
 (defsystem "aero-fighter"
-  :version "25.2.16"
+  :version "25.5.12"
   :author "Colin Woodbury <colin@fosskers.ca>"
   :license "MPL-2.0"
   :homepage "https://github.com/fosskers/aero-fighter"
