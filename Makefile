@@ -4,35 +4,31 @@ CL_MODE  ?= DEV
 aero-fighter: dev
 	CL_MODE=$(CL_MODE) sbcl --load build.lisp
 
-ecl: dev lib/libaero-fighter-raylib.so.550
+ecl: dev lib/liblisp-raylib.so.550
 	CL_MODE=$(CL_MODE) ecl --load build.lisp
 
-dev: lib/ lib/libaero-fighter-raylib.so lib/libaero-fighter-shim.so raylib.h shim.h
+dev: lib/ lib/liblisp-raylib.so lib/liblisp-raylib-shim.so raylib.h shim.h
 
 lib/:
 	mkdir lib/
 
-lib/libaero-fighter-raylib.so.550:
-	ln -s libaero-fighter-raylib.so lib/libaero-fighter-raylib.so.550
+lib/liblisp-raylib.so.550:
+	ln -s liblisp-raylib.so lib/liblisp-raylib.so.550
 
-lib/libaero-fighter-raylib.so:
-	cd vendored/raylib/src/ && $(MAKE) PLATFORM=$(PLATFORM)
-	mv vendored/raylib/src/libaero-fighter-raylib.so lib/libaero-fighter-raylib.so
+lib/liblisp-raylib.so:
+	cd vendored/raylib/ && $(MAKE) PLATFORM=$(PLATFORM)
+	mv vendored/raylib/lib/liblisp-raylib.so lib/
 
-lib/libaero-fighter-shim.so: raylib/shim.c raylib/raylib.h
-	cd raylib && gcc -O3 -fPIC -shared -o libaero-fighter-shim.so shim.c
-	mv raylib/libaero-fighter-shim.so lib/
-
-raylib/raylib.h:
-	ln -s ../vendored/raylib/src/raylib.h raylib/raylib.h
+lib/liblisp-raylib-shim.so: lib/liblisp-raylib.so
+	cp vendored/raylib/lib/liblisp-raylib-shim.so lib/
 
 raylib.h:
-	ln -s vendored/raylib/src/raylib.h raylib.h
+	ln -s vendored/raylib/c/raylib.h raylib.h
 
 shim.h:
-	ln -s raylib/shim.h shim.h
+	ln -s vendored/raylib/c/shim.h shim.h
 
 clean:
-	-rm raylib.h shim.h aero-fighter raylib/raylib.h
+	-rm raylib.h shim.h aero-fighter
 	rm -rf lib/
-	cd vendored/raylib/src/ && $(MAKE) clean
+	cd vendored/raylib/ && $(MAKE) clean

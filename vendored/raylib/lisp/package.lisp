@@ -8,7 +8,7 @@
            #:texture #:texture-width #:texture-height
            #:audio-stream #:sound
            #:music #:music-looping
-           #:camera-2d #:make-camera-2d
+           #:camera-2d #:make-camera-2d #:camera-2d-offset #:camera-2d-target #:get-world-to-screen-2d
            #:keyboard-key #:gamepad-button)
   ;; --- Functions --- ;;
   (:export #:init-window #:close-window
@@ -16,20 +16,20 @@
            #:set-target-fps #:window-should-close
            #:begin-drawing #:end-drawing
            #:begin-mode-2d #:end-mode-2d
-           #:clear-background #:draw-fps #:draw-text #:draw-circle #:draw-rectangle
+           #:clear-background #:draw-fps #:draw-text #:draw-rectangle #:draw-line
            #:load-texture #:unload-texture #:is-texture-valid #:draw-texture #:draw-texture-v #:draw-texture-rec
            #:load-sound #:unload-sound #:play-sound
            #:load-music-stream #:unload-music-stream #:is-music-stream-playing #:play-music-stream #:update-music-stream
            #:is-key-pressed #:is-key-down
            #:is-gamepad-button-pressed #:is-gamepad-button-down #:get-gamepad-name #:is-gamepad-available
-           #:check-collision-recs)
+           #:check-collision-recs #:check-collision-point-rec
+           #:get-frame-time)
   ;; --- Library Loading --- ;;
-  (:export #+sbcl #:load-shared-objects)
+  #+sbcl
+  (:export #:load-shared-objects)
   (:documentation "A light wrapping of necessary Raylib types and functions."))
 
 (in-package :raylib)
-
-;; --- Shared Object Loading --- ;;
 
 #+sbcl
 (defun load-shared-objects (&key (target nil))
@@ -40,8 +40,8 @@ be compiled with `.so' files found in one location, but run with ones from anoth
   (let ((dir (case target
                (:linux "/usr/lib/")
                (t "lib/"))))
-    (load-shared-object (merge-pathnames "libaero-fighter-raylib.so" dir) :dont-save t)
-    (load-shared-object (merge-pathnames "libaero-fighter-shim.so" dir) :dont-save t)))
+    (load-shared-object (merge-pathnames "liblisp-raylib.so" dir) :dont-save t)
+    (load-shared-object (merge-pathnames "liblisp-raylib-shim.so" dir) :dont-save t)))
 
 #+sbcl
 (load-shared-objects)
@@ -50,8 +50,8 @@ be compiled with `.so' files found in one location, but run with ones from anoth
 ;; are already visible when we start to reference them in other files.
 #+ecl
 (progn
-  (ffi:load-foreign-library #p"lib/libaero-fighter-raylib.so")
-  (ffi:load-foreign-library #p"lib/libaero-fighter-shim.so"))
+  (ffi:load-foreign-library #p"lib/liblisp-raylib.so")
+  (ffi:load-foreign-library #p"lib/liblisp-raylib-shim.so"))
 
 ;; --- Keyboard and Gamepad --- ;;
 
@@ -66,6 +66,9 @@ be compiled with `.so' files found in one location, but run with ones from anoth
     (:space 32)
     (:tab   258)
     (:enter 257)
+    (:shift 340)
+    (:zero  48)
+    (:one   49)
     (t (error "Unknown keyboard key: ~a" kw))))
 
 #++
@@ -98,7 +101,7 @@ be compiled with `.so' files found in one location, but run with ones from anoth
 (progn
   (let ((colour (make-color :r 255 :g 255 :b 255 :a 255)))
     (init-window 300 300 "hello!")
-    (set-target-fps 60)
+    (set-target-fps 100)
     (loop while (not (window-should-close))
           do (progn (begin-drawing)
                     (clear-background colour)

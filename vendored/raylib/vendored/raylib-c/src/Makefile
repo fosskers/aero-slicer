@@ -84,7 +84,7 @@ RAYLIB_LIBTYPE       ?= SHARED
 RAYLIB_BUILD_MODE    ?= RELEASE
 
 # Build output name for the library
-RAYLIB_LIB_NAME      ?= aero-fighter-raylib
+RAYLIB_LIB_NAME      ?= lisp-raylib
 
 # Define resource file for DLL properties
 RAYLIB_RES_FILE      ?= ./raylib.dll.rc.data
