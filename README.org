@@ -13,8 +13,8 @@ Reach God Mode!
     - [[#sdl-backend][SDL Backend]]
   - [[#repl-loading][REPL Loading]]
   - [[#compiling-executables][Compiling Executables]]
-    - [[#sbcl][SBCL]]
-    - [[#ecl][ECL]]
+    - [[#linux][Linux]]
+    - [[#windows][Windows]]
 - [[#controls][Controls]]
 - [[#game-mechanics][Game Mechanics]]
   - [[#spawn-schedule][Spawn Schedule]]
@@ -87,19 +87,34 @@ Make sure to start Sly from the project root.
 
 ** Compiling Executables
 
-You can just run =make=, or use a specific compiler like so:
+*** Linux
 
-*** SBCL
+A run of =make= will compile the underlying Raylib dependency and produce an
+SBCL-based executable. =make ecl= will likewise produce an ECL-based executable,
+which has a much smaller binary size.
+
+Otherwise, if you wish to build just the final executable directly:
 
 #+begin_example
 sbcl --load build.lisp
 #+end_example
 
-*** ECL
+or
 
 #+begin_example
 ecl --load build.lisp
 #+end_example
+
+*** Windows
+
+If compiling /for/ Windows /from/ Linux, the following Make command is provided:
+
+#+begin_example
+make windows
+#+end_example
+
+This will produce an executable runnable with [[https://www.winehq.org/][Wine]].
+
 * Controls
 
 Given any SNES-like or Xbox 360-like controller:
