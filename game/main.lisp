@@ -520,7 +520,7 @@ executables."
 
 (defun assets-path ()
   "Assets are installed to difficult locations depending on the platform."
-  (or #+(and :release :linux) #p"/usr/share/aero-fighter/assets/"
+  (or #+(and release linux) #p"/usr/share/aero-fighter/assets/"
       #p"assets/"))
 
 (defun maybe-load-shared-objects ()

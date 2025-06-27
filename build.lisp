@@ -42,7 +42,9 @@
 (progn
   (format t "--- SBCL: SAVING IMAGE ---~%")
   (format t "POLICY: ~a~%" sb-c::*policy*)
-  (sb-ext:save-lisp-and-die #p"aero-fighter"
-                            :toplevel #'aero-fighter:launch
-                            :executable t
-                            :compression t))
+  (let ((bin (or #+win32 #p"aero-fighter.exe"
+                 #p"aero-fighter")))
+    (sb-ext:save-lisp-and-die bin
+                              :toplevel #'aero-fighter:launch
+                              :executable t
+                              :compression (if (member :sb-core-compression *features*) t))))
