@@ -21,7 +21,8 @@
            #:load-sound #:unload-sound #:play-sound
            #:load-music-stream #:unload-music-stream #:is-music-stream-playing #:play-music-stream #:update-music-stream
            #:is-key-pressed #:is-key-down
-           #:is-gamepad-button-pressed #:is-gamepad-button-down #:get-gamepad-name #:is-gamepad-available
+           #:is-gamepad-button-pressed #:is-gamepad-button-down #:get-gamepad-name #:is-gamepad-available #:get-gamepad-button-pressed
+           #:get-gamepad-axis-count #:get-gamepad-axis-movement
            #:check-collision-recs #:check-collision-point-rec
            #:get-frame-time)
   ;; --- Library Loading --- ;;
@@ -65,16 +66,25 @@ be compiled with `.so' files found in one location, but run with ones from anoth
 ;; to reference enum values.
 (defun keyboard-key (kw)
   (case kw
+    ;; --- Directions --- ;;
     (:right 262)
     (:left  263)
     (:down  264)
     (:up    265)
+    ;; --- Control --- ;;
     (:space 32)
     (:tab   258)
     (:enter 257)
     (:shift 340)
+    ;; --- Numbers --- ;;
     (:zero  48)
     (:one   49)
+    ;; --- Letters --- ;;
+    (:w     87)
+    (:a     65)
+    (:s     83)
+    (:d     68)
+    (:r     82)
     (t (error "Unknown keyboard key: ~a" kw))))
 
 #++
