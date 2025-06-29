@@ -464,8 +464,8 @@ the player is pressing."
                    (- +world-max-x+ 136)
                    (- +world-max-y+ 20)
                    10)
-  (draw-white-text (format nil "Concept by JPJ and TRD")
-                   (- +world-max-x+ 130)
+  (draw-white-text (format nil "Concept by JPJ - Thanks TRD")
+                   (- +world-max-x+ 159)
                    (- +world-max-y+ 10)
                    10))
 
