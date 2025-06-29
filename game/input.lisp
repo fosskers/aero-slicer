@@ -5,32 +5,35 @@
 #+nil
 (launch)
 
+#+nil
+*game*
+
 (defun pressing-start? ()
   "Is the player pressed a start-like button?"
   (or (raylib:is-key-down +key-space+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-start+)))
+      (raylib:is-gamepad-button-down *gamepad* +gamepad-start+)))
 
 (defun warp-button-down? ()
   "Is the warp trigger being held down?"
   (or (raylib:is-key-down +key-tab+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-y+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-x+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-left-shoulder+)
-      (raylib:is-gamepad-button-down +gamepad+ +gamepad-right-shoulder+)))
+      (raylib:is-gamepad-button-down *gamepad* +gamepad-y+)
+      (raylib:is-gamepad-button-down *gamepad* +gamepad-x+)
+      (raylib:is-gamepad-button-down *gamepad* +gamepad-left-shoulder+)
+      (raylib:is-gamepad-button-down *gamepad* +gamepad-right-shoulder+)))
 
 (defun warp-direction ()
   "The direction the player intends to warp."
   (cond ((or (raylib:is-key-down +key-up+)
-             (raylib:is-gamepad-button-down +gamepad+ +gamepad-up+))
+             (raylib:is-gamepad-button-down *gamepad* +gamepad-up+))
          :up)
         ((or (raylib:is-key-down +key-down+)
-             (raylib:is-gamepad-button-down +gamepad+ +gamepad-down+))
+             (raylib:is-gamepad-button-down *gamepad* +gamepad-down+))
          :down)
         ((or (raylib:is-key-down +key-left+)
-             (raylib:is-gamepad-button-down +gamepad+ +gamepad-left+))
+             (raylib:is-gamepad-button-down *gamepad* +gamepad-left+))
          :left)
         ((or (raylib:is-key-down +key-right+)
-             (raylib:is-gamepad-button-down +gamepad+ +gamepad-right+))
+             (raylib:is-gamepad-button-down *gamepad* +gamepad-right+))
          :right)
         (t :up)))
 
@@ -38,7 +41,7 @@
   "Is the player trying to shoot?"
   (or (raylib:is-key-pressed +key-space+)
       ;; Doesn't crash if the gamepad isn't plugged in.
-      (raylib:is-gamepad-button-pressed +gamepad+ +gamepad-a+)))
+      (raylib:is-gamepad-button-pressed *gamepad* +gamepad-a+)))
 
 ;; --- Gamepads --- ;;
 
@@ -62,19 +65,27 @@
 
 (defun set-gamepad! (n)
   "Set the current in-use gamepad."
-  (setf +gamepad+ n))
+  (setf *gamepad* n))
 
 (defun auto-set-gamepad! (game)
   "Just pick one."
   (set-gamepad! (or (car (last (game-gamepads game))) 0)))
+
+(defun detect-axes! (game)
+  "Determine if the current gamepad has directional Sticks."
+  (when (not (zerop (raylib:get-gamepad-axis-count *gamepad*)))
+    (setf (game-gamepad-axes? game) t)))
 
 ;; --- Debugging --- ;;
 
 #++
 (defun debugging-gamepad ()
   (let ((last-pressed (raylib:get-gamepad-button-pressed)))
-    (when (not (zerop last-pressed))
-      (break (format nil "Button: ~a" last-pressed)))))
+    ;; (when (not (zerop last-pressed))
+    (break (format nil "Button: ~a" last-pressed))))
+
+#+nil
+(debugging-gamepad)
 
 #++
 (defun debugging-keypress ()
@@ -88,3 +99,6 @@
                         (- +screen-height+ 25)
                         20
                         raylib:+lightgray+))))
+
+#+nil
+(raylib:get-gamepad-axis-count 2)

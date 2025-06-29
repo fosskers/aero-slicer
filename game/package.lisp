@@ -14,6 +14,10 @@
 #+nil
 (launch)
 
+;; --- Game State --- ;;
+
+(defparameter *game* nil)
+
 ;; --- Globals --- ;;
 
 (defparameter +world-pixels-x+ 256)
@@ -148,7 +152,7 @@ single beam shot will never damage the same enemy twice.")
 (raylib:get-gamepad-name 0)
 
 ;; NOTE: See also `debugging-gamepad' in `input.lisp'.
-(defparameter +gamepad+ 0)
+(defparameter *gamepad* 0)
 (defparameter +gamepad-a+ #.(raylib:gamepad-button :right-face-right))
 (defparameter +gamepad-b+ #.(raylib:gamepad-button :right-face-down))
 (defparameter +gamepad-x+ #.(raylib:gamepad-button :right-face-up))
