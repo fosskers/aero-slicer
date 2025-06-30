@@ -20,6 +20,7 @@
 
 ;; --- Globals --- ;;
 
+(defparameter +game-version+ "v25.7.xx")
 (defparameter +world-pixels-x+ 256)
 (defparameter +world-pixels-y+ 240)
 (defparameter +screen-width+ (* +world-pixels-x+ 3))

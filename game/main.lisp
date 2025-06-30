@@ -467,6 +467,10 @@ the player is pressing."
                    -38 60 10)
   (draw-white-text (format nil "GAME OVER, DUDE") -96 0 20)
   (draw-white-text (format nil "(Press Start)") -36 20 10)
+  (draw-white-text +game-version+
+                   (- +world-max-x+ 41)
+                   (- +world-max-y+ 30)
+                   10)
   (draw-white-text (format nil "AERO FIGHTER by Colin W")
                    (- +world-max-x+ 136)
                    (- +world-max-y+ 20)
