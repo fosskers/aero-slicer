@@ -7,9 +7,15 @@
 
 ;; --- General --- ;;
 
+(declaim (ftype (function (real) boolean) neg?))
 (defun neg? (n)
   "Is a given number negative?"
   (< n 0))
+
+(declaim (ftype (function (real) boolean) pos?))
+(defun pos? (n)
+  "Is a given number positive?"
+  (> n 0))
 
 (defun close-to-zero? (n)
   "Is some float quite close to zero?"
@@ -22,6 +28,13 @@
 (defun real->float (n)
   "Truncate a `real' to a `single-float'."
   (coerce n 'single-float))
+
+(declaim (ftype (function (real real real) real) clamp))
+(defun clamp (low n high)
+  "Ensure that a given N is between two bounding values."
+  (cond ((< n low) low)
+        ((> n high) high)
+        (t n)))
 
 ;; --- Vectors --- ;;
 

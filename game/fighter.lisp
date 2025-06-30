@@ -248,7 +248,8 @@
            (move-by-warp! fighter)
            :warped)
           (warp-pressed? nil)
-          (t (move-by-press! fighter)))))
+          (t (or (move-by-press! fighter)
+                 (move-by-axes! fighter))))))
 
 (defun move-by-warp! (fighter)
   "The fighter is warping in a set direction."
@@ -266,21 +267,45 @@
 
 (defun move-by-press! (fighter)
   "Move the fighter in a normal, non-warping fashion."
-  (let ((pos  (fighter-pos fighter))
-        (dist (if (fighter-god-mode? fighter) 3.0 2.0)))
-    (when (or (raylib:is-key-down +key-right+)
-              (raylib:is-gamepad-button-down *gamepad* +gamepad-right+))
-      (let ((new (min +112.0 (+ dist (raylib:vector2-x pos)))))
-        (set-x! fighter new)))
-    (when (or (raylib:is-key-down +key-left+)
-              (raylib:is-gamepad-button-down *gamepad* +gamepad-left+))
-      (let ((new (max -128.0 (- (raylib:vector2-x pos) dist))))
-        (set-x! fighter new)))
-    (when (or (raylib:is-key-down +key-down+)
-              (raylib:is-gamepad-button-down *gamepad* +gamepad-down+))
-      (let ((new  (min +104.0 (+ (1+ dist) (raylib:vector2-y pos)))))
-        (set-y! fighter new)))
-    (when (or (raylib:is-key-down +key-up+)
-              (raylib:is-gamepad-button-down *gamepad* +gamepad-up+))
-      (let ((new (max -106.0 (- (raylib:vector2-y pos) dist))))
-        (set-y! fighter new)))))
+  (let ((pos    (fighter-pos fighter))
+        (dist   (if (fighter-god-mode? fighter) 3.0 2.0))
+        (moved? nil))
+    (or (when (or (raylib:is-key-down +key-right+)
+                  (raylib:is-gamepad-button-down *gamepad* +gamepad-right+))
+          (let ((new (min +112.0 (+ dist (raylib:vector2-x pos)))))
+            (set-x! fighter new)
+            (setf moved? t)))
+        (when (or (raylib:is-key-down +key-left+)
+                  (raylib:is-gamepad-button-down *gamepad* +gamepad-left+))
+          (let ((new (max -128.0 (- (raylib:vector2-x pos) dist))))
+            (set-x! fighter new)
+            (setf moved? t))))
+    (or (when (or (raylib:is-key-down +key-down+)
+                  (raylib:is-gamepad-button-down *gamepad* +gamepad-down+))
+          (let ((new  (min +104.0 (+ (1+ dist) (raylib:vector2-y pos)))))
+            (set-y! fighter new)
+            (setf moved? t)))
+        (when (or (raylib:is-key-down +key-up+)
+                  (raylib:is-gamepad-button-down *gamepad* +gamepad-up+))
+          (let ((new (max -106.0 (- (raylib:vector2-y pos) dist))))
+            (set-y! fighter new)
+            (setf moved? t))))
+    moved?))
+
+(defun move-by-axes! (fighter)
+  "If a d-pad direction wasn't pressed, then accept the input from the axes."
+  (multiple-value-bind (vert hori) (axes-yields)
+    (let* ((pos  (fighter-pos fighter))
+           (dist (if (fighter-god-mode? fighter) 3.0 2.0)))
+      (set-x! fighter (clamp -128.0
+                             (+ (raylib:vector2-x pos)
+                                (* hori dist))
+                             112.0))
+      (set-y! fighter (clamp -106.0
+                             (+ (raylib:vector2-y pos)
+                                ;; NOTE: 2025-07-01 In order to offset the
+                                ;; visual effect of the road itself scrolling,
+                                ;; we give the fighter a little boost in the
+                                ;; down direction, or else it feels sluggish.
+                                (* vert (if (pos? vert) (1+ dist) dist)))
+                             104.0)))))

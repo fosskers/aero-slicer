@@ -76,6 +76,11 @@
   (when (not (zerop (raylib:get-gamepad-axis-count *gamepad*)))
     (setf (game-gamepad-axes? game) t)))
 
+(defun axes-yields ()
+  "Gamepad axis values clamped to a minimum sensitivity."
+  (values (raylib:get-gamepad-axis-movement *gamepad* 1)
+          (raylib:get-gamepad-axis-movement *gamepad* 0)))
+
 ;; --- Debugging --- ;;
 
 #++
