@@ -1,6 +1,6 @@
 ;;; Display of the logo and various options.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #+nil
 (launch)

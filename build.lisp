@@ -8,7 +8,7 @@
   (let* ((path (merge-pathnames "lib/" (ext:getcwd)))
          (args (format nil "-Wl,-rpath,~a -L~a" path path)))
     (setf c:*user-linker-flags* args)
-    (setf c:*user-linker-libs*  "-laero-fighter-raylib -laero-fighter-shim"))
+    (setf c:*user-linker-libs*  "-llisp-raylib -llisp-raylib-shim"))
   (declaim (optimize (speed 3) (debug 1) (safety 1))))
 
 (format t "--- DETECTING ENVIRONMENT ---~%")
@@ -24,17 +24,17 @@
 ;; compiles and loads all its files. This is critical to ensure that no C-level
 ;; symbols are missing, say from shared objects.
 (asdf:load-system :raylib :force t)
-(asdf:load-system :aero-fighter :force t)
+(asdf:load-system :aero-slicer :force t)
 
 #+ecl
 (progn
   (format t "--- ECL: COMPILING EXECUTABLE ---~%")
-  (asdf:make-build :aero-fighter
+  (asdf:make-build :aero-slicer
                    :type :program
                    :move-here #p"./"
                    :epilogue-code
                    '(progn
-                     (aero-fighter:launch)
+                     (aero-slicer:launch)
                      (ext:quit)))
   (ext:quit))
 
@@ -42,9 +42,9 @@
 (progn
   (format t "--- SBCL: SAVING IMAGE ---~%")
   (format t "POLICY: ~a~%" sb-c::*policy*)
-  (let ((bin (or #+win32 #p"aero-fighter.exe"
-                 #p"aero-fighter")))
+  (let ((bin (or #+win32 #p"aero-slicer.exe"
+                 #p"aero-slicer")))
     (sb-ext:save-lisp-and-die bin
-                              :toplevel #'aero-fighter:launch
+                              :toplevel #'aero-slicer:launch
                               :executable t
                               :compression (if (member :sb-core-compression *features*) t))))

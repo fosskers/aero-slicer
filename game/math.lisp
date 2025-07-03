@@ -1,6 +1,6 @@
 ;;; Various math utilities.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #++
 (launch)

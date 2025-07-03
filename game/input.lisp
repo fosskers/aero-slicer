@@ -1,6 +1,6 @@
 ;;; Interaction from the player.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #+nil
 (launch)

@@ -1,4 +1,4 @@
-(defpackage aero-fighter
+(defpackage aero-slicer
   (:use :cl :arrow-macros)
   (:shadow #:shadow)
   (:local-nicknames (#:json #:parcom/json)
@@ -6,10 +6,10 @@
                     (#:t #:transducers))
   (:export #:launch))
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #-(or sbcl ecl)
-(error "Aero Fighter can only be compiled with SBCL or ECL.")
+(error "Aero Slicer can only be compiled with SBCL or ECL.")
 
 #+nil
 (launch)

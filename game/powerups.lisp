@@ -1,6 +1,6 @@
 ;;; The mechanics of various fighter powerups.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #+nil
 (launch)

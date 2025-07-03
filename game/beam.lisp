@@ -7,7 +7,7 @@
 ;;; Roughly: 8 frames (128ms) for the expansion, 9 frames (144ms) at peak, 8
 ;;; frames to wind down.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #+nil
 (launch)

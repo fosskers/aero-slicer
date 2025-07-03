@@ -1,4 +1,4 @@
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #+nil
 (launch)
@@ -7,7 +7,7 @@
 (declaim (optimize (speed 1) (debug 3) (safety 1)))
 #++
 (flamegraph:save-flame-graph ("sbcl.fg")
-  (launch))
+                             (launch))
 
 ;; --- Dependency Graph --- ;;
 
@@ -29,7 +29,7 @@
 
 #++
 (let ((graph (simple-graph:make-graph)))
-  (all-deps graph "aero-fighter")
+  (all-deps graph "aero-slicer")
   (with-open-file (stream #p"deps.dot" :direction :output :if-exists :supersede)
     (format stream (simple-graph:to-dot graph))))
 

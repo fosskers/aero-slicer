@@ -3,7 +3,7 @@
 ;;; Calling `game' initialises it, and likewise `ungame' unloads various
 ;;; textures that had been loaded into the GPU by Raylib.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #+nil
 (launch)

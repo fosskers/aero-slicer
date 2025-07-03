@@ -4,7 +4,7 @@
 ;;; and then a specific phase via Raylib to determine if their
 ;;; `raylib:rectangle' actually overlap.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #+nil
 (launch)

@@ -4,7 +4,7 @@
 ;;; initial beam is 4 pixels wide. The next is 8, and the final is 16, the full
 ;;; width of the ship.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #+nil
 (launch)

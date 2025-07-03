@@ -2,7 +2,7 @@ PLATFORM ?= PLATFORM_DESKTOP_GLFW
 CL_MODE  ?= DEV
 WINE     ?= $(HOME)/".wine/drive_c/Program Files/Steel Bank Common Lisp"
 
-aero-fighter: dev
+aero-slicer: dev
 	CL_MODE=$(CL_MODE) sbcl --load build.lisp
 
 ecl: dev lib/liblisp-raylib.so.550
@@ -30,7 +30,7 @@ shim.h:
 	ln -s vendored/raylib/c/shim.h shim.h
 
 clean:
-	-rm raylib.h shim.h aero-fighter aero-fighter.exe
+	-rm raylib.h shim.h aero-slicer aero-slicer.exe
 	rm -rf lib/
 	cd vendored/raylib/ && $(MAKE) clean
 

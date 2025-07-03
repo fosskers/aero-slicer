@@ -1,4 +1,4 @@
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #+nil
 (launch)
@@ -471,8 +471,8 @@ the player is pressing."
                    (- +world-max-x+ 41)
                    (- +world-max-y+ 30)
                    10)
-  (draw-white-text (format nil "AERO FIGHTER by Colin W")
-                   (- +world-max-x+ 136)
+  (draw-white-text (format nil "AERO SLICER by Colin W")
+                   (- +world-max-x+ 127)
                    (- +world-max-y+ 20)
                    10)
   (draw-white-text (format nil "Concept by JPJ - Thanks TRD")
@@ -531,7 +531,7 @@ executables."
 
 (defun assets-path ()
   "Assets are installed to difficult locations depending on the platform."
-  (or #+(and release linux) #p"/usr/share/aero-fighter/assets/"
+  (or #+(and release linux) #p"/usr/share/aero-slicer/assets/"
       #p"assets/"))
 
 (defun maybe-load-shared-objects ()

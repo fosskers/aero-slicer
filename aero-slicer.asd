@@ -1,8 +1,8 @@
-(defsystem "aero-fighter"
+(defsystem "aero-slicer"
   :version "25.5.12"
   :author "Colin Woodbury <colin@fosskers.ca>"
   :license "MPL-2.0"
-  :homepage "https://github.com/fosskers/aero-fighter"
+  :homepage "https://github.com/fosskers/aero-slicer"
   :depends-on (:arrow-macros
                :filepaths
                :parcom/json

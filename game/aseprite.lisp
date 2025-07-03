@@ -1,6 +1,6 @@
 ;;; Animated sprites, as pulled from an Aseprite sprite sheet.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 ;; Requirements:
 ;;

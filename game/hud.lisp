@@ -1,6 +1,6 @@
 ;;; The player's current score, bomb count, etc.
 
-(in-package :aero-fighter)
+(in-package :aero-slicer)
 
 #++
 (launch)
