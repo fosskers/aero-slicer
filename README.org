@@ -1,4 +1,4 @@
-#+title: Aero Fighter
+#+title: Aero Slicer
 
 [[file:screenshot.png]]
 
@@ -23,13 +23,13 @@ Reach God Mode!
 
 * History
 
-Aero Fighter was a game originally created by a friend of mine over 20 years ago
-in [[https://en.wikipedia.org/wiki/Turbo_Pascal][Turbo Pascal]]. For years he has told me how he'd love to dig out its old
-floppy disk and somehow get it working again.
+/Aero Fighter/ was a game originally created by a friend
+of mine over 20 years ago in [[https://en.wikipedia.org/wiki/Turbo_Pascal][Turbo Pascal]]. For years he has told me how he'd
+love to dig out its old floppy disk and somehow get it working again.
 
 In an effort to test the feasability of developing with [[https://github.com/raysan5/raylib/][Raylib]] in Common Lisp, I
-have recreated Aero Fighter with many enhancements. It is a simple top-down
-shooter game in NES-style. The goal is simple:
+have recreated /Aero Fighter/ as /Aero Slicer/ and given it many enhancements. It is
+a simple top-down shooter game in NES-style. The goal is simple:
 
 #+begin_quote
 Reach God Mode.
@@ -39,11 +39,11 @@ And then see how long you can last!
 
 * Building
 
-Aero Fighter can only be built with SBCL and ECL.
+Aero Slicer can only be built with SBCL and ECL.
 
 ** Library Preparation
 
-Before attempting to build Aero Fighter in any way, we must prep its C
+Before attempting to build Aero Slicer in any way, we must prep its C
 dependencies.
 
 #+begin_example
@@ -51,7 +51,7 @@ make dev
 #+end_example
 
 This will compile Raylib, move =.so= files to their expected locations, and create
-certain symlinks. Now you can load Aero Fighter in your REPL, or build
+certain symlinks. Now you can load Aero Slicer in your REPL, or build
 standalone executables.
 
 *** SDL Backend
@@ -64,7 +64,7 @@ make dev PLATFORM=PLATFORM_DESKTOP_SDL
 
 The value of =PLATFORM= matches that of Raylib itself. Technically you can put
 whatever value you want here, but only GLFW and SDL are guaranteed to work with
-Aero Fighter.
+Aero Slicer.
 
 ** REPL Loading
 
@@ -113,20 +113,21 @@ If compiling /for/ Windows /from/ Linux, the following Make command is provided:
 make windows
 #+end_example
 
-This will produce an executable runnable with [[https://www.winehq.org/][Wine]].
+This will produce an executable runnable with [[https://www.winehq.org/][Wine]] or within Windows itself.
 
 * Controls
 
 Given any SNES-like or Xbox 360-like controller:
 
-| Button  | Action                 |
-|---------+------------------------|
-| D-Pad   | Movement               |
-| Start   | Start the Game         |
-| Select  | Switch main controller |
-| A       | Laser                  |
-| B       | Bomb                   |
-| X/Y/L/R | Warp                   |
+| Button     | Action            |
+|------------+-------------------|
+| D-Pad      | Movement          |
+| Left Stick | Movement          |
+| Start      | Start the Game    |
+| Select     | Switch controller |
+| A          | Laser             |
+| B          | Bomb              |
+| X/Y/L/R    | Warp              |
 
 Keyboards:
 
@@ -175,7 +176,7 @@ All dependencies are vendored.
 
 * Credits
 
-Aero Fighter uses hand-written bindings to [[https://github.com/raysan5/raylib/][Raylib]] for windowing, sound effects,
+Aero Slicer uses hand-written bindings to [[https://github.com/raysan5/raylib/][Raylib]] for windowing, sound effects,
 collision, etc. The rest of the game logic is in pure Common Lisp.
 
 | Person       | Role           |
